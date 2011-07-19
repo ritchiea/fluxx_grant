@@ -394,9 +394,11 @@ module FluxxRequestTransaction
       def funding_source_names
         names=[] 
         for rtfs in @object.request_transaction_funding_sources do
-          names << rtfs.request_funding_source.funding_source_allocation.funding_source.name
+          if rtfs.request_funding_source.funding_source_allocation && rtfs.request_funding_source.funding_source_allocation.funding_source
+            names << rtfs.request_funding_source.funding_source_allocation.funding_source.name
+          end
         end
-        names
+        names.compact
       end
     end
 
