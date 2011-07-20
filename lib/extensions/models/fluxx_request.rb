@@ -499,7 +499,7 @@ module FluxxRequest
       rejected_state_clause = if self.respond_to? :sphinx_rejected_state_clause
         self.sphinx_rejected_state_clause
       else
-        "IF(requests.#{state_name} = 'rejected', 1, 0)"
+        "IF(lower(requests.#{state_name}) = 'rejected', 1, 0)"
       end
       
       # Note!!!: across multiple indices, the structure must be the same or the index can get corrupted and attributes, search filter will not work properly

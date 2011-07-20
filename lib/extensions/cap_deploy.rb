@@ -61,8 +61,6 @@ after "deploy", "thinking_sphinx:index"
 after "deploy:migrations", "thinking_sphinx:index"
 after "deploy", "fluxx:reload_all_templates"
 after "deploy:migrations", "fluxx:reload_all_templates"
-after "deploy", "fluxx:delayed_job_restart"
-after "deploy:migrations", "fluxx:delayed_job_restart"
 
 namespace :uname do
   desc "Invoke uname on remote servers"
