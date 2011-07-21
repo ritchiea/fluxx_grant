@@ -47,6 +47,11 @@ module FluxxSubProgram
     def load_all
       SubProgram.where(:retired => 0).order(:name).all
     end
+    def model_name
+      u = ActiveModel::Name.new Initiative
+      u.instance_variable_set '@human', I18n.t(:sub_program_name)
+      u
+    end
   end
   
   module ModelInstanceMethods

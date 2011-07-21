@@ -50,6 +50,12 @@ module FluxxInitiative
     def load_all
       Initiative.where(:retired => 0).order(:name).all
     end
+    
+    def model_name
+      u = ActiveModel::Name.new Initiative
+      u.instance_variable_set '@human', I18n.t(:initiative_name)
+      u
+    end
   end
 
   module ModelInstanceMethods

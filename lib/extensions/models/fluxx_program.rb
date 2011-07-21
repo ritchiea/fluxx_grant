@@ -54,6 +54,12 @@ module FluxxProgram
     def is_hidden?
       Fluxx.config(:hide_program) == "1" && Fluxx.config(:funding_source_allocation_hide_program) == "1"
     end
+    
+    def model_name
+      u = ActiveModel::Name.new Initiative
+      u.instance_variable_set '@human', I18n.t(:program_name)
+      u
+    end
 
     def finance_administrator_role_name
       'Finance Administrator'
