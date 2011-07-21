@@ -67,7 +67,7 @@
     .pairs
       .key= "#{I18n.t(:sub_program_name)}:"
       .value= model.sub_program.name if model.sub_program
-  - if model.secondary_programs
+  - if model.secondary_programs && !model.secondary_programs.empty?
     .pairs
       .key= "Secondary #{(I18n.t(:program_name)).pluralize}:"
       .value= model.secondary_programs.map(&:name).to_sentence
