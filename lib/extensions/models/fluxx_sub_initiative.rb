@@ -43,7 +43,7 @@ module FluxxSubInitiative
     end
 
     def model_name
-      u = ActiveModel::Name.new Initiative
+      u = ActiveModel::Name.new SubInitiative
       u.instance_variable_set '@human', I18n.t(:sub_initiative_name)
       u
     end

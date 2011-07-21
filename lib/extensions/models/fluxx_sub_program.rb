@@ -48,7 +48,7 @@ module FluxxSubProgram
       SubProgram.where(:retired => 0).order(:name).all
     end
     def model_name
-      u = ActiveModel::Name.new Initiative
+      u = ActiveModel::Name.new SubProgram
       u.instance_variable_set '@human', I18n.t(:sub_program_name)
       u
     end

@@ -56,7 +56,7 @@ module FluxxProgram
     end
     
     def model_name
-      u = ActiveModel::Name.new Initiative
+      u = ActiveModel::Name.new Program
       u.instance_variable_set '@human', I18n.t(:program_name)
       u
     end
