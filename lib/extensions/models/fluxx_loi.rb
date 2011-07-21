@@ -1,5 +1,5 @@
 module FluxxLoi
-  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :applicant, :organization_name, :email, :phone, :project_title]
+  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :applicant, :organization_name, :email, :phone, :project_title, :program_id]
   
   def self.included(base)
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'

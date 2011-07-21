@@ -5,3 +5,4 @@
 = form.input :project_title
 = form.input :applicant_linked, :as => :select, :collection => [["Linked", "1"], ["Not Linked", "0"]]
 = form.input :organization_linked, :as => :select, :collection => [["Linked", "1"], ["Not Linked", "0"]]
+= form.input :program_id, :required => false, :as => :select, :collection => Program.load_all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}
