@@ -30,7 +30,7 @@
                     - if state == 'Due' && current_user.has_role?(Program.grantee_role_name, model.request.program)
                       %span.actions
                         = link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png", :class => 'delete-button'), model_document_path(doc), :class => "delete-report"
-              - if state == 'Due' && current_user.has_role?(Program.grantee_role_name, model.request.program)
+              - if (model.in_state_with_category?(:new) || state == 'Due' || state == 'new') && current_user.has_role?(Program.grantee_role_name, model.request.program)
                 %li.upload
                   = link_to image_tag("/images/fluxx_engine/theme/default/icons/add.png", :class => 'add-button'), model_documents_path(:model_document => {:documentable_id => documentable_id, :documentable_type => documentable_class}), :class => 'to-upload', 'data-extensions'.to_sym=>"txt,zip,gz,pdf,png,jpg,gif,xls,doc,xlsx,docx,ppt,pptx", :title => "Add Document", 'data-document-type-url' => model_document_types_path(:model_type => documentable_class, :name => 'associated_request_documents', :format => :json), 'data-document-type-param' => 'model_document[model_document_type_id]'
                   = 'Upload A File'
