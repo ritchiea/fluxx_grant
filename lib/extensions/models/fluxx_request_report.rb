@@ -291,6 +291,10 @@ module FluxxRequestReport
       'InterimNarrative'
     end
 
+    def external_report_type_names
+      [final_budget_type_name, final_narrative_type_name, interim_budget_type_name, interim_narrative_type_name]
+    end
+
     def report_doc_types
       [interim_budget_type_name, interim_narrative_type_name, final_budget_type_name, final_narrative_type_name, final_eval_type_name, interim_eval_type_name, final_monitor_type_name]
     end
