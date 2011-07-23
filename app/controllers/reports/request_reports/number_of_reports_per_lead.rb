@@ -42,6 +42,9 @@ class NumberOfReportsPerLead < ActionController::ReportBase
     hash[:series] = report_types.map{|report_type| {:label => report_type}}
     hash[:stackSeries] = false;
     hash[:type] = "bar"
+    if xaxis.count < 5
+      hash[:seriesDefaults] = {:rendererOptions => {:barPadding => 20}}
+    end
 
     hash.to_json
 
