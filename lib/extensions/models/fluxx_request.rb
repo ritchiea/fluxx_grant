@@ -110,8 +110,8 @@ module FluxxRequest
       insta.headers = (lambda do |with_clause|
           block1 = ['Request ID', 'Request Type', 'Status', ['Amount Requested', :currency], ['Amount Recommended', :currency]]
           grant_block = [['Amount Funded', :currency], ['Total Paid', :currency], ['Total Due', :currency], ['Grant Agreement Date', :date], ['Grant Start Date', :date], ['Grant End Date', :date]]
-          block2 = ['Grantee', 'Grantee Street Address', 'Grantee Street Address2', 'Grantee City', 'Grantee State', 'Grantee Country', 'Grantee Postal Code', 'Grantee URL',
-            'Fiscal Org', 'Fiscal Street Address', 'Fiscal Street Address2', 'Fiscal City', 'Fiscal State', 'Fiscal Country', 'Fiscal Postal Code', 'Fiscal URL',
+          block2 = ['Grantee', 'Grantee Street Address', 'Grantee Street Address2', 'Grantee City', 'Grantee State', 'Grantee Country', 'Grantee Postal Code', 'Grantee URL', 'Grantee Tax Status', 'Grantee Tax ID',
+            'Fiscal Org', 'Fiscal Street Address', 'Fiscal Street Address2', 'Fiscal City', 'Fiscal State', 'Fiscal Country', 'Fiscal Postal Code', 'Fiscal URL', 'Fiscal Tax Status', 'Fiscal Tax ID',
             'Lead PO/PD', 'Program', 'Sub Program', ['Date Request Received', :date], ['Duration', :integer], 
             'Constituents', 'Means', 'Type of Org', 'Funding Source', ['Date Created', :date], ['Date Last Updated', :date],
             'Primary Contact First Name', 'Primary Contact Last Name', 'Primary Contact Email',
@@ -140,11 +140,11 @@ module FluxxRequest
           block2 = "program_organization.name, 
           program_organization.street_address program_org_street_address, program_organization.street_address2 program_org_street_address2, program_organization.city program_org_city,
           program_org_country_states.name program_org_state_name, program_org_countries.name program_org_country_name, program_organization.postal_code program_org_postal_code,
-          program_organization.url program_org_url,
+          program_organization.url program_org_url, (select value from multi_element_values where id = program_organization.tax_class_id) program_org_tax_class, program_organization.tax_id program_org_tax_id,
           fiscal_organization.name,
           fiscal_organization.street_address fiscal_org_street_address, fiscal_organization.street_address2 fiscal_org_street_address2, fiscal_organization.city fiscal_org_city,
           fiscal_org_country_states.name fiscal_org_state_name, fiscal_org_countries.name fiscal_org_country_name, fiscal_organization.postal_code fiscal_org_postal_code,
-          fiscal_organization.url fiscal_org_url,
+          fiscal_organization.url fiscal_org_url, (select value from multi_element_values where id = fiscal_organization.tax_class_id) fiscal_org_tax_class, fiscal_organization.tax_id fiscal_org_tax_id,
           (select concat(users.first_name, (concat(' ', users.last_name))) full_name from
           users where id = program_lead_id) lead_po,
           program.name, sub_program.name,
