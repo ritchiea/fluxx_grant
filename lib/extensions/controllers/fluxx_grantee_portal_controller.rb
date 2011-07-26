@@ -14,7 +14,7 @@ module FluxxGranteePortalController
     ITEMS_PER_PAGE = 10
     def index
       if current_user.is_grantee?
-        org_ids = current_user.primary_organization.id
+        org_ids = current_user.primary_organization.id if current_user.primary_organization
 
         client_store = ClientStore.where(:user_id => fluxx_current_user.id, :client_store_type => 'grantee portal').first ||
                        ClientStore.create(:user_id => fluxx_current_user.id, :client_store_type => 'grantee portal', :data => {:pages => {:requests => 1, :grants => 1, :reports => 1, :transactions => 1}}.to_json, :name => "Default")
@@ -26,7 +26,11 @@ module FluxxGranteePortalController
         page = params[:page] ? params[:page] : settings["pages"][table]
         settings["pages"][table] = page if (table != :all)
 
-        requests = Request.where("(requests.program_organization_id in (?) OR requests.fiscal_organization_id in (?)) AND requests.type = ? AND requests.deleted_at IS NULL", org_ids, org_ids, "GrantRequest")
+        requests = if org_ids
+          Request.where("(requests.program_organization_id in (?) OR requests.fiscal_organization_id in (?)) AND requests.type = ? AND requests.deleted_at IS NULL", org_ids, org_ids, "GrantRequest")
+        else
+          Request.where('1 = 2')
+        end
         request_ids = requests.map { |request| request.id }
 
         if table == :all || table == "requests"
