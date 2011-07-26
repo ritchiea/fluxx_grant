@@ -55,16 +55,17 @@ class BudgetOverviewByYear < ActionController::ReportBase
       hash = {:library => "jqPlot"}
 
       xaxis.each_index{|i| xaxis[i] += "  #{(((total_granted[i].to_f)/ budgeted[i].to_f) * 100).round.to_s}%"}
-      total_granted.each_index{|i| total_granted[i] -= pipeline[i] }
-      budgeted.each_index{|i| budgeted[i] -= pipeline[i] + total_granted[i] }
+      #total_granted.each_index{|i| total_granted[i] -= pipeline[i] }
+      budgeted.each_index{|i| budgeted[i] -= (pipeline[i] + total_granted[i]) }
 
-      hash[:data] = [pipeline, total_granted, budgeted ]
+      paid.each_index{|i| paid[i] -= (budgeted[i] + pipeline[i] + total_granted[i]) }
+
+      hash[:data] = [pipeline, total_granted, budgeted, paid ]
 
       hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => "#{I18n.t 'number.currency.format.unit'}%.2f" }}}
-      hash[:series] = [ {:label => "Total Annual Budget"}, {:label => "Actual in Pipeline (to date)"}, {:label => "Actual Committed (to date)"} ]
-
+      hash[:series] = [ {:label => "Actual in Pipeline (to date)", :renderer => "$.jqplot.BarRenderer"}, {:label => "Actual Committed (to date)", :renderer => "$.jqplot.BarRenderer"}, {:label => "Total Annual Budget"}, {:label => "Paid (to date)"} ]
       hash[:stackSeries] = true;
-      hash[:type] = "bar"
+      hash[:type] = "line"
     end
     hash.to_json
   end
@@ -117,7 +118,7 @@ class BudgetOverviewByYear < ActionController::ReportBase
     end || []
     always_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
     legend = [{:table => ["Status", "Grants", "Grant #{CurrencyHelper.current_long_name.pluralize}", I18n.t(:fip_name).pluralize, "#{I18n.t(:fip_name)} #{CurrencyHelper.current_long_name.pluralize}"], :filter => "", "listing_url".to_sym => "", "card_title".to_sym => ""}]
-    categories = ["Total Annual Budget", "Actual in Pipeline (to date)", "Actual Committed (to date)"]
+    categories = ["Total Annual Budget", "Actual in Pipeline (to date)", "Actual Committed (to date)", "Paid (to date)"]
     start_date_string = start_date.strftime('%m/%d/%Y')
     stop_date_string = stop_date.strftime('%m/%d/%Y')
     FundingSourceAllocation.build_temp_table do |temp_table_name|
@@ -131,7 +132,7 @@ class BudgetOverviewByYear < ActionController::ReportBase
             grant = [query, start_date, stop_date, program_ids, 'GrantRequest']
             fip = [query, start_date, stop_date, program_ids, 'FipRequest']
             card_filter ="utf8=%E2%9C%93&request%5Bdate_range_selector%5D=funding_agreement&request%5Brequest_from_date%5D=#{start_date_string}&request%5Brequest_to_date%5D=#{stop_date_string}&request%5B2has_been_rejected%5D=&request%5Bsort_attribute%5D=updated_at&request%5Bsort_order%5D=desc&request[program_id][]=" + program_ids.join("&request[program_id][]=")
-          when "Paid"
+          when "Paid (to date)"
             query = "select sum(rtfs.amount) AS amount, COUNT(DISTINCT r.id) AS count from request_transactions rt, request_transaction_funding_sources rtfs, request_funding_sources rfs, #{temp_table_name} fsa, requests r
               WHERE #{always_exclude} AND rt.state = 'paid' AND rt.id = rtfs.request_transaction_id AND rfs.id = rtfs.request_funding_source_id AND fsa.id = rfs.funding_source_allocation_id AND r.id = rt.request_id
               AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND fsa.program_id IN (?) AND type = ? and rt.deleted_at is null"
