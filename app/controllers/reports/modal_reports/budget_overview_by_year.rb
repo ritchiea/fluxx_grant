@@ -54,7 +54,7 @@ class BudgetOverviewByYear < ActionController::ReportBase
 
       hash = {:library => "jqPlot"}
 
-      xaxis.each_index{|i| xaxis[i] += "  #{(((total_granted[i].to_f + pipeline[i].to_f)/ budgeted[i].to_f) * 100).round.to_s}%"}
+      xaxis.each_index{|i| xaxis[i] += "  #{(((total_granted[i].to_f + pipeline[i].to_f)/ budgeted[i].to_f) * 100).round.to_s rescue 0}%"}
       #total_granted.each_index{|i| total_granted[i] -= pipeline[i] }
       budgeted.each_index{|i| budgeted[i] -= (pipeline[i] + total_granted[i]) }
 
