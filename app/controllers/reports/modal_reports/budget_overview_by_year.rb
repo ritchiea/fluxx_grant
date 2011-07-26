@@ -1,8 +1,9 @@
 class BudgetOverviewByYear < ActionController::ReportBase
   set_type_as_show
+  set_order -10
 
   def report_label
-    "Budget Overview Chart -new (Annual Tracker)"
+    "Budget Overview Chart (Annual Tracker)"
   end
 
   def report_description

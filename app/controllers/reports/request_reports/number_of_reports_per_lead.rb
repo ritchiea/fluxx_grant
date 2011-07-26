@@ -38,7 +38,7 @@ class NumberOfReportsPerLead < ActionController::ReportBase
       end
     end
 
-    hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :max => max + 10 }}
+    hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :max => max + 10, :tickOptions => { :formatString => "%.0f" } }}
     hash[:series] = report_types.map{|report_type| {:label => report_type}}
     hash[:stackSeries] = false;
     hash[:type] = "bar"
