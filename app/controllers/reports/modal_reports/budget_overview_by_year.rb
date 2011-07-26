@@ -63,7 +63,7 @@ class BudgetOverviewByYear < ActionController::ReportBase
       hash[:data] = [pipeline, total_granted, budgeted, paid ]
 
       hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => "#{I18n.t 'number.currency.format.unit'}%'.0f" }}}
-      hash[:series] = [ {:label => "Actual in Pipeline (to date)", :renderer => "$.jqplot.BarRenderer"}, {:label => "Actual Committed (to date)", :renderer => "$.jqplot.BarRenderer"}, {:label => "Total Annual Budget"}, {:label => "Paid (to date)"} ]
+      hash[:series] = [ {:label => "Pipeline", :renderer => "$.jqplot.BarRenderer"}, {:label => "Granted", :renderer => "$.jqplot.BarRenderer"}, {:label => "Budgeted"}, {:label => "Paid"} ]
       hash[:stackSeries] = true;
       hash[:type] = "line"
     end
@@ -118,7 +118,7 @@ class BudgetOverviewByYear < ActionController::ReportBase
     end || []
     always_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
     legend = [{:table => ["Status", "Grants", "Grant #{CurrencyHelper.current_long_name.pluralize}", I18n.t(:fip_name).pluralize, "#{I18n.t(:fip_name)} #{CurrencyHelper.current_long_name.pluralize}"], :filter => "", "listing_url".to_sym => "", "card_title".to_sym => ""}]
-    categories = ["Total Annual Budget", "Actual in Pipeline (to date)", "Actual Committed (to date)", "Paid (to date)"]
+    categories = ["Pipeline", "Granted", "Budgeted", "Paid"]
     start_date_string = start_date.strftime('%m/%d/%Y')
     stop_date_string = stop_date.strftime('%m/%d/%Y')
     FundingSourceAllocation.build_temp_table do |temp_table_name|
@@ -127,22 +127,22 @@ class BudgetOverviewByYear < ActionController::ReportBase
         card_title = program
         listing_url = controller.granted_requests_path
         case program
-          when "Actual Committed (to date)"
+          when "Granted"
             query = "SELECT SUM(r.amount_recommended) AS amount, count(r.id) AS count FROM requests r WHERE #{always_exclude} AND granted = 1 AND grant_agreement_at >= ? AND grant_agreement_at <= ? AND program_id IN (?) AND type = ?"
             grant = [query, start_date, stop_date, program_ids, 'GrantRequest']
             fip = [query, start_date, stop_date, program_ids, 'FipRequest']
             card_filter ="utf8=%E2%9C%93&request%5Bdate_range_selector%5D=funding_agreement&request%5Brequest_from_date%5D=#{start_date_string}&request%5Brequest_to_date%5D=#{stop_date_string}&request%5B2has_been_rejected%5D=&request%5Bsort_attribute%5D=updated_at&request%5Bsort_order%5D=desc&request[program_id][]=" + program_ids.join("&request[program_id][]=")
-          when "Paid (to date)"
+          when "Paid"
             query = "select sum(rtfs.amount) AS amount, COUNT(DISTINCT r.id) AS count from request_transactions rt, request_transaction_funding_sources rtfs, request_funding_sources rfs, #{temp_table_name} fsa, requests r
               WHERE #{always_exclude} AND rt.state = 'paid' AND rt.id = rtfs.request_transaction_id AND rfs.id = rtfs.request_funding_source_id AND fsa.id = rfs.funding_source_allocation_id AND r.id = rt.request_id
               AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND fsa.program_id IN (?) AND type = ? and rt.deleted_at is null"
             grant = [query, start_date, stop_date, program_ids, 'GrantRequest']
             fip = [query, start_date, stop_date, program_ids, 'FipRequest']
-          when "Total Annual Budget"
+          when "Budgeted"
             query = "SELECT SUM(tmp.amount) AS amount FROM #{temp_table_name} tmp WHERE tmp.retired=0 AND tmp.deleted_at IS NULL AND tmp.program_id IN (?) AND tmp.spending_year IN (?)"
             grant = [query, program_ids, years]
             fip = [query, program_ids, years]
-          when "Actual in Pipeline (to date)"
+          when "Pipeline"
             query = "SELECT SUM(r.amount_requested) AS amount, COUNT(DISTINCT r.id) AS count FROM requests r  WHERE #{always_exclude} AND r.granted = 0 AND r.program_id IN (?) AND type = ? AND r.state NOT IN (?)"
             grant = [query, program_ids, 'GrantRequest', ReportUtility.pre_pipeline_states]
             fip = [query, program_ids, 'FipRequest', ReportUtility.pre_pipeline_states]
