@@ -70,7 +70,7 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
       plot = {:library => "jqplot"}
 
       hash[:data] = [budgeted, pipeline, total_granted, paid]
-      hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => "#{I18n.t 'number.currency.format.unit'}%.2f" }}}
+      hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => "#{I18n.t 'number.currency.format.unit'}%'.2f" }}}
       hash[:series] = [ {:label => "Budgeted"}, {:label => "Pipeline"}, {:label => "Granted"}, {:label => "Paid"} ]
       hash[:stackSeries] = false;
       hash[:type] = "bar"

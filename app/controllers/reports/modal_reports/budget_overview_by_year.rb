@@ -62,7 +62,7 @@ class BudgetOverviewByYear < ActionController::ReportBase
 
       hash[:data] = [pipeline, total_granted, budgeted, paid ]
 
-      hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => "#{I18n.t 'number.currency.format.unit'}%.2f" }}}
+      hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => "#{I18n.t 'number.currency.format.unit'}%'.2f" }}}
       hash[:series] = [ {:label => "Actual in Pipeline (to date)", :renderer => "$.jqplot.BarRenderer"}, {:label => "Actual Committed (to date)", :renderer => "$.jqplot.BarRenderer"}, {:label => "Total Annual Budget"}, {:label => "Paid (to date)"} ]
       hash[:stackSeries] = true;
       hash[:type] = "line"
