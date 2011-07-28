@@ -11,5 +11,5 @@
   = form.input :user_profile_id, :label => "Profile", :as => :select, :required => false, :collection => UserProfile.all.map {|profile|[profile.name, profile.id]}
 = form.input :favorite_user_ids, :label => 'Marked as Favorite', :required => false, :as => :boolean, :checked_value => (current_user ? current_user.id : nil), :unchecked_value => ''
 = form.input :was_grantee_org_owner, :label => 'Primary Grantee', :required => false, :as => :boolean, :checked_value => 1, :unchecked_value => ''
-= form.input :sort_attribute, :label => 'Sort Field', :required => false, :as => :select, :include_blank => nil, :collection => [['Last Name, First Name (Default)', 'full_name'], ['Last Updated', 'updated_at']]
+= form.input :sort_attribute, :label => 'Sort Field', :required => false, :as => :select, :include_blank => nil, :collection => [['Last Name, First Name (Default)', 'last_full_name'], ['First Name, Last Name', 'full_name'], ['Last Updated', 'updated_at']]
 = form.input :sort_order, :label => 'Sort Order', :required => false, :as => :select, :include_blank => nil, :collection => [['Descending', 'desc'], ['Ascending', 'asc']]

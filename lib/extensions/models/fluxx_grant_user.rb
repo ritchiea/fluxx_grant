@@ -86,6 +86,7 @@ module FluxxGrantUser
         indexes "lower(users.last_name)", :as => :last_name, :sortable => true
         indexes "lower(users.email)", :as => :email, :sortable => true
         indexes "lower(TRIM(CONCAT(CONCAT(IFNULL(users.first_name, ' '), ' '), IFNULL(users.last_name, ' '))))", :as => :full_name, :sortable => true
+        indexes "lower(TRIM(CONCAT(CONCAT(IFNULL(users.last_name, ' '), ' '), IFNULL(users.first_name, ' '))))", :as => :last_full_name, :sortable => true
 
         # attributes
         has created_at, updated_at, deleted_at, test_user_flag
@@ -111,6 +112,7 @@ module FluxxGrantUser
         indexes "lower(users.last_name)", :as => :last_name, :sortable => true
         indexes "lower(users.email)", :as => :email, :sortable => true
         indexes "lower(TRIM(CONCAT(CONCAT(IFNULL(users.first_name, ' '), ' '), IFNULL(users.last_name, ' '))))", :as => :full_name, :sortable => true
+        indexes "lower(TRIM(CONCAT(CONCAT(IFNULL(users.last_name, ' '), ' '), IFNULL(users.first_name, ' '))))", :as => :last_full_name, :sortable => true
 
         # attributes
         has created_at, updated_at, deleted_at, test_user_flag
