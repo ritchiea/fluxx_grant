@@ -40,6 +40,7 @@
             minWidth: 500,
             minHeight: 500,
             close: function(event, ui) {
+              $('#modal-content').remove();
               $('.page').fadeTo('slow','1');
             }
           });
