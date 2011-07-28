@@ -52,6 +52,7 @@ en:
   program_lead_name: "Program Lead"
   Organization: "Organization"
   organization: "organization"
+  interim_monitor_name: "Interim Monitor"
   amount_recommended_field_required: "Amount recommended is required"
   duration_in_months_field_required: "Duration is required"
   grant_begins_at_field_required: "Grant begin date is required"

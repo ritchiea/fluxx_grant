@@ -291,12 +291,16 @@ module FluxxRequestReport
       'InterimNarrative'
     end
 
+    def interim_monitor_type_name
+      'InterimMonitor'
+    end
+
     def external_report_type_names
       [final_budget_type_name, final_narrative_type_name, interim_budget_type_name, interim_narrative_type_name]
     end
 
     def report_doc_types
-      [interim_budget_type_name, interim_narrative_type_name, final_budget_type_name, final_narrative_type_name, final_eval_type_name, interim_eval_type_name, final_monitor_type_name]
+      [interim_budget_type_name, interim_narrative_type_name, final_budget_type_name, final_narrative_type_name, final_eval_type_name, interim_eval_type_name, final_monitor_type_name, interim_monitor_type_name]
     end
     
     def type_to_english_translation report_type
@@ -308,6 +312,7 @@ module FluxxRequestReport
         when RequestReport.final_narrative_type_name then 'Final Narrative'
         when RequestReport.interim_budget_type_name then 'Interim Financial'
         when RequestReport.interim_narrative_type_name then 'Interim Narrative'
+        when RequestReport.interim_monitor_type_name then I18n.t(:interim_monitor_name)
         else
           report_type.to_s
       end
@@ -414,6 +419,9 @@ module FluxxRequestReport
       report_type == RequestReport.interim_narrative_type_name
     end
 
+    def is_interim_monitor_type_name?
+      report_type == RequestReport.interim_monitor_type_name
+    end
 
     def type_to_english
       RequestReport.type_to_english_translation report_type
