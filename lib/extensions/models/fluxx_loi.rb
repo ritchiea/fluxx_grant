@@ -7,6 +7,8 @@ module FluxxLoi
     base.belongs_to :request
     base.belongs_to :user
     base.belongs_to :organization
+    base.belongs_to :geo_country
+    base.belongs_to :geo_state
     base.validates_presence_of   :applicant
     base.validates_presence_of   :organization_name
     base.validates_presence_of   :email
