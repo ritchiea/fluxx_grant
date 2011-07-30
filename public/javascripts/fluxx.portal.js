@@ -1,6 +1,7 @@
 (function($){
   $.fn.extend({
     initGranteePortal: function() {
+      $('.multiple-select-transfer select[multiple="true"], .multiple-select-transfer select[multiple="multiple"]').selectTransfer();
       $.fn.installFluxxDecorators();
       $('.notice').delay(5000).fadeOut('slow');
     },
