@@ -18,6 +18,9 @@ module FluxxGrant
       User rescue nil
       Project rescue nil
       Request.sphinx_index_names rescue nil
+      
+      
+      LiquidLoader.include_libraries
     end
     
     rake_tasks do
