@@ -23,10 +23,10 @@ module FluxxFipRequestsController
         # Check to see if this model is a GrantRequest
         model_id = conf.load_param_id params
         model = GrantRequest.safe_find(model_id, conf.force_load_deleted_param(params))
-        
+        p "ESH: 222 FipRequest model = #{model}"
         if model
           redirect_params = params.delete_if{|k,v| %w[controller action].include?(k) }
-          head 201, :location => (send("#{model.class.name.tableize.singularize}_path", model.id, redirect_params))
+          head 201, :location => (grant_requests_path(model.id, redirect_params))
         end
       end
       insta.template = 'grant_requests/grant_request_show'
