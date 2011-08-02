@@ -7,7 +7,7 @@ module FluxxGrantModelDocumentTypesController
         if params[:model_id] && params[:model_type]
           klass = Kernel.const_get params[:model_type] rescue nil
           if klass && klass.extract_classes(klass).any?{|cur_klass| cur_klass == Request} && (request_model = klass.find(params[:model_id]))
-            self.pre_models = ModelDocumentType.load_by_class(klass, :program_id => request_model.program_id, :sub_program_id => request_model.sub_program_id, 
+            self.pre_models ||= ModelDocumentType.load_by_class(klass, :program_id => request_model.program_id, :sub_program_id => request_model.sub_program_id, 
               :initiative_id => request_model.initiative_id, :sub_initiative_id => request_model.sub_initiative_id)
           end
         end
