@@ -22,7 +22,7 @@ module FluxxFundingSourceAllocationsController
         elsif !params[:funding_source_id].blank?
           FundingSource.find params[:funding_source_id]
         end
-        self.pre_models = if prog_entity
+        self.pre_models ||= if prog_entity
           if params[:spending_year].blank?
             []
           elsif prog_entity.is_a?(FundingSource)

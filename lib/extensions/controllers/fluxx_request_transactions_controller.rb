@@ -24,7 +24,7 @@ module FluxxRequestTransactionsController
       insta.icon_style = ICON_STYLE
       insta.pre do |conf|
         request = Request.safe_find(grab_param(:request_transaction, :request_id))
-        self.pre_model = RequestTransaction.new(:request => request)
+        self.pre_model ||= RequestTransaction.new(:request => request)
       end
     end
     base.insta_edit RequestTransaction do |insta|
@@ -35,7 +35,7 @@ module FluxxRequestTransactionsController
       insta.template = 'request_transaction_form'
       insta.icon_style = ICON_STYLE
       insta.pre do |conf|
-        self.pre_model = conf.load_new_model params
+        self.pre_model ||= conf.load_new_model params
         populate_request_transaction_funding_source_param_hash self.pre_model
       end
     end
@@ -44,7 +44,7 @@ module FluxxRequestTransactionsController
       insta.icon_style = ICON_STYLE
       insta.add_workflow
       insta.pre do |conf|
-        self.pre_model = conf.load_existing_model params
+        self.pre_model ||= conf.load_existing_model params
         populate_request_transaction_funding_source_param_hash self.pre_model
       end
     end

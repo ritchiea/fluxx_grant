@@ -9,7 +9,7 @@ module FluxxGrantUsersController
       insta.pre do |controller_dsl|
         if params[:related_organization_id]
           rel_org_id = params[:related_organization_id]
-          self.pre_models = User.find_by_sql ['SELECT users.* FROM users, user_organizations 
+          self.pre_models ||= User.find_by_sql ['SELECT users.* FROM users, user_organizations 
                                  WHERE user_organizations.organization_id IN 
                                  (select distinct(id) from (select id from organizations where id = ? 
                                   union select id from organizations where parent_org_id = ? 

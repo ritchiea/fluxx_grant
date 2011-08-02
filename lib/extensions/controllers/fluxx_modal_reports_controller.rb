@@ -7,7 +7,7 @@ module FluxxModalReportsController
       insta.icon_style = ICON_STYLE
       insta.always_skip_wrapper = true
       insta.pre do |controller_dsl|
-        self.pre_models = insta_show_report_list
+        self.pre_models ||= insta_show_report_list
       end
     end
     base.insta_show do |insta|

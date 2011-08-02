@@ -52,7 +52,7 @@ module FluxxFundingSourceAllocationAuthoritiesController
         #
         # If you click retired it will mark both of the above as retired essentially because
         # we track allocations not allocation authorities
-        self.pre_model = controller_dsl.load_existing_model params
+        self.pre_model ||= controller_dsl.load_existing_model params
         self.pre_model.funding_source_allocation.update_attributes(:retired => params[:funding_source_allocation_authority][:retired]) if self.pre_model && self.pre_model.funding_source_allocation
       end
     end
