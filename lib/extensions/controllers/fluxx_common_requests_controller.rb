@@ -1,5 +1,15 @@
 # File to share functionality among grant/fip/granted request controllers
 module FluxxCommonRequestsController
+  def self.hash_methods hash, model
+    if model.is_a? FipRequest
+      hash[:title] = model.fip_title
+    else
+      hash[:title] = model.org_name_text
+    end
+    hash[:view_amount] = (model.granted ? model.amount_recommended : model.amount_requested)
+    hash[:grant_or_request_id] = model.grant_or_request_id
+  end
+  
   def self.included(base)
     base.extend(ModelClassMethods)
     base.class_eval do

@@ -49,7 +49,7 @@ module FluxxRequestFundingSource
     end
     
     def funding_source_allocation_has_enough_money
-      if funding_source_allocation && funding_source_allocation.amount_remaining && !(funding_source_allocation.amount_remaining >= funding_amount)
+      if funding_source_allocation && funding_source_allocation.amount_remaining && funding_amount && !(funding_source_allocation.amount_remaining >= funding_amount)
         errors[:funding_source_allocation] << "Please select a funding source with sufficient allocation."
       end
     end
