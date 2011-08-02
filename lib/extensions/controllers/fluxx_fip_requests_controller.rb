@@ -18,6 +18,17 @@ module FluxxFipRequestsController
       end
     end
     base.insta_show FipRequest do |insta|
+      insta.force_redirect do |conf|
+        # Load the model; we may have either a FIP or a Grant, handle both cases
+        # Check to see if this model is a GrantRequest
+        model_id = conf.load_param_id params
+        model = GrantRequest.safe_find(model_id, conf.force_load_deleted_param(params))
+        
+        if model
+          redirect_params = params.delete_if{|k,v| %w[controller action].include?(k) }
+          head 201, :location => (send("#{model.class.name.tableize.singularize}_path", model.id, redirect_params))
+        end
+      end
       insta.template = 'grant_requests/grant_request_show'
       insta.icon_style = ICON_STYLE
       insta.add_workflow
