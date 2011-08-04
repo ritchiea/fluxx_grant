@@ -818,6 +818,11 @@ module FluxxRequest
       amount_paids.sum if !amount_paids.empty?
     end
 
+    def amount_pending
+      amount_due = request_transactions.reject(&:paid_at).map(&:amount_due).compact
+      amount_due.sum if !amount_due.empty?
+    end
+
     def to_s
       title
     end

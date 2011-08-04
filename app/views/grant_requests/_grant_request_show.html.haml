@@ -89,9 +89,18 @@
     .key Amount Recommended:
     .value= as_currency(model.amount_recommended) if model.amount_recommended
   - if model.is_grant?
+    -paid = model.amount_funded || 0
+    -pending = model.amount_pending || 0
     .pairs
       .key Amount Paid to Date:
-      .value= number_to_currency(model.amount_funded, :precision => 0) if model.amount_funded
+      .value= number_to_currency(paid, :precision => 2) if model.amount_funded
+    .pairs
+      .key Pending Payment:
+      .value=  number_to_currency(pending, :precision => 2) if model.amount_pending
+    .pairs
+      .key Available To Spend:
+      .value= number_to_currency(paid + pending, :precision => 2)
+
 
 = render :partial => "request_funding_sources/list_request_funding_sources", :locals => { :model => model}
 %div.partial
