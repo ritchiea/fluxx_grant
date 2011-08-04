@@ -12,12 +12,13 @@
   .pairs
     .key Due Date:
     .value= model.due_at.mdy if model.due_at
-  .pairs
-    .key Payment Recorded By:
-    .value= model.payment_recorded_by.full_name if model.payment_recorded_by
+  - if model.payment_recorded_by
+    .pairs
+      .key Payment Recorded By:
+      .value= model.payment_recorded_by.full_name
   .pairs
     .key Conditions:
-    .value= model.condition.empty? ? "None" : model.condition
+    .value= model.condition && !model.condition.empty? ?  model.condition : "None"
   - if model.user_payee
     .pairs
       .key Payee (Person):
@@ -42,7 +43,7 @@
         .pairs
           .key Initiatives:
           .value= render :partial => "request_funding_sources/request_funding_source_initiatives", :locals => { :funding_source => rfs }
-  %h3
+        %h3
   %strong= "Total: #{as_currency(total)}"
 = render :partial => "model_documents/list_model_documents", :locals => { :model => model}
 = render :partial => "notes/list_notes", :locals => { :model => model, :class_type => RequestTransaction.name}
