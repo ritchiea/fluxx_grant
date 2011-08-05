@@ -9,7 +9,7 @@ class FluxxCrmCreateGroupMembers < ActiveRecord::Migration
       t.string :groupable_type
     end
     add_index :group_members, :group_id
-    add_index :group_members, [:groupable_id, :groupable_type]
+    add_index :group_members, [:groupable_id, :groupable_type], :name => 'group_members_grp_id_grp_type'
     add_constraint 'group_members', 'group_members_group_id', 'group_id', 'groups', 'id'
   end
 

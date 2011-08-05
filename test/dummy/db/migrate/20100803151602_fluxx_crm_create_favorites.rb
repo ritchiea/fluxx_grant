@@ -8,7 +8,7 @@ class FluxxCrmCreateFavorites < ActiveRecord::Migration
     end
 
     add_constraint 'favorites', 'favorites_user_id', 'user_id', 'users', 'id'
-    add_index :favorites, [:favorable_type, :favorable_id]
+    add_index :favorites, [:favorable_type, :favorable_id], :name => 'favorites_favtype_favid'
   end
 
   def self.down

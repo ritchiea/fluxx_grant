@@ -9,7 +9,7 @@ class FluxxEngineCreateClientStores < ActiveRecord::Migration
     end
     add_long_text_column :client_stores, :data
     add_index :client_stores, :user_id
-    add_index :client_stores, [:user_id, :client_store_type]
+    add_index :client_stores, [:user_id, :client_store_type], :name => 'client_store_idx_usr_id_clt_stor_type'
   end
 
   def self.down

@@ -9,10 +9,10 @@ class FluxxGrantCreateRequestFundingSources < ActiveRecord::Migration
       t.integer :locked_by_id, :null => true, :limit => 12
       t.datetime :locked_until, :null => true
     end
-    add_index :request_funding_sources, :request_id
-    add_index :request_funding_sources, :program_id
-    add_index :request_funding_sources, :initiative_id
-    add_index :request_funding_sources, :funding_source_id
+    add_index :request_funding_sources, :request_id, :name => 'rfs_index_request_id'
+    add_index :request_funding_sources, :program_id, :name => 'rfs_index_program_id'
+    add_index :request_funding_sources, :initiative_id, :name => 'rfs_index_initiative_id'
+    add_index :request_funding_sources, :funding_source_id, :name => 'rfs_index_funding_source_id'
 
     add_constraint 'request_funding_sources', 'request_funding_sources_request_id', 'request_id', 'requests', 'id'
     add_constraint 'request_funding_sources', 'request_funding_sources_program_id', 'program_id', 'programs', 'id'
