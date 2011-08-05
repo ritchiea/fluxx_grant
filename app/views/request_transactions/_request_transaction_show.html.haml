@@ -31,19 +31,17 @@
   %h3 Transaction Funding Sources
   %div
     - total = 0
-    - model.request.request_funding_sources.each do |rfs|
-      - if rfs.funding_source_allocation && rfs.funding_source_allocation.funding_source
-        .pairs
-          .key Amount:
-          .value= as_currency(rfs.funding_amount)
-          -total += rfs.funding_amount
-        .pairs
-          .key Source:
-          .value= rfs.funding_source_allocation.funding_source.name
-        .pairs
-          .key Initiatives:
-          .value= render :partial => "request_funding_sources/request_funding_source_initiatives", :locals => { :funding_source => rfs }
-        %h3
+    - model.request_transaction_funding_sources.each do |rfs|
+      - if rfs.request_funding_source
+        %dl.inline
+          %dt Amount:
+          %dd= as_currency(rfs.request_funding_source.funding_amount)
+          -total += rfs.request_funding_source.funding_amount
+          %dt Source:
+          %dd= rfs.request_funding_source.funding_source_allocation.funding_source.name
+          %dt Initiatives:
+          %dd= render :partial => "request_funding_sources/request_funding_source_initiatives", :locals => { :funding_source => rfs.request_funding_source }
+          %hr
   %strong= "Total: #{as_currency(total)}"
 = render :partial => "model_documents/list_model_documents", :locals => { :model => model}
 = render :partial => "notes/list_notes", :locals => { :model => model, :class_type => RequestTransaction.name}
