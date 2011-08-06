@@ -1,7 +1,4 @@
-%h2
-  = model.applicant
-%h4
-  = model.organization_name
-  = model.project_title
-%p
-  = model.project_summary
+%h2= = model.organization_name
+%h4= [dollars_format(model.amount_requested), mdy_date_format(model.created_at), (model.program ? model.program.name : nil)].compact.join(' | ')
+
+%p= model.project_summary

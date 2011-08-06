@@ -5,6 +5,7 @@ module FluxxLoi
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
     base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
     base.belongs_to :request
+    base.belongs_to :program
     base.belongs_to :user
     base.belongs_to :organization
     base.belongs_to :geo_country
