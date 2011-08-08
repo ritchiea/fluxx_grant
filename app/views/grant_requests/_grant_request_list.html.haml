@@ -2,6 +2,48 @@
   %h2= model.fip_title
 - else
   %h2= model.org_name_text
-%h4= [dollars_format(model.granted ? model.amount_recommended : model.amount_requested), mdy_date_format(model.request_received_at), (model.program ? model.program.name : '')].compact.join(' | ')
-%h4= model.grant_or_request_id
-%p= model.project_summary
+- if @alert_execute_context
+  %h4= model.project_summary
+  %div.partial
+  .pairs
+    .key= 'Status'
+    .value= model.state_to_english
+  .pairs
+    .key= 'Id'
+    .value= model.grant_or_request_id
+  .pairs
+    .key= 'Amount'
+    .value= dollars_format(model.amount_recommended || model.amount_requested)
+  .pairs
+    .key= 'Start Date'
+    .value= mdy_date_format(model.request_received_at)
+  .pairs
+    .key= 'Duration'
+    .value= "#{model.duration_in_months} Months"
+  .pairs
+    .key= 'Program'
+    .value= (model.program ? model.program.name : '')
+  %h4= 'Changes'
+  - audit = load_audits(model).first
+  - if audit
+    %table
+      %tr
+        %td= "Attribute"
+        %td= "Was"
+        %td= "Changed To"
+      - deltas = calculate_audit_changes(model, audit)
+      - deltas.each do |delta|
+        - name = delta[:name]
+        - old_value = delta[:old_value]
+        - new_value = delta[:new_value]
+        %tr
+          %td= name
+          %td= old_value
+          %td= new_value
+  - else
+    No Changes
+      
+- else
+  %h4= [dollars_format(model.granted ? model.amount_recommended : model.amount_requested), mdy_date_format(model.request_received_at), (model.program ? model.program.name : '')].compact.join(' | ')
+  %h4= model.grant_or_request_id
+  %p= model.project_summary

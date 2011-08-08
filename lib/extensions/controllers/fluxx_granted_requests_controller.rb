@@ -6,6 +6,7 @@ module FluxxGrantedRequestsController
   def self.included(base)
     base.send :include, FluxxCommonRequestsController
     base.insta_index Request do |insta|
+      insta.controller_name = 'Grants'
       insta.template = 'granted_requests/grant_request_list'
       insta.filter_title = "Grants Filter"
       insta.filter_template = 'granted_requests/granted_request_filter'
