@@ -35,10 +35,10 @@
       - if rfs.request_funding_source
         %dl.inline
           %dt Amount:
-          %dd= as_currency(rfs.request_funding_source.funding_amount)
-          -total += rfs.request_funding_source.funding_amount
+          %dd= as_currency(rfs.amount)
+          -total += rfs.amount
           %dt Source:
-          %dd= rfs.request_funding_source.funding_source_allocation.funding_source.name
+          %dd= rfs.request_funding_source.funding_source_allocation.funding_source.name if rfs.request_funding_source.funding_source_allocation && rfs.request_funding_source.funding_source_allocation.funding_source
           %dt Initiatives:
           %dd= render :partial => "request_funding_sources/request_funding_source_initiatives", :locals => { :funding_source => rfs.request_funding_source }
           %hr
