@@ -2,7 +2,8 @@
   %h2= model.fip_title
 - else
   %h2= model.org_name_text
-- if @alert_execute_context
+- alert_execute_context ||= false
+- if alert_execute_context
   %h4= model.project_summary
   %div.partial
   .pairs
