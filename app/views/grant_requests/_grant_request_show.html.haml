@@ -36,11 +36,13 @@
   - if model.is_a? GrantRequest
     .pairs
       .key Duration:
-      .value= "#{model.duration_in_months} months" if model.duration_in_months
+      .value
+        = render :partial => "grant_requests/grant_request_duration_in_months", :locals => { :model => model }
   - elsif model.is_a? FipRequest
     .pairs
       .key Projected End Date:
-      .value= model.fip_projected_end_at.mdy if model.fip_projected_end_at 
+      .value
+        = render :partial => "grant_requests/grant_request_duration_in_months", :locals => { :model => model }
   .pairs
     .key Final Proposal Date:
     .value= model.ierf_proposed_end_at.mdy if model.ierf_proposed_end_at
@@ -87,7 +89,8 @@
     .value= as_currency(model.amount_requested) if model.amount_requested
   .pairs
     .key Amount Recommended:
-    .value= as_currency(model.amount_recommended) if model.amount_recommended
+    .value
+      = render :partial => "grant_requests/grant_request_amount_recommended", :locals => { :model => model }
   - if model.is_grant?
     -paid = model.amount_funded || 0
     -pending = model.amount_pending || 0
