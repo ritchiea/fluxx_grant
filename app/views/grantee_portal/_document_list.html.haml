@@ -1,7 +1,8 @@
 - if FileTest.exists? "#{Rails.root}/public/documents/documents.yaml"
   - @data = YAML::load(File.open( "#{Rails.root}/public/documents/documents.yaml" ))
 - else
-  - @data = Dir.glob("#{Rails.root}/public/documents/*.pdf").map{|filename| filename.gsub("#{Rails.root}/public/documents/", '')}.sort.paginate
+  - @data = WillPaginate::Collection.create(params[:page] || 1, WillPaginate.per_page) do |pager|
+    - pager.replace Dir.glob("#{Rails.root}/public/documents/*.pdf").map{|filename| filename.gsub("#{Rails.root}/public/documents/", '')}.sort
 
 .titlebar
   %h4
