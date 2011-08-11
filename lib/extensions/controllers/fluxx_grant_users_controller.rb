@@ -15,7 +15,7 @@ module FluxxGrantUsersController
                                   union select id from organizations where parent_org_id = ? 
                                   union select id from organizations where parent_org_id = (select parent_org_id from organizations where id = ?) and parent_org_id is not null
                                   union select parent_org_id from organizations where id = ?) all_orgs where id is not null) 
-                                 AND user_organizations.user_id = users.id', rel_org_id, rel_org_id, rel_org_id, rel_org_id]
+                                 AND user_organizations.user_id = users.id and users.deleted_at is null', rel_org_id, rel_org_id, rel_org_id, rel_org_id]
         end
       end
     end
