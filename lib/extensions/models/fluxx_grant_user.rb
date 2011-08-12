@@ -96,7 +96,7 @@ module FluxxGrantUser
 
         has 'null', :type => :multi, :as => :favorite_user_ids
         has 'null', :type => :multi, :as => :organization_id
-        has 'null', :type => :multi, :as => :user_profile_id
+        has user_profile_id
         has 'null', :type => :multi, :as => :last_name_ord
         has 'null', :type => :multi, :as => :first_name_ord
         has request_users.request(:id), :type => :multi, :as => :user_request_ids

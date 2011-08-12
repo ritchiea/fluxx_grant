@@ -85,7 +85,6 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :fiscal_request_ids
         has request_organizations.request(:id), :type => :multi, :as => :org_request_ids
         has favorites.user(:id), :as => :favorite_user_ids
-        has 'null', :type => :multi, :as => :user_ids
         has 'null', :type => :multi, :as => :group_ids
         has satellite_orgs(:id), :as => :satellite_org_ids
         has "CONCAT(organizations.id, ',', IFNULL(organizations.parent_org_id, '0'))", :as => :related_org_ids, :type => :multi
@@ -107,7 +106,6 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :fiscal_request_ids
         has 'null', :type => :multi, :as => :org_request_ids
         has 'null', :type => :multi, :as => :favorite_user_ids
-        has users(:id), :as => :user_ids
         has 'null', :type => :multi, :as => :group_ids
         has 'null', :type => :multi, :as => :satellite_org_ids
         has 'null', :type => :multi, :as => :related_org_ids
@@ -129,7 +127,6 @@ module FluxxGrantOrganization
         has fiscal_requests(:id), :as => :fiscal_request_ids
         has 'null', :type => :multi, :as => :org_request_ids
         has 'null', :type => :multi, :as => :favorite_user_ids
-        has 'null', :type => :multi, :as => :user_ids
         has 'null', :type => :multi, :as => :group_ids
         has 'null', :type => :multi, :as => :satellite_org_ids
         has 'null', :type => :multi, :as => :related_org_ids
@@ -151,7 +148,6 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :fiscal_request_ids
         has 'null', :type => :multi, :as => :org_request_ids
         has 'null', :type => :multi, :as => :favorite_user_ids
-        has 'null', :type => :multi, :as => :user_ids
         has group_members.group(:id), :type => :multi, :as => :group_ids
         has 'null', :type => :multi, :as => :satellite_org_ids
         has 'null', :type => :multi, :as => :related_org_ids
