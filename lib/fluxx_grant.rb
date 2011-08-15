@@ -41,13 +41,3 @@ DirectorySync.new [
   ["#{public_dir}/stylesheets", '/stylesheets/fluxx_grant'],
 ]
 
-FLUXX_ADMIN_CONFIGURATION = {
-    :workflows => [['New Request Workflow', Request.name], ['New Report Workflow', RequestReport.name], ['New Transaction Workflow', RequestTransaction.name]],
-    :alerts => [['New Report Alert', RequestReportsController.name]],
-    :roles => [['New Program Role', Program.name]],
-    :states => [['New Request State', Request.name], ['New Report State', RequestReport.name], ['New Transaction State', RequestTransaction.name]],
-    :attributes => [['New Request Attribute', Request.name], ['New Report Attribute', RequestReport.name], ['New Transaction Attribute', RequestTransaction.name], ['New LOI Attribute', Loi.name]],
-    :methods => [['New Request Model Method', Request.name], ['New Report Model Method', RequestReport.name], ['New Transaction Model Method', RequestTransaction.name]],
-    :validations => [['New Request Model Validation', Request.name], ['New Report Model Validation', RequestReport.name], ['New Transaction Model Validation', RequestTransaction.name]],
-    :pre_create => ['GrantRequest']
-   } rescue nil
