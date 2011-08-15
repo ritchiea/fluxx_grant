@@ -45,7 +45,12 @@ module FluxxRequestFundingSource
     end
     
     def amount_remaining
-      funding_amount - amount_spent
+      cur_amt_spent = amount_spent
+      if funding_amount && cur_amt_spent
+        funding_amount - cur_amt_spent
+      else
+        nil
+      end
     end
     
     def funding_source_allocation_has_enough_money
