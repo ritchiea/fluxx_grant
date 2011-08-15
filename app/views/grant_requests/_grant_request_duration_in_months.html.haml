@@ -1,5 +1,4 @@
 - if model.request_amendments.select{|ra| ra.duration || ra.end_date }.empty?
-  %h1 foo
   - if model.is_a?(FipRequest)
     = "#{model.fip_projected_end_at ? model.fip_projected_end_at.mdy : ''} (Original)"
   - elsif Fluxx.config(:dont_use_duration_in_requests) == "1"
