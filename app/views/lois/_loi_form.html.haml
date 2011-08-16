@@ -1,14 +1,15 @@
 %fieldset.inputs
   %ol
     = form.input :applicant, :label => "Your Name"
-    = form.input :organization_name, :label => "Applicant/ Organization Name"
+    = form.input :organization_name, :label => "Applicant/Organization Name"
     = form.input :tax_id, :label => "Applicant/ Organization EIN"
     = form.input :email
     = form.input :phone
     = form.input :address, :label => 'Mailing Address'
     = form.input :street_address2, :label => "Mailing Address 2"
     = form.input :geo_country, :label => 'Country:', :as => :select, :input_html => {:class => 'geo_country_select', 'data-related-child'.to_sym => '.geo-state-select'}, :collection => GeoCountry.order('name asc').all.map {|country| [country.name, country.id]}
-    - state_collection = form.object.geo_country ? form.object.geo_country.find_related_geo_states : []
+    - country = GeoCountry.where(:name => "United States").first
+    - state_collection = country ? country.find_related_geo_states : []
     = form.input :geo_state, :label => 'State/Province: ', :as => :select, :input_html => {:class => 'geo-state-select', 'data-param'.to_sym => 'geo_state[geo_country_id]', 'data-src'.to_sym => geo_states_path(:format => 'autocomplete'), 'data-cache'.to_sym => 'geo_state_select'}, :collection => state_collection.map {|state| [state.name, state.id]}
     = form.input :city, :label => "City"
     = form.input :postal_code, :label => "Postal Code"
@@ -16,8 +17,8 @@
     = form.input :project_summary
     = form.input :amount_requested
     = form.input :grant_begins_at, :label => "Projected Start Date"
-    = form.input :duration_in_months, {:label => 'Projected Duration (months):', :as => :select, :collection => (1..60).to_a, :input_html => {:class => 'select_short'}}
+    = form.input :duration_in_months, {:label => 'Projected Duration (months)', :as => :select, :collection => (1..60).to_a, :input_html => {:class => 'select_short'}}
     = form.input :program_id, :required => false, :as => :select, :collection => Program.load_all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}
-    = render :partial => 'lois/new_extra',  :locals => {:form => form, :prefix => '', :label_prefix => '', :rollup => 'request_hierarchy'}
-
+    = render :partial => 'lois/new_extra',  :locals => {:form => form}
+  
   = form.commit_button
