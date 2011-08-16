@@ -26,7 +26,7 @@
       $.extend(true, {
         fluxx: {
           config: {
-            date_format: '#{Fluxx.config(:date_picker_format) && !Fluxx.config(:date_picker_format).empty? ? Fluxx.config(:date_picker_format) : 'm/d/yy'}',
+            date_format: '#{escape_javascript(Fluxx.config(:date_picker_format) && !Fluxx.config(:date_picker_format).empty? ? Fluxx.config(:date_picker_format) : 'm/d/yy')}',
             datepicker_unique_id: 1,
             icon_path: '/fluxx_engine/theme/default/images/icons',
             realtime_updates: {
@@ -39,7 +39,7 @@
               actions: [
               #{build_adminlink}
               #{build_reportlink}
-              '#{link_to current_user.full_name.blank? ? (current_user.email.blank? ? current_user.login : current_user.email) : current_user.full_name, current_user, :class => 'new-detail'}',
+              '#{escape_javascript(link_to current_user.full_name.blank? ? (current_user.email.blank? ? current_user.login : current_user.email) : current_user.full_name, current_user, :class => 'new-detail')}',
                 '#{link_to 'Help', '#', :id => 'help-logo'}',
                 '#{link_to 'Logout', logout_path}'
               ]
