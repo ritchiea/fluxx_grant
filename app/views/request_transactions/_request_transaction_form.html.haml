@@ -26,7 +26,7 @@
           %br
           %small= render :partial => "request_funding_sources/request_funding_source_initiatives", :locals => { :funding_source => rfs }
         - rtfs = RequestTransactionFundingSource.where(:request_transaction_id => model.id, :request_funding_source_id => rfs.id).first
-        = raw "<input type='text' name='funding_source_value_#{rfs.id}' value='#{rtfs ? rtfs.amount : ''}'>"
+        = raw "<input type='text' name='funding_source_value_#{rfs.id}' value='#{(rtfs && rtfs.amount) ? rtfs.amount.to_currency : ''}'>"
   - if model.errors[:Missing_Funding_source]
     %li.error
       %p.inline-errors
