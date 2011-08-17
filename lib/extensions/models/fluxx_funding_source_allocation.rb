@@ -35,6 +35,9 @@ module FluxxFundingSourceAllocation
     base.insta_utc do |insta|
       insta.time_attributes = [] 
     end
+    base.insta_filter_amount do |insta|
+      insta.amount_attributes = [:amount]
+    end
     base.liquid_methods *( LIQUID_METHODS )    
     
     base.extend(ModelClassMethods)
