@@ -293,6 +293,9 @@ module FluxxRequest
     base.insta_utc do |insta|
       insta.time_attributes = [:request_received_at, :grant_approved_at, :grant_agreement_at, :grant_amendment_at, :grant_begins_at, :grant_closed_at, :fip_projected_end_at, :ierf_proposed_end_at, :ierf_budget_end_at]
     end
+    base.insta_filter_amount do |insta|
+      insta.amount_attributes = [:amount_requested, :amount_recommended, :funds_expended_amount]
+    end
     
     base.insta_workflow do |insta|
       insta.add_state_to_english :new, 'New Request', 'new'
@@ -847,14 +850,6 @@ module FluxxRequest
         request_received_at.full 
       end
       "#{proposal_date} proposal and budget"
-    end
-
-    def amount_requested= new_amount
-      write_attribute(:amount_requested, filter_amount(new_amount))
-    end
-
-    def amount_recommended= new_amount
-      write_attribute(:amount_recommended, filter_amount(new_amount))
     end
 
     def generate_request_id

@@ -41,48 +41,20 @@ module FluxxBudgetRequest
     base.insta_utc do |insta|
       insta.time_attributes = [] 
     end
-    
-#    base.insta_workflow do |insta|
-#      # insta.add_state_to_english :new, 'New Request'
-#      # insta.add_event_to_english :recommend_funding, 'Recommend Funding'
-#    end
+    base.insta_filter_amount do |insta|
+      insta.amount_attributes = [:amount_requested, :amount_recommended]
+    end
     
     base.extend(ModelClassMethods)
     base.class_eval do
       include ModelInstanceMethods
     end
-    
-#    base.send :include, AASM
-#    base.add_aasm
-#    base.add_sphinx if base.respond_to?(:sphinx_indexes) && !(base.connection.adapter_name =~ /SQLite/i)
   end
-  
 
   module ModelClassMethods
-#    def add_aasm
-#      aasm_column :state
-#      aasm_initial_state :new
-#    end
-#
-#    def add_sphinx
-#      define_index :budget_request_first do
-#        # fields
-#
-#
-#        # attributes
-#        has created_at, updated_at
-#      end
-#    end
   end
   
   module ModelInstanceMethods
-    def amount_requested= new_amount
-      write_attribute(:amount_requested, filter_amount(new_amount))
-    end
-
-    def amount_recommended= new_amount
-      write_attribute(:amount_recommended, filter_amount(new_amount))
-    end
     def relates_to_user? user
       (user.id == self.created_by_id)
     end

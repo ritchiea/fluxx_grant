@@ -11,6 +11,9 @@ module FluxxFundingSource
     base.insta_search
     base.insta_export
     base.insta_realtime
+    base.insta_filter_amount do |insta|
+      insta.amount_attributes = [:amount]
+    end
     base.liquid_methods *( LIQUID_METHODS )    
     
     base.extend(ModelClassMethods)
@@ -27,10 +30,6 @@ module FluxxFundingSource
   end
 
   module ModelInstanceMethods
-    def amount= new_amount
-      write_attribute(:amount, filter_amount(new_amount))
-    end
-    
     def amount_available
       funding_source_allocations.inject(amount || 0){|acc, fsa| acc - (fsa.amount || 0)}
     end

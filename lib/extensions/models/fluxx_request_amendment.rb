@@ -8,6 +8,9 @@ module FluxxRequestAmendment
       insta.time_attributes = [:start_date, :end_date]
     end
     
+    insta_filter_amount do |insta|
+      insta.amount_attributes = [:amount_recommended]
+    end
   end
 
   class_methods do

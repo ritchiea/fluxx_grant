@@ -27,6 +27,9 @@ module FluxxFundingSourceAllocationAuthority
     base.insta_template do |insta|
     end
 
+    base.insta_filter_amount do |insta|
+      insta.amount_attributes = [:amount]
+    end
     base.extend(ModelClassMethods)
     base.class_eval do
       include ModelInstanceMethods

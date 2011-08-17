@@ -24,6 +24,9 @@ module FluxxRequestFundingSource
     base.insta_multi
     base.insta_lock
     base.insta_realtime
+    base.insta_filter_amount do |insta|
+      insta.amount_attributes = [:funding_amount]
+    end
     base.liquid_methods *( LIQUID_METHODS )    
 
     base.extend(ModelClassMethods)
@@ -36,10 +39,6 @@ module FluxxRequestFundingSource
   end
 
   module ModelInstanceMethods
-    def funding_amount= new_amount
-      write_attribute(:funding_amount, filter_amount(new_amount))
-    end
-    
     def amount_spent
       request_transaction_funding_sources.inject(0){|acc, rtfs| acc + (rtfs.amount || 0)}
     end

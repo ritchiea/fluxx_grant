@@ -148,6 +148,9 @@ module FluxxRequestTransaction
     base.insta_utc do |insta|
       insta.time_attributes = [:due_at, :paid_at, :transaction_at] 
     end
+    base.insta_filter_amount do |insta|
+      insta.amount_attributes = [:amount_paid, :amount_due]
+    end
     
     base.insta_role do |insta|
       # Define who is allowed to perform which events
@@ -301,14 +304,6 @@ module FluxxRequestTransaction
       end
     end
 
-    def amount_paid= new_amount
-      write_attribute(:amount_paid, filter_amount(new_amount))
-    end
-
-    def amount_due= new_amount
-      write_attribute(:amount_due, filter_amount(new_amount))
-    end
-    
     def related_users
       if request
         request.related_users
