@@ -3,7 +3,7 @@ class FluxxGrantCoalesceGrantBeginsAtIerfStartAtFields < ActiveRecord::Migration
     execute 'update requests set grant_begins_at = ierf_start_at where grant_begins_at is null' rescue nil
     change_table :requests do |t|
       t.remove :ierf_start_at
-    end
+    end rescue nil
   end
 
   def self.down
