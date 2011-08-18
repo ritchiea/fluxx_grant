@@ -20,6 +20,13 @@ module FluxxGrantRequestsController
           grant_request_index_format_html controller_dsl, outcome, default_block
         end
       end
+      insta.summary_view do |format|
+        format.html do |triple|
+            controller_dsl, outcome, default_block = triple
+           @data = "7777777"
+          default_block.call
+        end
+      end
     end
     base.insta_show GrantRequest do |insta|
       insta.force_redirect do |conf|

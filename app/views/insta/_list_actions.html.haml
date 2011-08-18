@@ -1,5 +1,7 @@
 %li= link_to raw('&#9617;'), '#', :class => 'open-listing-actions', :title => 'Open/Close Listing Actions Tab'
 %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/page_white_excel.png', :alt => "Export to .xls"), url_for(:format => :xls), :class => 'area-data', :title =>'Export to .xls'
+-if @show_summary_view
+  %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/email.png', :alt => 'Show Summary View'), url_for(), :class => 'to-summary', :title =>'Show Summary View'
 - if @first_report_id
   %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/chart_bar.png', :alt => "Reports"), url_for(:fluxxreport_id => @first_report_id, :all_results => 1), :class => 'new-detail area-data', 'data-insert' => 'after', :title =>'Visualizations'
 - if @show_conversion_funnel
