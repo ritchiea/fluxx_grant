@@ -10,6 +10,6 @@
   %fieldset.inputs
     %ol
       = semantic_form_for Loi.new(), :html => {:class => ''} do |form|
-        = render :partial => 'lois/loi_form',  :locals => {:form => form}
+        = render :partial => 'lois/loi_form',  :locals => {:form => form, :omit_create_button => true}
         = form.submit :value => "Submit Request"
         %input{:type => 'submit', :name => 'cancel', :class => 'create open-link float_left', :value => 'Cancel', 'data-href'.to_sym => portal_path}
