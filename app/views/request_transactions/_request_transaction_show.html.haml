@@ -35,8 +35,8 @@
       - if rfs.request_funding_source
         %dl.inline
           %dt Amount:
-          %dd= as_currency(rfs.amount)
-          -total += rfs.amount
+          %dd= as_currency(rfs.amount) if rfs.amount
+          -total += rfs.amount if rfs.amount
           %dt Source:
           %dd= rfs.request_funding_source.funding_source_allocation.funding_source.name if rfs.request_funding_source.funding_source_allocation && rfs.request_funding_source.funding_source_allocation.funding_source
           %dt Initiatives:
