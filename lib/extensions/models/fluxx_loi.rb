@@ -53,6 +53,11 @@ module FluxxLoi
     base.insta_utc do |insta|
       insta.time_attributes = [:grant_begins_at]
     end
+    
+    base.insta_filter_amount do |insta|
+      insta.amount_attributes = [:amount_requested]
+    end
+    
 
 
     base.extend(ModelClassMethods)
