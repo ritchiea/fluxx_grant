@@ -107,7 +107,9 @@ class BudgetOverviewByYear < ActionController::ReportBase
     query = "SELECT id FROM requests WHERE deleted_at IS NULL AND state <> 'rejected' and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and program_id in (?)"
     request_ids = ReportUtility.array_query([query, start_date, stop_date, program_ids])
     hash = ReportUtility.get_report_totals request_ids
-    "#{hash[:grants]} Grants totaling #{number_to_currency(hash[:grants_total])} and #{hash[:fips]} #{I18n.t(:fip_name).pluralize} totaling #{number_to_currency(hash[:fips_total])}"
+    summary_text = "#{hash[:grants]} Grants totaling #{number_to_currency(hash[:grants_total])}"
+    summary_text = summary_text + " and #{hash[:fips]} #{I18n.t(:fip_name).pluralize} totaling #{number_to_currency(hash[:fips_total])}" unless Fluxx.config(:hide_fips) == "1"
+    summary_text
   end
 
   def report_legend controller, index_object, params
@@ -118,7 +120,9 @@ class BudgetOverviewByYear < ActionController::ReportBase
       ReportUtility.get_program_ids filter["program_id"]
     end || []
     always_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
-    legend = [{:table => ["Status", "Grants", "Grant #{CurrencyHelper.current_long_name.pluralize}", I18n.t(:fip_name).pluralize, "#{I18n.t(:fip_name)} #{CurrencyHelper.current_long_name.pluralize}"], :filter => "", "listing_url".to_sym => "", "card_title".to_sym => ""}]
+    legend_table = ["Status", "Grants", "Grant #{CurrencyHelper.current_long_name.pluralize}"]
+    legend_table << [I18n.t(:fip_name).pluralize, "#{I18n.t(:fip_name)} #{CurrencyHelper.current_long_name.pluralize}"] unless Fluxx.config(:hide_fips) == "1"
+    legend = [{:table => legend_table, :filter => "", "listing_url".to_sym => "", "card_title".to_sym => ""}]
     categories = ["Pipeline", "Granted", "Budgeted", "Paid"]
     start_date_string = start_date.strftime('%m/%d/%Y')
     stop_date_string = stop_date.strftime('%m/%d/%Y')
@@ -153,7 +157,9 @@ class BudgetOverviewByYear < ActionController::ReportBase
         end
         grant_result = ReportUtility.single_value_query(grant)
         fip_result = ReportUtility.single_value_query(fip)
-        legend << { :table => [program, grant_result["count"], number_to_currency(grant_result["amount"] ? grant_result["amount"] : 0 ), fip_result["count"], number_to_currency(fip_result["amount"] ? fip_result["amount"] : 0)],
+        legend_table = [program, grant_result["count"], number_to_currency(grant_result["amount"] ? grant_result["amount"] : 0 )]
+        legend_table << [fip_result["count"], number_to_currency(fip_result["amount"] ? fip_result["amount"] : 0)] unless Fluxx.config(:hide_fips) == "1"
+        legend << { :table => legend_table,
                     :filter => card_filter, "listing_url".to_sym => listing_url, "card_title".to_sym => card_title}
       end
     end
