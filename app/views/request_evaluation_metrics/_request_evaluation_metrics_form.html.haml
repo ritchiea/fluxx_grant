@@ -1,7 +1,8 @@
 %fieldset.inputs
   %ol
     = form.input :request_id, :as => :hidden
-    = form.input :timeframe, :as => :select, :collection => ["Short-Term", "Intermediate", "Long-Term"]
+    - unless Fluxx.config(:hide_request_eval_timeframe) == "1"
+      = form.input :timeframe, :as => :select, :collection => ["Short-Term", "Intermediate", "Long-Term"]
     = form.input :description, :label => "Expected Impact", :as => :text
     
     = form.input :comment, :label => "Progress Indicator", :as => :text

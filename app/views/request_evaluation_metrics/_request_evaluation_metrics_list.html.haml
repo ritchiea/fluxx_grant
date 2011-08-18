@@ -16,7 +16,8 @@
     %thead
       %tr
         %th
-        %th Timeframe
+        - unless Fluxx.config(:hide_request_eval_timeframe) == "1"
+          %th Timeframe
         %th Expected Impact
         %th Progress Indicator
         %th
