@@ -69,6 +69,9 @@ module FluxxLoisController
                                 :amount_requested => model.amount_requested, :duration_in_months => model.duration_in_months,
                                 :grant_begins_at => model.grant_begins_at, :project_summary => model.project_summary, :grantee_org_owner_id => model.user_id)
 
+          draft_state = Request.all_states_with_category("draft").first
+          request.state = draft_state if draft_state
+
           if request.save
             attributes_to_set = {}
             request_attributes = request.all_dynamic_attributes
