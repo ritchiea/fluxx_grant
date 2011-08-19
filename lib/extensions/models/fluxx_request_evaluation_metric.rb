@@ -25,5 +25,8 @@ module FluxxRequestEvaluationMetric
   end
 
   module ModelInstanceMethods
+    def relates_to_user? user
+      (user.primary_organization.id == self.request.program_organization_id) || (user.primary_organization.id == self.request.fiscal_organization_id)
+    end
   end
 end
