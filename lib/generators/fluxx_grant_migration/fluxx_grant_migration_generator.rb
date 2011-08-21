@@ -90,6 +90,7 @@ class FluxxGrantMigrationGenerator < Rails::Generators::Base
     handle_migration 'make_amount_precision_larger.rb', 'db/migrate/fluxx_grant_make_amount_precision_larger.rb'
     handle_migration 'add_address_fields_to_lois.rb', 'db/migrate/fluxx_grant_add_address_fields_to_lois.rb'
     handle_migration 'add_view_model_document_to_grantee_profile.rb', 'db/migrate/fluxx_grant_add_view_model_document_to_grantee_profile.rb'
+    handle_migration 'alter_grantee_profile_rule_for_model_document.rb', 'db/migrate/fluxx_grant_alter_grantee_profile_rule_for_model_document.rb'
   end
   
   private
