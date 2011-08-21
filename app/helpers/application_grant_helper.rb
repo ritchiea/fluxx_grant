@@ -76,7 +76,7 @@ module ApplicationGrantHelper
     links << "  '#{link_to 'People', users_path, :class => 'new-listing indent'}'" unless Fluxx.config(:hide_people) == "1" || !current_user.has_listview_for_model?(User)
     links << "  '#{link_to I18n.t(:Organization).pluralize, organizations_path, :class => 'new-listing indent'}'" unless Fluxx.config(:hide_organizations) == "1" || !current_user.has_listview_for_model?(Organization)
 
-    links << "  '<h3>Project/Product Management</h3>'"
+    links << "  '<h3>Project/Product Management</h3>'" unless (Fluxx.config(:hide_projects) == "1" || !current_user.has_listview_for_model?(Project)) && (Fluxx.config(:hide_tasks) == "1" || !current_user.has_listview_for_model?(WorkTask))
     links << "  '#{link_to 'Projects', projects_path, :class => 'new-listing indent'}'" unless Fluxx.config(:hide_projects) == "1" || !current_user.has_listview_for_model?(Project)
     links << "  '#{link_to 'Tasks', work_tasks_path, :class => 'new-listing indent'}'" unless Fluxx.config(:hide_tasks) == "1" || !current_user.has_listview_for_model?(WorkTask)
 
