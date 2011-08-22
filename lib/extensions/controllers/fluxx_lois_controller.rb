@@ -135,8 +135,37 @@ module FluxxLoisController
     
     base.insta_related Loi do |insta|
       insta.add_related do |related|
+        related.display_name = 'Person'
+        related.for_search do |model|
+          [model.user]
+        end
+        related.add_title_block do |model|
+          model.full_name if model
+        end
+        related.display_template = '/users/related_users'
+      end
+      insta.add_related do |related|
+        related.display_name = 'Org'
+        related.for_search do |model|
+          [model.organization]
+        end
+        related.add_title_block do |model|
+          model.name if model
+        end
+        related.display_template = '/organizations/related_organization'
+      end
+      insta.add_related do |related|
+        related.display_name = 'Request'
+        related.for_search do |model|
+          [model.request]
+        end
+        related.add_title_block do |model|
+          model.title if model
+        end
+        related.display_template = '/grant_requests/related_request'
       end
     end
+    
     
     base.extend(ModelClassMethods)
     base.class_eval do
