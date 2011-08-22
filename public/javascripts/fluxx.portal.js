@@ -2,6 +2,7 @@
   $.fn.extend({
     initGranteePortal: function() {
       $('.multiple-select-transfer select[multiple="true"], .multiple-select-transfer select[multiple="multiple"]').selectTransfer();
+      $('.datetime input').fluxxDatePicker({ changeMonth: true, changeYear: true });
       $.fn.installFluxxDecorators();
       $('.notice').delay(5000).fadeOut('slow');
     },
@@ -48,11 +49,34 @@
         }
       });
       $(document).data('modal-target', options.target);
+    },
+    fluxxDatePicker: function(options) {
+      return this.each(function() {
+        var unique = $.fluxx.config.datepicker_unique_id++;
+        var $input = $(this);
+        var id = $input.attr('id');
+        if (!id)
+          $input.attr('id', 'input_' + unique);
+        else if (id.match(/[a-zA-Z]/))
+          $input.attr('id', $input.attr('id') + '_' + unique);
+        $input.datepicker({ changeMonth: true, changeYear: true });
+      });
     }
   });
 
 	$.extend(true, {
 		fluxx: {
+      config: {
+        dashboard: {
+          enabled: true,
+          default_dashboard: {
+            type: 'dashboard',
+            name: 'Default',
+            data: {cards: [], nextUid: 1},
+            url: '#default'
+          }
+        }
+      },
 		  decorators: {
 	      'a.prev-page': [
 	        'click', function(e) {          
