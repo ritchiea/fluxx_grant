@@ -35,6 +35,14 @@ module FluxxGrant
       rescue Exception => e
         p "ESH: have an error while setting up AdminDefaults: #{e.inspect}, #{e.backtrace.inspect}"
       end
+      
+      begin
+        FluxxSphinxCheck.add_check Organization, 100, 2
+        FluxxSphinxCheck.add_check User, 100, 2
+        FluxxSphinxCheck.add_check Request, 100, 2
+      rescue Exception => e
+        p "ESH: have an error while setting up FluxxSphinxCheck: #{e.inspect}, #{e.backtrace.inspect}"
+      end
     end
     
     rake_tasks do
