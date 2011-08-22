@@ -1,7 +1,7 @@
 .titlebar
   %h4
 .content
-- if @data.count == 0
+- if !@data || @data.count == 0
   %p.caption="No Documents"
 - else
   %table{:cellspacing => 0}
