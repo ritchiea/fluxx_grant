@@ -122,7 +122,8 @@ module FluxxProgram
     end
     
     def all_program_users
-      User.joins(:role_users => :role).where({:deleted_at => nil, :role_users => {:roles => {:roleable_type => self.name}}}).group("users.id").compact
+      employee_profile = UserProfile.employee_profile
+      User.joins(:role_users => :role).where({:user_profile_id => employee_profile.id, :deleted_at => nil, :role_users => {:roles => {:roleable_type => self.name}}}).order('last_name asc, first_name asc').group("users.id").compact
     end
 
     def load_all_nonrollup
@@ -168,10 +169,10 @@ module FluxxProgram
       
       program_ids = programs.compact.flatten.map &:id
       
-      employee_user_profile = UserProfile.where(:name => 'Employee').first
+      employee_user_profile = UserProfile.employee_profile
       user_query = User.joins(:role_users => :role).order('first_name asc, last_name asc').where({:deleted_at => nil, :user_profile_id => (employee_user_profile ? employee_user_profile.id : nil), :test_user_flag => 0, :role_users => {:roleable_id => program_ids, :roles => {:roleable_type => self.class.name}}})
       user_query = user_query.where({:role_users => {:roles => {:name => role_name}}}) if role_name
-      user_query.group("users.id").compact
+      user_query.order('last_name asc, first_name asc').group("users.id").compact
     end
     
     def program_fsa_join_where_clause
