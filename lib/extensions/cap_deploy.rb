@@ -110,8 +110,10 @@ namespace :fluxx do
   end
   task :delayed_job_restart do
     if variables[:delayed_fluxx_instance]
+      run "sudo /sbin/restart sphinx FLUXX_INSTANCE=#{variables[:delayed_fluxx_instance]}"
       run "sudo /sbin/restart delayed_job FLUXX_INSTANCE=#{variables[:delayed_fluxx_instance]}"
     else
+      run "sudo /sbin/restart sphinx"
       run "sudo /sbin/restart delayed_job"
     end
   end
