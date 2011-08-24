@@ -22,8 +22,13 @@ module FluxxGrantRequestsController
       end
       insta.summary_view do |format|
         format.html do |triple|
-            controller_dsl, outcome, default_block = triple
-           @data = "7777777"
+          controller_dsl, outcome, default_block = triple
+          query = "SELECT SUM(r.amount_requested) AS amount, AVG(DATEDIFF(CURDATE(), r.created_at)) as days, AVG(r.amount_requested) AS average, COUNT(DISTINCT r.id) AS count FROM requests r  WHERE r.id IN (?)"
+          results = ReportUtility.single_value_query([query, @models.map(&:id)])
+          @amount_in_pipeline = results["amount"]
+          @number_in_pipeline = results["count"]
+          @average_amount = results["average"]
+          @average_days = results["days"]
           default_block.call
         end
       end
