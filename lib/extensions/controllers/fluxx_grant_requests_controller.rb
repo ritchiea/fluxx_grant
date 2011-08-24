@@ -31,8 +31,9 @@ module FluxxGrantRequestsController
           @average_amount = results["average"]
           @average_days = results["days"]
           @pipeline = []
-          query = "SELECT sum(r.amount_requested) as amount, count(r.id) as count, r.state AS state FROM requests_table r WHERE r.id IN (?) group by r.state"
-          req = Request.connection.execute(Request.send(:sanitize_sql, [query, ids]))
+          exclude_states = GrantRequest.all_states_with_category :granted
+          query = "SELECT sum(r.amount_requested) as amount, count(r.id) as count, r.state AS state FROM requests_table r WHERE r.id IN (?) and r.state not in (?) group by r.state"
+          req = Request.connection.execute(Request.send(:sanitize_sql, [query, ids, exclude_states]))
           max = 0
           i = 0
           dummy_model = Request.new
