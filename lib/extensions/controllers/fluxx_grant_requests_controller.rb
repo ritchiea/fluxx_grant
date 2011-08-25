@@ -23,7 +23,7 @@ module FluxxGrantRequestsController
       insta.summary_view do |format|
         format.html do |triple|
           controller_dsl, outcome, default_block = triple
-          query = "SELECT SUM(r.amount_requested) AS amount, AVG(DATEDIFF(CURDATE(), r.created_at)) as days, AVG(r.amount_requested) AS average, COUNT(DISTINCT r.id) AS count FROM requests r WHERE r.id IN (?)"
+          query = "SELECT SUM(r.amount_requested) AS amount, AVG(DATEDIFF(CURDATE(), r.created_at)) as days, AVG(r.amount_requested) AS average, COUNT(r.id) AS count FROM requests r WHERE r.id IN (?)"
           ids=  @models.map(&:id)
           results = ReportUtility.single_value_query([query, ids])
           @amount_in_pipeline = results["amount"]
@@ -32,7 +32,7 @@ module FluxxGrantRequestsController
           @average_days = results["days"]
           @pipeline = []
           exclude_states = GrantRequest.all_states_with_category :granted
-          query = "SELECT sum(r.amount_requested) as amount, count(r.id) as count, r.state AS state FROM requests_table r WHERE r.id IN (?) and r.state not in (?) group by r.state"
+          query = "SELECT sum(r.amount_requested) as amount, count(r.id) as count, r.state AS state FROM requests r WHERE r.id IN (?) and r.state not in (?) group by r.state"
           req = Request.connection.execute(Request.send(:sanitize_sql, [query, ids, exclude_states]))
           max = 0
           i = 0
