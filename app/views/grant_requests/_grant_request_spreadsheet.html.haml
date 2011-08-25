@@ -1,0 +1,48 @@
+:css
+  .spreadsheet-view {
+    height: 100%;
+    width: 100%
+  }
+
+  .spreadsheet-card .listing {
+    width: 710px;
+  }
+
+  .spreadsheet-card .paginate-info {
+    width: 555px;
+  }
+
+  .totals-table {
+    background-color: #fff;
+  }
+
+%table{:cellspacing => 0, :class => 'totals-table'}
+  %thead
+    %tr
+      %th Request ID
+      %th Organization
+      %th Status
+      %th Amount
+      %th Start Date
+      %th Duration
+      %th Program
+  %tbody
+    -total = 0
+    -@models.each do |model|
+      %tr
+        %td= model.grant_or_request_id
+        %td= model.org_name_text
+        %td= model.state_to_english
+        %td= dollars_format(model.amount_recommended || model.amount_requested)
+        -total +=  model.amount_recommended || model.amount_requested
+        %td= mdy_date_format(model.request_received_at)
+        %td= "#{model.duration_in_months} Months"
+        %td= (model.program ? model.program.name : '')
+    %tr
+      %td
+      %td
+      %td
+      %td= dollars_format(total)
+      %td
+      %td
+      %td

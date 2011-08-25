@@ -51,6 +51,13 @@ module FluxxGrantRequestsController
           default_block.call
         end
       end
+      insta.spreadsheet_view do |format|
+        format.html do |triple|
+          controller_dsl, outcome, default_block = triple
+          default_block.call
+        end
+      end
+
     end
     base.insta_show GrantRequest do |insta|
       insta.force_redirect do |conf|
