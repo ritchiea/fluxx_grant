@@ -108,7 +108,7 @@ module ReviewerBaseReport
         start_user_column = column + 1
         users.each do |user|
           review = reviews_by_request_id[request_id]
-          user_review = review[user.id.to_s] if review
+          user_review = review[user.id] if review
           worksheet.write(row, column += 1, (user_review ? (user_review.rating.to_i rescue '') : ''), number_format)
         end
         end_user_column = column
