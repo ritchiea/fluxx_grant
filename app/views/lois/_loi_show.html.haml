@@ -25,7 +25,7 @@
     %td
       = model.organization_name
       %br
-      = model.address
+      = render :partial => "insta/show/contact_info", :locals => {:location => model, :detailed => false}
       -if model.organization
         %br
         connected to
@@ -35,8 +35,6 @@
         = link_to "Disconnect", loi_path(model, :disconnect_organization => 1, :as_modal => 1), :class => 'as-put', 'data-on-success' => 'refreshCaller', "data-confirm" => "Are you sure you with to disconnect the organization?"
       -else
         = link_to "Connect", edit_loi_path(model, :connect_organization => 1, :as_modal => 1), :class => 'to-modal hide-footer', 'data-on-success' => 'close,refreshCaller'
-    %tr
-      %td
     %tr
       %td Request:
       %td
