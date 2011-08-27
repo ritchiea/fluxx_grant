@@ -1,30 +1,42 @@
-%table{:cellspacing => 0, :class => 'totals-table'}
+%table
   %thead
     %tr
-      %th Request ID
-      %th Organization
+      %th{:nowrap => 1} Request ID
       %th Status
       %th Amount
-      %th Start Date
+      %th Submitted
+      %th{:nowrap => 1} Start Date
       %th Duration
       %th Program
+      - unless Fluxx.config(:hide_sub_program) == "1"
+        %th Sub Program
+      - unless Fluxx.config(:hide_initiative) == "1"
+        %th Initiative
+      - unless Fluxx.config(:hide_sub_initiative) == "1"
+        %th Sub Initiative
+      %th Grantee
+      %th Lead
+      %th{:nowrap => 1} Tax Status
+      %th{:nowrap => 1} Main Contact
+
   %tbody
-    -total = 0
     -@models.each do |model|
       %tr
-        %td= model.grant_or_request_id
-        %td= model.org_name_text
-        %td= model.state_to_english
+        %td{:nowrap => 1}= link_to model.grant_or_request_id, current_show_path(model.id), :class => "new-detail", 'data-insert' => 'after'
+        %td{:nowrap => 1}= link_to model.state_to_english,  url_for(:action => :show, :view_states => true, :id => model.id), :class => 'to-modal small-modal', :title => 'View Workflow', 'data-on-success' => 'refreshCaller'
         %td= dollars_format(model.amount_recommended || model.amount_requested)
-        -total +=  model.amount_recommended || model.amount_requested
+        %td= model.request_received_at.mdy if model.request_received_at
         %td= mdy_date_format(model.request_received_at)
         %td= "#{model.duration_in_months} Months"
-        %td= (model.program ? model.program.name : '')
-    %tr
-      %td
-      %td
-      %td
-      %td= dollars_format(total)
-      %td
-      %td
-      %td
+        %td{:nowrap => 1}= (model.program ? model.program.name : '')
+        - unless Fluxx.config(:hide_sub_program) == "1"
+          %td{:nowrap => 1}= (model.sub_program ? model.sub_program.name : '')
+        - unless Fluxx.config(:hide_initiative) == "1"
+          %td{:nowrap => 1}= (model.initiative ? model.initiative.name : '')
+        - unless Fluxx.config(:hide_sub_initiative) == "1"
+          %td{:nowrap => 1}= (model.sub_initiative ? model.sub_initiative.name : '')
+        %td{:nowrap => 1}= model.org_name_text
+        %td{:nowrap => 1}= model.grantee_org_owner.full_name if model.grantee_org_owner
+        %td{:nowrap => 1}= model.program_organization.tax_class.value if model.program_organization && model.program_organization.tax_class
+        %td{:nowrap => 1}= model.program_lead.full_name if model.program_lead
+
