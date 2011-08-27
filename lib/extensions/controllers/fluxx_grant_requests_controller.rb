@@ -41,12 +41,12 @@ module FluxxGrantRequestsController
             amount = res["amount"] ? res["amount"].to_i : 0
             count = res["count"] ? res["count"].to_i : 0
             dummy_model.state = res["state"]
-            max = amount if amount > max
+            max = count if count > max
             @pipeline[i] = {:count => count, :amount  => amount, :state => dummy_model.state_to_english}
             i += 1
           end
           max = max.to_f
-          @pipeline.each{|stats| stats[:percentage] = (max > 0 ? stats[:amount] / max : 1) * 100}
+          @pipeline.each{|stats| stats[:percentage] = (max > 0 ? stats[:count] / max : 1) * 100}
 
           default_block.call
         end

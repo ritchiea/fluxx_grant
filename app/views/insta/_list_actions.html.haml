@@ -1,13 +1,19 @@
+-view ||= :listing
 %li= link_to raw('&#9617;'), '#', :class => 'open-listing-actions', :title => 'Open/Close Listing Actions Tab'
-%li= link_to image_tag('/images/fluxx_engine/theme/default/icons/page_white_excel.png', :alt => "Export to .xls"), url_for(:format => :xls), :class => 'area-data', :title =>'Export to .xls'
+-if @show_summary_view || @show_spreadsheet_view
+  %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/application_view_list.png', :alt => 'Show List View'), url_for(), :class => "to-listing#{view == :listing ? ' disabled' : ''}", :title =>'Show Listing View'
 -if @show_summary_view
-  %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/chart_pie.png', :alt => 'Show Summary View'), url_for(), :class => 'to-summary', :title =>'Show Summary View'
+  %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/chart_pie.png', :alt => 'Show Summary View'), url_for(), :class => "to-summary#{view == :summary ? ' disabled' : ''}", :title =>'Show Summary View'
 -if @show_spreadsheet_view
-  %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/application_view_columns.png', :alt => 'Show Spreadsheet View'), url_for(), :class => 'to-spreadsheet', :title =>'Show Spreadsheet View'
+  %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/application_view_columns.png', :alt => 'Show Spreadsheet View'), url_for(), :class => "to-spreadsheet#{view == :spreadsheet ? ' disabled' : ''}", :title =>'Show Spreadsheet View'
 - if @first_report_id
   %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/chart_bar.png', :alt => "Reports"), url_for(:fluxxreport_id => @first_report_id, :all_results => 1), :class => 'new-detail area-data', 'data-insert' => 'after', :title =>'Visualizations'
 - if @show_conversion_funnel
   %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/arrow_join.png', :alt => "Conversion Funnel"), url_for(:view_funnel => 1, :all_results => 1), :class => 'new-detail area-data', 'data-insert' => 'after', :title =>'Conversion Funnel'
+-if @show_summary_view || @show_spreadsheet_view
+  %li.divider
+    %span
+%li= link_to image_tag('/images/fluxx_engine/theme/default/icons/page_white_excel.png', :alt => "Export to .xls"), url_for(:format => :xls), :class => 'area-data', :title =>'Export to .xls'
 %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/arrow_refresh.png', :alt => 'Refresh Card'), '#', :class => 'refresh-card', :title =>'Refresh Card'
 %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/email.png', :alt => 'Subscribe'), new_alert_path(:manage_subscription => true), :class => 'open-subscriptions', :title =>'Subscribe Card'
 %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/cog_edit.png', :alt => 'Open Filters'), '#', :class => 'open-filters', :title =>'Filter Card'
