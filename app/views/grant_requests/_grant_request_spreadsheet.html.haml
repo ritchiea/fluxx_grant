@@ -1,4 +1,4 @@
-%table
+%table.fixed-header
   %thead
     %tr
       %th{:nowrap => 1} Request ID
@@ -27,7 +27,7 @@
         %td= dollars_format(model.amount_recommended || model.amount_requested)
         %td= model.request_received_at.mdy if model.request_received_at
         %td= mdy_date_format(model.request_received_at)
-        %td= "#{model.duration_in_months} Months"
+        %td= "#{model.duration_in_months} Mo"
         %td{:nowrap => 1}= (model.program ? model.program.name : '')
         - unless Fluxx.config(:hide_sub_program) == "1"
           %td{:nowrap => 1}= (model.sub_program ? model.sub_program.name : '')
