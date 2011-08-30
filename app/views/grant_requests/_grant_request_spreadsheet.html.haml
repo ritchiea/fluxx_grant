@@ -1,12 +1,20 @@
-%table.fixed-header
+%table.spreadsheet
   %thead
     %tr
-      %th{:nowrap => 1} Request ID
+      %th Request ID
+      - unless Fluxx.config(:hide_sub_program) == "1"
+        %th Request Type
       %th Status
-      %th Amount
-      %th Submitted
-      %th{:nowrap => 1} Start Date
-      %th Duration
+      %th Amount Requested
+      %th Amount Recommended
+      %th Grantee
+      %th Grantee City
+      %th Grantee State
+      %th Grantee URL
+      %th Grantee Tax Status
+      %th Grantee Tax ID
+      %th Fiscal Org
+      %th Lead PO/PD
       %th Program
       - unless Fluxx.config(:hide_sub_program) == "1"
         %th Sub Program
@@ -14,20 +22,41 @@
         %th Initiative
       - unless Fluxx.config(:hide_sub_initiative) == "1"
         %th Sub Initiative
-      %th Grantee
-      %th Lead
-      %th{:nowrap => 1} Tax Status
-      %th{:nowrap => 1} Main Contact
+      %th Date Request Received
+      %th Duration
+      %th Geo Focus (Region)
+      %th Geo Focus (State)
+      %th Constituents
+      %th Means
+      %th Type of Org
+      %th Funding Source
+      %th Date Created
+      %th Date Last Updated
+      %th Primary Contact
+      %th Primary Contact Email
+      %th Signatory
+      %th Signatory Email
+      - unless Fluxx.config(:hide_sub_program) == "1"
+        %th FIP Title
+      %th Request Summary
 
   %tbody
     -@models.each do |model|
       %tr
         %td{:nowrap => 1}= link_to model.grant_or_request_id, current_show_path(model.id), :class => "new-detail", 'data-insert' => 'after'
+        - unless Fluxx.config(:hide_sub_program) == "1"
+          %td= model.is_a?(FipRequest) ? I18n.t(:fip_name) : 'Request'
         %td{:nowrap => 1}= link_to model.state_to_english,  url_for(:action => :show, :view_states => true, :id => model.id), :class => 'to-modal small-modal', :title => 'View Workflow', 'data-on-success' => 'refreshCaller'
-        %td= dollars_format(model.amount_recommended || model.amount_requested)
-        %td= model.request_received_at.mdy if model.request_received_at
-        %td= mdy_date_format(model.request_received_at)
-        %td= "#{model.duration_in_months} Mo"
+        %td= dollars_format(model.amount_requested)
+        %td= dollars_format(model.amount_recommended)
+        %td{:nowrap => 1}= model.program_organization.name if model.program_organization
+        %td{:nowrap => 1}= model.program_organization.city if model.program_organization
+        %td{:nowrap => 1}= model.program_organization.state if model.program_organization
+        %td{:nowrap => 1}= model.program_organization.url if model.program_organization
+        %td{:nowrap => 1}= model.program_organization.tax_class.value if model.program_organization && model.program_organization.tax_class
+        %td{:nowrap => 1}= model.program_organization.tax_id if model.program_organization
+        %td{:nowrap => 1}= model.fiscal_organization.name if model.fiscal_organization_id
+        %td{:nowrap => 1}= model.program_lead.full_name if model.program_lead
         %td{:nowrap => 1}= (model.program ? model.program.name : '')
         - unless Fluxx.config(:hide_sub_program) == "1"
           %td{:nowrap => 1}= (model.sub_program ? model.sub_program.name : '')
@@ -35,8 +64,20 @@
           %td{:nowrap => 1}= (model.initiative ? model.initiative.name : '')
         - unless Fluxx.config(:hide_sub_initiative) == "1"
           %td{:nowrap => 1}= (model.sub_initiative ? model.sub_initiative.name : '')
-        %td{:nowrap => 1}= model.org_name_text
+        %td{:nowrap => 1}= model.request_received_at.mdy if model.request_received_at
+        %td{:nowrap => 1}= "#{model.duration_in_months} Mo" if model.duration_in_months
+        %td{:nowrap => 1}= model.geo_regions.map{|region| region}.join(', ');
+        %td{:nowrap => 1}= model.geo_states.map{|state| geo_state_to_str(state)}.join(', ');
+        %td{:nowrap => 1}= model.constituents.map(&:value).join(', ')
+        %td{:nowrap => 1}= model.usa_means.map(&:value).join(', ')
+        %td{:nowrap => 1}= model.china_means.map(&:value).join(', ')
+        %td{:nowrap => 1}= model.request_funding_sources.map{|rfs| rfs.funding_source_allocation.funding_source.name}.join(', ');
+        %td{:nowrap => 1}= model.created_at.mdy if model.created_at
+        %td{:nowrap => 1}= model.updated_at.mdy if model.updated_at
         %td{:nowrap => 1}= model.grantee_org_owner.full_name if model.grantee_org_owner
-        %td{:nowrap => 1}= model.program_organization.tax_class.value if model.program_organization && model.program_organization.tax_class
-        %td{:nowrap => 1}= model.program_lead.full_name if model.program_lead
-
+        %td{:nowrap => 1}= model.grantee_org_owner.email if model.grantee_org_owner
+        %td{:nowrap => 1}= model.grantee_signatory.full_name if model.grantee_signatory
+        %td{:nowrap => 1}= model.grantee_signatory.email if model.grantee_signatory
+        - unless Fluxx.config(:hide_sub_program) == "1"
+          %td{:nowrap => 1}= model.fip_title
+        %td{:nowrap => 1}= model.project_summary
