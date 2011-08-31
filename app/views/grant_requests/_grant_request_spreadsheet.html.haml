@@ -24,11 +24,6 @@
         %th Sub Initiative
       %th Date Request Received
       %th Duration
-      %th Geo Focus (Region)
-      %th Geo Focus (State)
-      %th Constituents
-      %th Means
-      %th Type of Org
       %th Funding Source
       %th Date Created
       %th Date Last Updated
@@ -66,11 +61,6 @@
           %td{:nowrap => 1}= (model.sub_initiative ? model.sub_initiative.name : '')
         %td{:nowrap => 1}= model.request_received_at.mdy if model.request_received_at
         %td{:nowrap => 1}= "#{model.duration_in_months} Mo" if model.duration_in_months
-        %td{:nowrap => 1}= model.geo_regions.map{|region| region}.join(', ');
-        %td{:nowrap => 1}= model.geo_states.map{|state| geo_state_to_str(state)}.join(', ');
-        %td{:nowrap => 1}= model.constituents.map(&:value).join(', ')
-        %td{:nowrap => 1}= model.usa_means.map(&:value).join(', ')
-        %td{:nowrap => 1}= model.china_means.map(&:value).join(', ')
         %td{:nowrap => 1}= model.request_funding_sources.map{|rfs| rfs.funding_source_allocation.funding_source.name}.join(', ');
         %td{:nowrap => 1}= model.created_at.mdy if model.created_at
         %td{:nowrap => 1}= model.updated_at.mdy if model.updated_at
