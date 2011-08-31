@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110712063423) do
+ActiveRecord::Schema.define(:version => 20110825081210) do
 
   create_table "alert_emails", :force => true do |t|
     t.string   "mailer_method"
@@ -306,6 +306,7 @@ ActiveRecord::Schema.define(:version => 20110712063423) do
     t.text     "description"
     t.integer  "sub_program_id",                    :null => false
     t.boolean  "retired",        :default => false, :null => false
+    t.integer  "migrate_id"
   end
 
   add_index "initiatives", ["created_by_id"], :name => "sub_programs_created_by_id"
@@ -333,10 +334,16 @@ ActiveRecord::Schema.define(:version => 20110712063423) do
     t.integer  "organization_id"
     t.boolean  "delta"
     t.string   "tax_id"
-    t.decimal  "amount_requested",   :precision => 10, :scale => 2
+    t.decimal  "amount_requested",                  :precision => 10, :scale => 2
     t.integer  "sub_program_id"
     t.integer  "duration_in_months"
     t.datetime "grant_begins_at"
+    t.string   "street_address2"
+    t.string   "city",               :limit => 100
+    t.integer  "geo_state_id"
+    t.integer  "geo_country_id"
+    t.string   "postal_code",        :limit => 100
+    t.integer  "migrate_id"
   end
 
   add_index "lois", ["created_by_id"], :name => "lois_created_by_id"
@@ -356,6 +363,7 @@ ActiveRecord::Schema.define(:version => 20110712063423) do
     t.datetime "deleted_at"
     t.boolean  "delta",                 :default => true,  :null => false
     t.boolean  "display_in_adhoc_list", :default => false, :null => false
+    t.string   "generate_state"
   end
 
   add_index "model_document_templates", ["category"], :name => "index_model_document_templates_on_category"
@@ -490,6 +498,7 @@ ActiveRecord::Schema.define(:version => 20110712063423) do
     t.text     "c3_serialized_response"
     t.string   "vendor_number"
     t.boolean  "is_grantor",                             :default => false
+    t.integer  "migrate_id"
   end
 
   add_index "organizations", ["created_by_id"], :name => "organizations_created_by_id"
@@ -510,6 +519,7 @@ ActiveRecord::Schema.define(:version => 20110712063423) do
     t.boolean  "rollup"
     t.integer  "geo_zone_id"
     t.boolean  "retired",       :default => false, :null => false
+    t.integer  "migrate_id"
   end
 
   add_index "programs", ["geo_zone_id"], :name => "program_geo_zone_id"
@@ -805,6 +815,7 @@ ActiveRecord::Schema.define(:version => 20110712063423) do
     t.integer  "user_payee_id"
     t.integer  "bank_account_id"
     t.text     "condition"
+    t.integer  "migrate_id"
   end
 
   add_index "request_transactions", ["organization_payee_id"], :name => "request_transactions_org_payee_id"
@@ -880,6 +891,7 @@ ActiveRecord::Schema.define(:version => 20110712063423) do
     t.boolean  "extension_flag"
     t.boolean  "display_warnings",                                                 :default => true
     t.integer  "grant_cycle_id"
+    t.integer  "migrate_id"
   end
 
   add_index "requests", ["fiscal_org_owner_id"], :name => "index_requests_on_fiscal_org_owner_id"
@@ -924,6 +936,13 @@ ActiveRecord::Schema.define(:version => 20110712063423) do
   add_index "roles", ["created_by_id"], :name => "roles_created_by_id"
   add_index "roles", ["updated_by_id"], :name => "roles_updated_by_id"
 
+  create_table "sphinx_checks", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "check_ts"
+    t.boolean  "delta",      :default => true, :null => false
+  end
+
   create_table "sub_initiatives", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -933,6 +952,7 @@ ActiveRecord::Schema.define(:version => 20110712063423) do
     t.text     "description"
     t.integer  "initiative_id",                    :null => false
     t.boolean  "retired",       :default => false, :null => false
+    t.integer  "migrate_id"
   end
 
   add_index "sub_initiatives", ["created_by_id"], :name => "sub_initiatives_created_by_id"
@@ -948,6 +968,7 @@ ActiveRecord::Schema.define(:version => 20110712063423) do
     t.string   "description"
     t.integer  "program_id"
     t.boolean  "retired",       :default => false, :null => false
+    t.integer  "migrate_id"
   end
 
   add_index "sub_programs", ["program_id"], :name => "index_initiatives_on_program_id"
@@ -1059,6 +1080,7 @@ ActiveRecord::Schema.define(:version => 20110712063423) do
     t.string   "current_login_ip"
     t.string   "last_login_ip"
     t.boolean  "test_user_flag",                               :default => false
+    t.integer  "migrate_id"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email"
