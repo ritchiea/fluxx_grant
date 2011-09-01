@@ -139,7 +139,7 @@ module FluxxProgram
     end
 
     def program_roles
-      Role.where(:roleable_type => Program.name).order(:name).all
+      Role.where(:roleable_type => Program.name, :deleted_at => nil).order(:name).all
     end
   end
 
