@@ -17,11 +17,11 @@ class DollarsByOrganizationReport < ActionController::ReportBase
     "Grant listing of funds committed, by Organization and by Initiative. (Excel Table)"
   end
   
-  def compute_show_document_headers controller, show_object, params
+  def compute_show_document_headers controller, show_object, params, report_vars
     ['fluxx_' + "#{CurrencyHelper.current_long_name.pluralize}_by_organization" + '_' + Time.now.strftime("%m%d%y") + ".xls", 'application/vnd.ms-excel']
   end
   
-  def compute_show_document_data controller, show_object, params
+  def compute_show_document_data controller, show_object, params, report_vars
     models, start_date, end_date, spending_year, query_types = load_results params, 'organization'
     request_data, sub_programs = process_results models
     output = StringIO.new

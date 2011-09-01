@@ -26,6 +26,7 @@ module FluxxGrantTestHelper
           setup_grant_multi_element_groups
           setup_grant_org_tax_classes
           setup_grant_fip_types
+          setup_profiles
         end
       end
 

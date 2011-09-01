@@ -15,11 +15,11 @@ class ReviewerExportReport < ActionController::ReportBase
     'External Reviewer Export (Excel Table)'
   end
 
-  def compute_show_document_headers controller, show_object, params
+  def compute_show_document_headers controller, show_object, params, report_vars
     ['fluxx_' + 'reviewer_export' + '_' + Time.now.strftime("%m%d%y") + ".xls", 'application/vnd.ms-excel']
   end
 
-  def compute_show_document_data controller, show_object, params
-    base_compute_show_document_data controller, show_object, params, :export
+  def compute_show_document_data controller, show_object, params, report_vars
+    base_compute_show_document_data controller, show_object, params, report_vars, :export
   end
 end

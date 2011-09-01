@@ -2,20 +2,20 @@ module MonthlyGrantsBaseReport
 
   attr_accessor :start_date, :end_date
 
-  def report_filter_text controller, index_object, params, models
+  def report_filter_text controller, index_object, params, models, report_vars
     if (self.start_date && self.end_date)
       "#{self.start_date.strftime("%B %d, %Y")} to #{self.end_date.strftime("%B %d, %Y")}"
     end
   end
 
-  def report_summary controller, index_object, params, models
+  def report_summary controller, index_object, params, models, report_vars
     hash = ReportUtility.get_report_totals models.map(&:id)
     summary_text = "#{hash[:grants]} Grants totaling #{number_to_currency(hash[:grants_total])}"
     summary_text = summary_text + " and #{hash[:fips]} #{I18n.t(:fip_name).pluralize} totaling #{number_to_currency(hash[:fips_total])}" unless Fluxx.config(:hide_fips) == "1"
     summary_text
   end
 
-  def report_legend controller, index_object, params, models
+  def report_legend controller, index_object, params, models, report_vars
     request_ids = models.map(&:id)
     subquery = "SELECT amount_recommended, id FROM requests WHERE type = ? and id in (?)"
     query = "SELECT programs.name AS program, programs.id as program_id, count(grants.id) as grants, sum(grants.amount_recommended) as grant_dollars, count(fips.id) as fips, sum(fips.amount_recommended) as fip_dollars FROM requests LEFT JOIN programs ON programs.id = requests.program_id LEFT JOIN (#{subquery}) as grants ON grants.id = requests.id LEFT JOIN (#{subquery}) as fips ON fips.id = requests.id WHERE requests.id IN (?) GROUP BY requests.program_id ORDER BY program DESC"

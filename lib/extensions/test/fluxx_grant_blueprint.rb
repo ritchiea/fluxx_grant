@@ -149,6 +149,14 @@ module FluxxGrantBlueprint
   end
   
   module ModelInstanceMethods
+    
+    def setup_profiles
+      unless bp_attrs[:executed_setup_profiles]
+        bp_attrs[:executed_setup_profiles] = true
+        UserProfile.create(:name => 'Employee')
+      end
+    end
+    
     def setup_grant_multi_element_groups
       unless bp_attrs[:executed_setup_multi_element_groups]
         bp_attrs[:executed_setup_multi_element_groups] = true

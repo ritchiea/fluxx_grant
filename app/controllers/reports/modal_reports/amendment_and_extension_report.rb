@@ -14,11 +14,11 @@ class AmendmentAndExtensionReport < ActionController::ReportBase
     'List of grants where amendment/extension updates to end-date or amount have been entered'
   end
 
-  def compute_show_document_headers controller, show_object, params
+  def compute_show_document_headers controller, show_object, params, report_vars
     ['fluxx_' + 'amendment_and_extension' + '_' + Time.now.strftime("%m%d%y") + ".xls", 'application/vnd.ms-excel']
   end
 
-  def compute_show_document_data controller, show_object, params
+  def compute_show_document_data controller, show_object, params, report_vars
     active_record_params = params[:active_record_base] || {}
     
     case active_record_params[:date_range_type]

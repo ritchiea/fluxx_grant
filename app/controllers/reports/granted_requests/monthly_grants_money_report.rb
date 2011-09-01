@@ -6,7 +6,7 @@ class MonthlyGrantsMoneyReport < ActionController::ReportBase
     "Grant #{CurrencyHelper.current_long_name.pluralize} By Month"
   end
 
-  def compute_index_plot_data controller, index_object, params, models
+  def compute_index_plot_data controller, index_object, params, models, report_vars
     hash = by_month_report models.map(&:id), params, :sum_amount
     hash[:title] = report_label
     hash.to_json

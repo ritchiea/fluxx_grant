@@ -10,7 +10,7 @@ class BudgetOverviewByYear < ActionController::ReportBase
     "Data visualization to track Program's annual budgeting and grant throughput. (Bar Chart)"
   end
 
-  def compute_show_plot_data controller, index_object, params
+  def compute_show_plot_data controller, index_object, params, report_vars
     filter = params["active_record_base"]
     hash = {}
     hash[:title] = report_label
@@ -92,13 +92,13 @@ class BudgetOverviewByYear < ActionController::ReportBase
     return start_date, start_date.end_of_year()
   end
 
-  def report_filter_text controller, index_object, params
+  def report_filter_text controller, index_object, params, report_vars
     start_date, stop_date = get_date_range params["active_record_base"]
     stop_date = Time.now if (stop_date > Time.now.to_date)
     "#{start_date.strftime('%B %d, %Y')} to #{stop_date.strftime('%B %d, %Y')}"
   end
 
-  def report_summary controller, index_object, params
+  def report_summary controller, index_object, params, report_vars
     filter = params["active_record_base"]
     start_date, stop_date = get_date_range filter
     program_ids= if filter
@@ -112,7 +112,7 @@ class BudgetOverviewByYear < ActionController::ReportBase
     summary_text
   end
 
-  def report_legend controller, index_object, params
+  def report_legend controller, index_object, params, report_vars
     filter = params["active_record_base"]
     start_date, stop_date = get_date_range filter
     years = ReportUtility.get_years start_date, stop_date

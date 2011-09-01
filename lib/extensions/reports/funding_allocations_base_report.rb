@@ -19,12 +19,12 @@ module FundingAllocationsBaseReport
     return start_date, start_date.end_of_year()
   end
 
-  def report_filter_text controller, index_object, params
+  def report_filter_text controller, index_object, params, report_vars
     start_date, stop_date = get_date_range params["active_record_base"]
     "#{start_date.strftime('%B %d, %Y')} to #{stop_date.strftime('%B %d, %Y')}"
   end
 
-  def report_summary controller, index_object, params
+  def report_summary controller, index_object, params, report_vars
     filter = params["active_record_base"]
     start_date, stop_date = get_date_range filter
     program_ids= if filter
@@ -38,7 +38,7 @@ module FundingAllocationsBaseReport
     summary_text
   end
 
-  def report_legend controller, index_object, params
+  def report_legend controller, index_object, params, report_vars
     filter = params["active_record_base"]
     start_date, stop_date = get_date_range filter
     years = ReportUtility.get_years start_date, stop_date

@@ -1,5 +1,5 @@
 module ReviewerBaseReport
-  def base_compute_show_document_data controller, show_object, params, report_type=:export
+  def base_compute_show_document_data controller, show_object, params, report_vars, report_type=:export
     active_record_params = params[:active_record_base] || {}
 
     start_date = if active_record_params[:start_date].blank?

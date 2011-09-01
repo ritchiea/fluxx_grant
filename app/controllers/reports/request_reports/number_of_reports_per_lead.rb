@@ -4,7 +4,7 @@ class NumberOfReportsPerLead < ActionController::ReportBase
   def report_label
     "Reports Pending Lead Approval"
   end
-  def compute_index_plot_data controller, index_object, params, models
+  def compute_index_plot_data controller, index_object, params, models, report_vars
     hash = {:library => "jqplot"}
     hash[:title] = report_label
     hash[:data] = []
@@ -47,15 +47,15 @@ class NumberOfReportsPerLead < ActionController::ReportBase
 
   end
 
-  def report_filter_text controller, index_object, params, models
+  def report_filter_text controller, index_object, params, models, report_vars
 
   end
 
-  def report_summary controller, index_object, params, models
+  def report_summary controller, index_object, params, models, report_vars
 
   end
 
-  def report_legend controller, index_object, params, models
+  def report_legend controller, index_object, params, models, report_vars
     legend = [{:table => ['Report Type', 'Number of Reports Due']}]
     query = "select count(rr.id) as count, report_type from request_reports rr where report_type != '' and rr.state != 'approved' and id in (?) group by report_type order by report_type"
     filter = []

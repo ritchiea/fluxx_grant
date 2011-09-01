@@ -9,7 +9,8 @@ class BudgetRequestsControllerTest < ActionController::TestCase
   end
   
   test "should get index" do
-    get :index
+    req = GrantRequest.make
+    get :index, :request_id => req.to_param
     assert_response :success
     assert_not_nil assigns(:budget_requests)
   end

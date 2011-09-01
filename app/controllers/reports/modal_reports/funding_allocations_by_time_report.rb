@@ -10,7 +10,7 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
     "Data visualization to track monthly budgeting and grant throughput. (Bar Chart)"
   end
 
-  def compute_show_plot_data controller, index_object, params
+  def compute_show_plot_data controller, index_object, params, report_vars
     filter = params["active_record_base"] || {}
     hash = {}
     hash[:title] = report_label

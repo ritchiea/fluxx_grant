@@ -16,8 +16,6 @@ Gem::Specification.new do |s|
   s.test_files        = `git ls-files -- {test}/*`.split("\n")
   s.require_paths     = ["lib"]
 
-  s.add_dependency "delayed_job"
-  s.add_dependency "ts-delayed-delta", ">= 1.1.0"
   s.add_dependency "httpi"
   s.add_dependency "crack"
   s.add_dependency 'memcache-client', '>= 1.8.5'

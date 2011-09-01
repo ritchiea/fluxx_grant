@@ -234,19 +234,19 @@ class GrantRequestTest < ActiveSupport::TestCase
   test "test amendment notes" do
     @req.update_attributes :state => 'granted', :amount_recommended => 1000, :duration_in_months => 20
     @req.update_attributes :amend => true, :amount_recommended => 2000, :duration_in_months => 10
-    assert_equal @req.notes.last.note, "Amount amended from 1000 to 2000. Duration amended from 20 to 10."
+    assert_equal "Amount amended from $1,000.00 to $2,000.00. Duration amended from 20 to 10.", @req.notes.last.note
   end
 
   test "test amendment notes with extra text" do
     @req.update_attributes :state => 'granted', :amount_recommended => 2000
     @req.update_attributes :amend => true, :amount_recommended => 3000, :amend_note => "Hell yeah!"
-    assert_equal @req.notes.last.note, "Amount amended from 2000 to 3000. Hell yeah!"
+    assert_equal "Amount amended from $2,000.00 to $3,000.00. Hell yeah!", @req.notes.last.note
   end
 
   test "test original entry in amendments" do
     @req.update_attributes :state => 'pending_grant_promotion'
-    @req.update_attributes :state => "granted", :amount_recommended => 1500
-    amend = @req.request_amendments.last
+    @req.update_attributes :amend => true, :state => "granted", :amount_recommended => 1500
+    amend = @req.reload.request_amendments.first
     assert_equal 1500, amend.amount_recommended
     assert amend.original
   end

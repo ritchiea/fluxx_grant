@@ -1095,7 +1095,7 @@ module FluxxRequest
 
     def append_amendment_note
       note = []
-      note << "Amount amended from #{amount_recommended_was} to #{amount_recommended}." if amount_recommended_changed?
+      note << "Amount amended from #{amount_recommended_was ? amount_recommended_was.to_currency : ''} to #{amount_recommended ? amount_recommended.to_currency : ''}." if amount_recommended_changed?
       note << "Duration amended from #{duration_in_months_was} to #{duration_in_months}." if duration_in_months_changed?
       note << amend_note unless amend_note.to_s.empty?
       notes.build(:note => note.join(" "))
