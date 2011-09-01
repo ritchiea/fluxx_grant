@@ -100,9 +100,10 @@
     .pairs
       .key Pending Payment:
       .value=  number_to_currency(pending, :precision => 2) if model.amount_pending
-    .pairs
-      .key Available To Spend:
-      .value= number_to_currency(paid + pending, :precision => 2)
+    - if model.is_a?(FipRequest)
+      .pairs
+        .key Available To Spend:
+        .value= number_to_currency((model.amount_recommended || 0) - ((paid || 0) + (pending || 0)), :precision => 2)
 
 
 = render :partial => "request_funding_sources/list_request_funding_sources", :locals => { :model => model}
