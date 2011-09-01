@@ -10,8 +10,9 @@ class ProgramTest < ActiveSupport::TestCase
   end
   
   test "create a program and find the users" do
-    user1 = User.make
-    user2 = User.make
+    employee_profile = UserProfile.employee_profile
+    user1 = User.make :user_profile => employee_profile
+    user2 = User.make :user_profile => employee_profile
     role_user1 = user1.has_role! 'president', @program
     role_user2 = user2.has_role! 'vice president', @program
     assert_equal 2, @program.reload.load_users.size

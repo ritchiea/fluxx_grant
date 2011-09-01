@@ -450,7 +450,7 @@ class GrantRequestsControllerTest < ActionController::TestCase
   test "try to show a granted request" do
     @request1.update_attributes :state => "granted"
     get :show, :id => @request1.to_param, :finance_tracker => 1
-    assert_redirected_to granted_request_path(assigns(:model), :finance_tracker => 1)
+    assert 201, @response.status
   end
 
   test "should get edit" do
@@ -502,9 +502,8 @@ class GrantRequestsControllerTest < ActionController::TestCase
   test "show warnings related to funding sources" do
     login_as_user_with_role Program.program_associate_role_name
     @request1.update_attributes :display_warnings => true
-    put :hide_funding_warnings, :id => @request1.to_param
+    put :update, :id => @request1.to_param, :grant_request => {:display_warnings => '0'}
     assert_equal false, @request1.reload().display_warnings?
-    assert_redirected_to grant_request_path(assigns(:model))
   end
 
   test "fail validation and make sure request does not save" do

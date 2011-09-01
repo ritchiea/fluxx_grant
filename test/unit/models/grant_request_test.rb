@@ -244,10 +244,10 @@ class GrantRequestTest < ActiveSupport::TestCase
   end
 
   test "test original entry in amendments" do
-    @req.update_attributes :state => 'pending_grant_promotion'
+    @req.update_attributes :state => 'pending_grant_promotion', :amount_recommended => 1505
     @req.update_attributes :amend => true, :state => "granted", :amount_recommended => 1500
     amend = @req.reload.request_amendments.first
-    assert_equal 1500, amend.amount_recommended
+    assert_equal 1505, amend.amount_recommended.to_i
     assert amend.original
   end
 
