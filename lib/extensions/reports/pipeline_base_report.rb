@@ -4,12 +4,12 @@ module PipelineBaseReport
     start_date = if active_record_params[:start_date].blank?
       nil
     else
-      Time.parse(active_record_params[:start_date]) rescue nil
+      Time.parse_localized(active_record_params[:start_date]) rescue nil
     end
     end_date = if active_record_params[:end_date].blank?
       nil
     else
-      Time.parse(active_record_params[:end_date]) rescue nil
+      Time.parse_localized(active_record_params[:end_date]) rescue nil
     end
     spending_year = active_record_params[:spending_year]
 

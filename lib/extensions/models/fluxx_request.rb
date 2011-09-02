@@ -1,7 +1,7 @@
 module FluxxRequest
   def self.prepare_from_date search_with_attributes, name, val
-    if (Time.parse(val) rescue nil)
-      start_at = Time.parse(val)
+    if (Time.parse_localized(val) rescue nil)
+      start_at = Time.parse_localized(val)
       if search_with_attributes[name] && search_with_attributes[name].end < FAR_IN_THE_FUTURE
         search_with_attributes[name] = ((start_at.to_i-1)..(search_with_attributes[name].end))
       else
@@ -12,8 +12,8 @@ module FluxxRequest
   end
   
   def self.prepare_to_date search_with_attributes, name, val
-    if (Time.parse(val) rescue nil)
-      end_at = Time.parse(val)
+    if (Time.parse_localized(val) rescue nil)
+      end_at = Time.parse_localized(val)
       if search_with_attributes[name] && search_with_attributes[name].begin > 0
         search_with_attributes[name] = ((search_with_attributes[name].begin)..end_at.to_i)
       else

@@ -32,12 +32,12 @@ class GrantsByFundingSourceReport < ActionController::ReportBase
       start_date = if active_record_params[:start_date].blank?
         nil
       else
-        Time.parse(active_record_params[:start_date]) rescue nil
+        Time.parse_localized(active_record_params[:start_date]) rescue nil
       end || Time.now
       end_date = if active_record_params[:end_date].blank?
         nil
       else
-        Time.parse(active_record_params[:end_date]) rescue nil
+        Time.parse_localized(active_record_params[:end_date]) rescue nil
       end || Time.now
     end
 
