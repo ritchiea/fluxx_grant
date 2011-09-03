@@ -1,5 +1,7 @@
+-#%li= link_to image_tag('/images/fluxx_engine/theme/default/icons/monitor_list.png', :alt => 'Show Full Screen'), url_for(), :class => "to-full-screen", :title =>'Show Full Screen'
 -view ||= :listing
 %li= link_to raw('&#9617;'), '#', :class => 'open-listing-actions', :title => 'Open/Close Listing Actions Tab'
+%li= link_to image_tag('/images/fluxx_engine/theme/default/icons/monitor.png', :alt => 'Show Full Screen'), url_for(), :class => "to-fullscreen", :title =>'Show Full Screen'
 -if @show_summary_view || @show_spreadsheet_view
   %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/application_view_list.png', :alt => 'Show List View'), url_for(), :class => "to-listing#{view == :listing ? ' disabled' : ''}", :title =>'Show Listing View'
 -if @show_summary_view
