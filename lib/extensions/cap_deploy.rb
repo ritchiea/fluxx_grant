@@ -157,6 +157,7 @@ namespace :db do
   desc "Make symlink for database yaml" 
   task :symlink do
     run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml" 
+    run "if [ -f #{shared_path}/config/amazon_s3.yml ]; then ln -nfs #{shared_path}/config/amazon_s3.yml #{release_path}/config/amazon_s3.yml; fi" 
   end
   
 end
