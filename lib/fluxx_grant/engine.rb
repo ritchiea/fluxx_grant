@@ -24,13 +24,13 @@ module FluxxGrant
       
       defaults = AdminDefaults.singleton
       begin
-        defaults.workflows = [['New Request Workflow', Request.name], ['New Report Workflow', RequestReport.name], ['New Transaction Workflow', RequestTransaction.name]],
-        defaults.alerts = [['New Report Alert', RequestReportsController.name]],
-        defaults.roles = [['New Program Role', Program.name]],
-        defaults.states = [['New Request State', Request.name], ['New Report State', RequestReport.name], ['New Transaction State', RequestTransaction.name]],
-        defaults.attributes = [['New Request Attribute', Request.name], ['New Report Attribute', RequestReport.name], ['New Transaction Attribute', RequestTransaction.name], ['New LOI Attribute', Loi.name]],
-        defaults.methods = [['New Request Model Method', Request.name], ['New Report Model Method', RequestReport.name], ['New Transaction Model Method', RequestTransaction.name]],
-        defaults.validations = [['New Request Model Validation', Request.name], ['New Report Model Validation', RequestReport.name], ['New Transaction Model Validation', RequestTransaction.name]],
+        defaults.workflows = [['New Request Workflow', Request.name], ['New Report Workflow', RequestReport.name], ['New Transaction Workflow', RequestTransaction.name]]
+        defaults.alerts = [['New Report Alert', RequestReportsController.name]]
+        defaults.roles = [['New Program Role', Program.name]]
+        defaults.states = [['New Request State', Request.name], ['New Report State', RequestReport.name], ['New Transaction State', RequestTransaction.name]]
+        defaults.attributes = [['New Request Attribute', Request.name], ['New Report Attribute', RequestReport.name], ['New Transaction Attribute', RequestTransaction.name], ['New LOI Attribute', Loi.name]]
+        defaults.methods = [['New Request Model Method', Request.name], ['New Report Model Method', RequestReport.name], ['New Transaction Model Method', RequestTransaction.name]]
+        defaults.validations = [['New Request Model Validation', Request.name], ['New Report Model Validation', RequestReport.name], ['New Transaction Model Validation', RequestTransaction.name]]
         defaults.pre_create = ['GrantRequest']
       rescue Exception => e
         p "ESH: have an error while setting up AdminDefaults: #{e.inspect}, #{e.backtrace.inspect}"
