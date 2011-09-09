@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'capistrano'
   s.add_dependency 'aws-s3'
   s.add_dependency 'capistrano-ext'
-  s.add_dependency 'airbrake'
+  s.add_dependency 'hoptoad_notifier'
 
   s.add_development_dependency 'capybara', '0.3.7'
   s.add_development_dependency 'machinist', '>= 1.0.6'

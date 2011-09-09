@@ -2,7 +2,7 @@ require "rails"
 require "fluxx_crm"
 
 require "delayed_job"
-require "airbrake"
+require "hoptoad_notifier"
 require "httpi"
 require "crack"
 
