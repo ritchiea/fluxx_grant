@@ -67,7 +67,7 @@ module FluxxGrantRequestsController
         
         if model
           redirect_params = params.delete_if{|k,v| %w[controller action].include?(k) }
-          head 201, :location => (fip_request_path(model.id, redirect_params))
+          fluxx_redirect (fip_request_path(model.id, redirect_params)), conf
         end
       end
       
@@ -78,7 +78,7 @@ module FluxxGrantRequestsController
         format.html do |triple|
           if @model and @model.granted?
             redirect_params = params.delete_if{|k,v| %w[controller action].include?(k) }
-            head 201, :location => (granted_request_path(redirect_params))
+            fluxx_redirect granted_request_path(redirect_params)
           else
             controller_dsl, outcome, default_block = triple
             grant_request_show_format_html controller_dsl, outcome, default_block

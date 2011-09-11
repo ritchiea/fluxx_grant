@@ -25,7 +25,7 @@ module FluxxFipRequestsController
         model = GrantRequest.safe_find(model_id, conf.force_load_deleted_param(params))
         if model
           redirect_params = params.delete_if{|k,v| %w[controller action].include?(k) }
-          head 201, :location => (grant_request_path(model.id, redirect_params))
+          fluxx_redirect grant_request_path(model.id, redirect_params), conf
         end
       end
       insta.template = 'grant_requests/grant_request_show'
@@ -35,7 +35,7 @@ module FluxxFipRequestsController
         format.html do |triple|
           if @model and @model.granted?
             redirect_params = params.delete_if{|k,v| %w[controller action].include?(k) }
-            head 201, :location => (granted_request_path(redirect_params))
+            fluxx_redirect (granted_request_path(redirect_params))
           else
             controller_dsl, outcome, default_block = triple
             grant_request_show_format_html controller_dsl, outcome, default_block
