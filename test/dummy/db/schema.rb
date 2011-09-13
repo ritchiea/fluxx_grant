@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110825081210) do
+ActiveRecord::Schema.define(:version => 20110913223701) do
 
   create_table "alert_emails", :force => true do |t|
     t.string   "mailer_method"
@@ -892,6 +892,7 @@ ActiveRecord::Schema.define(:version => 20110825081210) do
     t.boolean  "display_warnings",                                                 :default => true
     t.integer  "grant_cycle_id"
     t.integer  "migrate_id"
+    t.boolean  "skip_hgrant_flag",                                                 :default => false, :null => false
   end
 
   add_index "requests", ["fiscal_org_owner_id"], :name => "index_requests_on_fiscal_org_owner_id"
