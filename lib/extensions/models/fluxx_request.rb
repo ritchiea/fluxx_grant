@@ -59,7 +59,7 @@ module FluxxRequest
     base.has_many :request_amendments, :as => :request
     base.has_many :request_users
     base.has_many :project_requests
-    base.has_many :projects, :through => :project_requests
+    base.has_many :projects, :through => :project_requests, :conditions => {:deleted_at => nil}
     base.has_many :request_transactions, :order => "due_at", :conditions => {:deleted_at => nil}
     base.has_many :budget_requests, :foreign_key => :request_id, :conditions => {:deleted_at => nil}
     base.accepts_nested_attributes_for :request_transactions, :allow_destroy => true

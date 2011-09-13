@@ -7,7 +7,7 @@
   = form.input :granted, :as => :hidden
   = form.input :request_id, :as => :hidden
 
-= form.input :project, :label => "Title", :as => :select, :collection => (Project.where(:deleted_at => nil) - Request.find(request_id).projects)
+= form.input :project, :label => "Project", :as => :select, :collection => (Project.where(:deleted_at => nil) - Request.find(request_id).projects)
 = form.input :description, :as => :text
 
 = form.commit_button
