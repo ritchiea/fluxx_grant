@@ -24,6 +24,10 @@ module Rack
       end
     end
     
+    def load_request_ids sphinx_conditions={}
+      ::Request.search_for_ids sphinx_search, :with => {:granted => 1, :deleted_at => 0, :filter_type => "GrantRequest".to_crc32, :skip_hgrant_flag => 0}.merge(sphinx_conditions), :limit => 100000, :order => 'id desc'
+    end
+    
     def load_records sphinx_search, sphinx_conditions={}
       ends_at_sql = if Fluxx.config(:dont_use_duration_in_requests) == "1"
         'grant_closed_at'
@@ -31,7 +35,8 @@ module Rack
         'date_add(date_add(grant_begins_at, interval duration_in_months MONTH), interval -1 DAY)'
       end
       
-      @request_ids = ::Request.search_for_ids sphinx_search, :with => {:granted => 1, :deleted_at => 0, :filter_type => "GrantRequest".to_crc32}.merge(sphinx_conditions), :limit => 100000, :order => 'id desc'
+      @request_ids = load_request_ids sphinx_conditions
+      # TODO ESH: make a way to take client_id into account
       @requests = GrantRequest.connection.execute(GrantRequest.send(:sanitize_sql, ["select requests.*, 
           #{ends_at_sql} grant_ends_at,
           program.name program_name,
