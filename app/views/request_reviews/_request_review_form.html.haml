@@ -3,7 +3,7 @@
     %h4
       External Review for
       = model.request
-      %input{:type => 'submit', :name => 'cancel', :class => 'button create open-link float_right', :value => 'Return to List', 'data-href'.to_sym => portal_grant_request_path(model.request)}
+      %input{:type => 'submit', :name => 'cancel', :class => 'button create open-link float_right', :value => 'Submit or Edit', 'data-href'.to_sym => portal_grant_request_path(model.request)}
   %ul.content
     = form.input :request_id, :as => :hidden
     = form.input :review_type, :label => "Review Type"
