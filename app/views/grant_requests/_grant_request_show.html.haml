@@ -65,17 +65,19 @@
     .pairs
       .key= "#{I18n.t(:program_name)}:"
       .value= model.program.name if model.program
-  - unless Fluxx.config(:hide_sub_program) == "1"
-    .pairs
-      .key= "#{I18n.t(:sub_program_name)}:"
-      .value= model.sub_program.name if model.sub_program
+  - unless current_user.is_portal_user?
+    - unless Fluxx.config(:hide_sub_program) == "1"
+      .pairs
+        .key= "#{I18n.t(:sub_program_name)}:"
+        .value= model.sub_program.name if model.sub_program
   - if model.secondary_programs && !model.secondary_programs.empty?
     .pairs
       .key= "Secondary #{(I18n.t(:program_name)).pluralize}:"
       .value= model.secondary_programs.map(&:name).to_sentence
-  .pairs
-    .key Lead Program Officer/Director:
-    .value= model.program_lead.full_name if model.program_lead
+  - unless current_user.is_portal_user?
+    .pairs
+      .key Lead Program Officer/Director:
+      .value= model.program_lead.full_name if model.program_lead
   .pairs
     .key Primary Signatory:
     .value= model.grantee_signatory.full_name if model.grantee_signatory
