@@ -19,7 +19,7 @@
     
   %div.c40r
     - unless Fluxx.config(:hide_lois) == "1"
-      = render :partial => "lois/loi_information"
+      = render :partial => "lois/loi_information", :locals => {:message_style => :new_session}
       = form_for(@user_session, :url => new_loi_path, :html => { :method => :get}) do |f|
         %p= f.submit "Create an account now"
     - else
