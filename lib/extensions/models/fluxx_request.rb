@@ -524,7 +524,7 @@ module FluxxRequest
 
         # attributes
         has :created_at, :updated_at, :deleted_at, :created_by_id, :program_id, :sub_program_id, :request_received_at, :grant_agreement_at, :grant_begins_at, :granted
-        has "CAST(skip_hgrant_flag AS INT)", :type => :boolean, :as => :skip_hgrant_flag
+        has "CAST(skip_hgrant_flag AS UNSIGNED INT)", :type => :boolean, :as => :skip_hgrant_flag
         has :program_organization_id, :fiscal_organization_id
         has "if(requests.amount_recommended is null, ROUND(requests.amount_requested), ROUND(requests.amount_recommended))", :as => :amount_recommended_or_requested, :type => :integer
         has "ROUND(requests.amount_recommended)", :as => :amount_recommended, :type => :integer
