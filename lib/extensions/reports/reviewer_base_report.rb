@@ -6,22 +6,22 @@ module ReviewerBaseReport
       nil
     else
       Time.parse_localized(active_record_params[:start_date]) rescue nil
-    end || Time.now
+    end || Time.now.beginning_of_year
     end_date = if active_record_params[:end_date].blank?
       nil
     else
       Time.parse_localized(active_record_params[:end_date]) rescue nil
-    end || Time.now
+    end || Time.now.end_of_year
 
-    programs = params[:active_record_base][:program_id]
-    programs = if params[:active_record_base][:program_id]
-      Program.where(:id => params[:active_record_base][:program_id]).all rescue nil
+    programs = active_record_params[:program_id]
+    programs = if active_record_params[:program_id]
+      Program.where(:id => active_record_params[:program_id]).all rescue nil
     end || []
     programs = programs.compact
 
-    lead_users = params[:active_record_base][:lead_user_ids]
-    lead_users = if params[:active_record_base][:lead_user_ids]
-      User.where(:id => params[:active_record_base][:lead_user_ids]).all rescue nil
+    lead_users = active_record_params[:lead_user_ids]
+    lead_users = if active_record_params[:lead_user_ids]
+      User.where(:id => active_record_params[:lead_user_ids]).all rescue nil
     end || []
     lead_users = lead_users.compact
 
