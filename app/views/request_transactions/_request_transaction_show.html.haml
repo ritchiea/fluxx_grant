@@ -27,6 +27,16 @@
     .pairs
       .key Payee (Organization):
       .value= model.organization_payee.name
+    .pairs
+      .key Payment Type:
+      .value= model.payment_type
+    .pairs
+      .key Date Paid:
+      .value= model.paid_at.try(:mdy)
+    .pairs
+      .key Check/Confirmation Number:
+      .value= model.payment_confirmation_number
+
 %div.partial
   %h3 Transaction Funding Sources
   %div
