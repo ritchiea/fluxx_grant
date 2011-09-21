@@ -27,12 +27,15 @@
     .pairs
       .key Payee (Organization):
       .value= model.organization_payee.name
+  - if model.payment_type
     .pairs
       .key Payment Type:
       .value= model.payment_type
+  - if model.paid_at
     .pairs
       .key Date Paid:
       .value= model.paid_at.try(:mdy)
+  - if model.payment_confirmation_number
     .pairs
       .key Check/Confirmation Number:
       .value= model.payment_confirmation_number
