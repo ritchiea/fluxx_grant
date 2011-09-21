@@ -23,12 +23,8 @@
       = form_for(@user_session, :url => new_loi_path, :html => { :method => :get}) do |f|
         %p= f.submit "Create an account now"
     - else
-      %p
-        We consider requests for funding on an invitation-only basis.  Please login using the username and password that should have been provided to you.
-      %p
-        After you log in, you may fill out an initial request for funding.  Your request will remain in Draft status and be available for editing until you click on the "Submit" link. Once you submit you will not be able to edit it so please take care when completing the form.  After our internal review, you will be notified if you should submit a full application for funding.
-      %p
-        You can return to this portal to view your grant request as it moves through the process. 
+      = render :partial => "lois/no_loi_information"
+    
       
 = render :partial => "extra_portal"
 
