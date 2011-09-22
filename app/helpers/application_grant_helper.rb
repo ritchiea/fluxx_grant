@@ -1,19 +1,23 @@
 module ApplicationGrantHelper
   def render_grant_id request
+    return '' unless request
     if request.is_grant?
       request.grant_id
     end
   end
 
   def render_request_id request
+    return '' unless request
     request.request_id
   end
 
   def render_grant_or_request_id request
+    return '' unless request
     render_grant_id(request) || render_request_id(request)
   end
 
   def render_text_program_name request, include_fiscal=true
+    return '' unless request
     if request.is_a? FipRequest
       request.fip_title
     else
@@ -28,6 +32,7 @@ module ApplicationGrantHelper
   end
 
   def render_program_name request, include_fiscal=true
+    return '' unless request
     if request.is_a? FipRequest
      raw "<span class=\"minimize-detail-pull\">#{request.fip_title}</span> <br />"
     else
@@ -42,12 +47,14 @@ module ApplicationGrantHelper
   end
 
   def render_grant_amount request, grant_text='Granted'
+    return '' unless request
     if request.is_grant?
       "#{as_currency(request.amount_recommended)} #{grant_text}"
     end
   end
 
   def render_request_amount request, request_text
+    return '' unless request
     if request.amount_requested && request.amount_requested != 0
       "#{request_text} <span class='minimize-detail-pull'>#{as_currency(request.amount_requested)}</span> <br />"
     end
