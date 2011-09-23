@@ -4,7 +4,7 @@
       $('.multiple-select-transfer select[multiple="true"], .multiple-select-transfer select[multiple="multiple"]').selectTransfer();
       $('.datetime input').fluxxDatePicker({ changeMonth: true, changeYear: true });
       $.fn.installFluxxDecorators();
-      $('.notice').delay(5000).fadeOut('slow');
+      $('.notice').delay(10000).fadeOut('slow');
     },
 		installFluxxDecorators: function() {
 		  $.each($.fluxx.decorators, function(key,val) {
