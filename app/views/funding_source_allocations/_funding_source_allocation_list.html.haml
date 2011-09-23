@@ -4,10 +4,10 @@
 - sub_program_id ||= grab_param(:funding_source_allocation, :sub_program_id)
 - initiative_id ||= grab_param(:funding_source_allocation, :initiative_id)
 - sub_initiative_id ||= grab_param(:funding_source_allocation, :sub_initiative_id)
-- programs = Program.find((models.map(&:program_id).compact))
-- sub_programs = SubProgram.find((models.map(&:sub_program_id).compact))
-- initiatives = Initiative.find((models.map(&:initiative_id).compact))
-- sub_initiatives = SubInitiative.find((models.map(&:sub_initiative_id).compact))
+- programs = Program.where(:id => (models.map(&:program_id).compact))
+- sub_programs = SubProgram.where(:id => (models.map(&:sub_program_id).compact))
+- initiatives = Initiative.where(:id => (models.map(&:initiative_id).compact))
+- sub_initiatives = SubInitiative.where(:id => (models.map(&:sub_initiative_id).compact))
 - hierarchy = [{:level => 'program', :models => programs}, {:level => "sub_program", :models => sub_programs}, {:level => "initiative", :models => initiatives}, {:level => "sub_initiative", :models => sub_initiatives}]
 - total_funding = 0
 - unless !models || models.empty?
