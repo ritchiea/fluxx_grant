@@ -41,27 +41,27 @@ class GrantsByFundingSourceReport < ActionController::ReportBase
       end || Time.now
     end
 
-    programs = params[:active_record_base][:program_id]
-    programs = if params[:active_record_base][:program_id]
-      Program.where(:id => params[:active_record_base][:program_id]).all rescue nil
+    programs = active_record_params[:program_id]
+    programs = if active_record_params[:program_id]
+      Program.where(:id => active_record_params[:program_id]).all rescue nil
     end || []
     programs = programs.compact
 
-    sub_programs = params[:active_record_base][:sub_program_id]
-    sub_programs = if params[:active_record_base][:sub_program_id]
-      SubProgram.where(:id => params[:active_record_base][:sub_program_id]).all rescue nil
+    sub_programs = active_record_params[:sub_program_id]
+    sub_programs = if active_record_params[:sub_program_id]
+      SubProgram.where(:id => active_record_params[:sub_program_id]).all rescue nil
     end || []
     sub_programs = sub_programs.compact
 
-    funding_sources = params[:active_record_base][:funding_source_ids]
-    funding_sources = if params[:active_record_base][:funding_source_ids]
-      FundingSource.where(:id => params[:active_record_base][:funding_source_ids]).all rescue nil
+    funding_sources = active_record_params[:funding_source_ids]
+    funding_sources = if active_record_params[:funding_source_ids]
+      FundingSource.where(:id => active_record_params[:funding_source_ids]).all rescue nil
     end || []
     funding_sources = funding_sources.compact
     
-    lead_users = params[:active_record_base][:lead_user_ids]
-    lead_users = if params[:active_record_base][:lead_user_ids]
-      User.where(:id => params[:active_record_base][:lead_user_ids]).all rescue nil
+    lead_users = active_record_params[:lead_user_ids]
+    lead_users = if active_record_params[:lead_user_ids]
+      User.where(:id => active_record_params[:lead_user_ids]).all rescue nil
     end || []
     lead_users = lead_users.compact
     
