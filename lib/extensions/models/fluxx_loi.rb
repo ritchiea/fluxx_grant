@@ -1,5 +1,5 @@
 module FluxxLoi
-  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :applicant, :organization_name, :email, :phone, :project_title, :program_id]
+  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :loi_applicant, :loi_organization_name, :loi_email, :loi_phone, :loi_project_title, :program_id]
   
   def self.included(base)
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
@@ -91,7 +91,13 @@ module FluxxLoi
         indexes "lower(lois.project_title)", :as => :project_title, :sortable => true
 
         # attributes
-        has created_at, updated_at, deleted_at, email, phone
+        has created_at, updated_at, deleted_at
+        
+        has organization_name, :as => :loi_organization_name, :crc => true 
+        has applicant, :as => :loi_applicant, :crc => true 
+        has email, :as => :loi_email, :crc => true 
+        has phone, :as => :loi_phone, :crc => true 
+        has project_title, :as => :loi_project_title, :crc => true 
 
         has favorites.user(:id), :as => :favorite_user_ids
 

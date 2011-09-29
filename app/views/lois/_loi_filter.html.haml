@@ -1,8 +1,9 @@
-= form.input :applicant
-= form.input :organization
-= form.input :email
-= form.input :phone
-= form.input :project_title
+= form.input :loi_applicant
+= form.input :loi_organization_name
+
+= form.input :loi_email
+-# TODO ESH: this doesn't work right now because the phone # is interpreted as a number rather than a string...  Need a better way to identify = form.input :loi_phone
+= form.input :loi_project_title
 = form.input :applicant_linked, :as => :select, :collection => [["Linked", "1"], ["Not Linked", "0"]]
 = form.input :organization_linked, :as => :select, :collection => [["Linked", "1"], ["Not Linked", "0"]]
 = form.input :program_id, :required => false, :as => :select, :collection => Program.load_all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}
