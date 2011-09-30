@@ -161,5 +161,25 @@ module FluxxLoi
         user.update_attribute "primary_user_organization_id", user_org.id
       end
     end
+    
+    def loi_applicant
+      applicant
+    end
+    
+    def loi_organization_name
+      organization_name
+    end   
+    
+    def loi_email
+      email
+    end
+    
+    def loi_phone
+      phone
+    end
+    
+    def loi_project_title
+      project_title
+    end
   end
 end
