@@ -91,7 +91,7 @@ class ProgramInitiativeBudgetReport < ActionController::ReportBase
     # Add page summary
     # worksheet.write(0, 0, 'The Energy Foundation', non_wrap_bold_format)
     worksheet.write(1, 0, 'Detail Summary', non_wrap_bold_format)
-    worksheet.write(2, 0, "Spending Year: " + spending_year)
+    worksheet.write(2, 0, "Spending Year: " + (spending_year ? spending_year : ''))
     worksheet.write(3, 0, "Report Date: " + Time.now.mdy)
 
 
