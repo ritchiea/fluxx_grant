@@ -69,8 +69,8 @@ module ReviewerBaseReport
     # Add page summary
     # worksheet.write(0, 0, 'The Energy Foundation', non_wrap_bold_format)
     worksheet.write(1, 0, 'Reviewer Feedback', non_wrap_bold_format)
-    worksheet.write(2, 0, 'Start Date: ' + start_date.mdy)
-    worksheet.write(3, 0, 'End Date: ' + end_date.mdy)
+    worksheet.write(2, 0, 'Start Date: ' + start_date.mdy) if start_date
+    worksheet.write(3, 0, 'End Date: ' + end_date.mdy) if end_date
     worksheet.write(4, 0, "Report Date: " + Time.now.mdy)
   
     # Adjust column widths

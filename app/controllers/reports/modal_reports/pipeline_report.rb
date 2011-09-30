@@ -42,7 +42,7 @@ class PipelineReport < ActionController::ReportBase
     # Add page summary
     # worksheet.write(0, 0, 'The Energy Foundation', non_wrap_bold_format)
     worksheet.write(1, 0, 'Pipeline report', non_wrap_bold_format)
-    worksheet.write(2, 0, "Date Range: " + start_date.mdy + " - " + end_date.mdy)
+    worksheet.write(2, 0, "Date Range: " + start_date.mdy + " - " + end_date.mdy) if start_date && end_date
     worksheet.write(3, 0, "Report Date: " + Time.now.mdy)
 
     # Put in a black separator line

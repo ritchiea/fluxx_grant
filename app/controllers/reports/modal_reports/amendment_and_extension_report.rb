@@ -46,9 +46,9 @@ class AmendmentAndExtensionReport < ActionController::ReportBase
     query_types << 'GrantRequest' if types.index 'Grants'
     query_types << 'FipRequest' if types.index I18n.t(:fip_name).pluralize
 
-    programs = params[:active_record_base][:program_id]
-    programs = if params[:active_record_base][:program_id]
-      Program.where(:id => params[:active_record_base][:program_id]).all rescue nil
+    programs = active_record_params[:program_id]
+    programs = if active_record_params[:program_id]
+      Program.where(:id => active_record_params[:program_id]).all rescue nil
     end || []
     programs = programs.compact
     
@@ -76,8 +76,8 @@ class AmendmentAndExtensionReport < ActionController::ReportBase
 
     # Add page summary
     worksheet.write(row+=1, 0, 'Amendment & Extension Report', non_wrap_bold_format)
-    worksheet.write(row+=1, 0, 'Start Date: ' + start_date.mdy)
-    worksheet.write(row+=1, 0, 'End Date: ' + end_date.mdy)
+    worksheet.write(row+=1, 0, 'Start Date: ' + start_date.mdy) if start_date
+    worksheet.write(row+=1, 0, 'End Date: ' + end_date.mdy) if end_date
     worksheet.write(row+=1, 0, "Report Date: " + Time.now.mdy)
 
     # Adjust column widths
