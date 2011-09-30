@@ -113,7 +113,10 @@ module FluxxRequest
           block2 = ['Grantee', 'Grantee Street Address', 'Grantee Street Address2', 'Grantee City', 'Grantee State', 'Grantee Country', 'Grantee Postal Code', 'Grantee URL', 'Grantee Tax Status', 'Grantee Tax ID',
             'Fiscal Org', 'Fiscal Street Address', 'Fiscal Street Address2', 'Fiscal City', 'Fiscal State', 'Fiscal Country', 'Fiscal Postal Code', 'Fiscal URL', 'Fiscal Tax Status', 'Fiscal Tax ID',
             'Lead PO/PD', 'Program', 'Sub Program', ['Date Request Received', :date], ['Duration', :integer], 
-            'Constituents', 'Means', 'Type of Org', 'Funding Source', ['Date Created', :date], ['Date Last Updated', :date],
+            'Constituents', 'Means', 'Type of Org', 'Funding Source', 
+            ['Final Proposal Date', :date],
+            ['Final Budget Date', :date],
+            ['Date Created', :date], ['Date Last Updated', :date],
             'Primary Contact First Name', 'Primary Contact Last Name', 'Primary Contact Email',
             'Program Lead First Name', 'Program Lead Last Name', 'Program Lead Contact Email',
             'Signatory First Name', 'Signatory Last Name', 'Signatory Email', "#{I18n.t(:fip_name)} Title",
@@ -170,6 +173,9 @@ module FluxxRequest
            WHERE meg_tax_class.name = 'tax_classes' and meg_tax_class.target_class_name = 'Request' and
            multi_element_group_id = meg_tax_class.id and program_organization.tax_class_id = mev_tax_class.id) org_tax_class,
           replace(group_concat(funding_sources.name, ', '), ', ', '') funding_source_name,
+          requests.ierf_proposed_end_at,
+          requests.ierf_budget_end_at,
+          
           requests.created_at, requests.updated_at, 
           owner_users.first_name, owner_users.last_name, owner_users.email,
           lead_users.first_name, lead_users.last_name, lead_users.email,
