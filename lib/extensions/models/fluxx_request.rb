@@ -47,7 +47,7 @@ module FluxxRequest
   begin FAR_IN_THE_FUTURE.to_i rescue FAR_IN_THE_FUTURE = Time.now + 10.year end
 
   # for liquid_methods info see: https://github.com/tobi/liquid/blob/master/lib/liquid/module_ex.rb
-  LIQUID_METHODS = [:grant_id, :project_summary, :grant_agreement_at, :grant_begins_at, :grant_ends_at, :request_received_at, :fip_projected_end_at, :amount_requested, :amount_recommended, :duration_in_months, :program_lead, :signatory_contact, :signatory_user_org, :signatory_user_org_title, :address_org, :program, :initiative, :sub_program, :request_transactions, :request_reports, :letter_request_reports, :request_evaluation_metrics, :letter_project_summary_without_leading_to, :ierf_proposed_end_at, :ierf_budget_end_at, :program_organization, :fiscal_organization, :grantee_org_owner_with_specific, :letter_project_summary, :signatory_contact_title, :request_funding_sources, :budget_requests, :state_to_english ]  
+  LIQUID_METHODS = [:grant_id, :project_summary, :grant_agreement_at, :grant_begins_at, :grant_ends_at, :request_received_at, :fip_projected_end_at, :amount_requested, :amount_recommended, :duration_in_months, :program_lead, :signatory_contact, :signatory_user_org, :signatory_user_org_title, :address_org, :program, :initiative, :sub_program, :request_transactions, :request_reports, :letter_request_reports, :request_evaluation_metrics, :letter_project_summary_without_leading_to, :first_transaction, :ierf_proposed_end_at, :ierf_budget_end_at, :program_organization, :fiscal_organization, :grantee_org_owner_with_specific, :letter_project_summary, :signatory_contact_title, :request_funding_sources, :budget_requests, :state_to_english, :first_transaction ]  
 
   def self.included(base)
     base.send :include, AASM
@@ -113,7 +113,10 @@ module FluxxRequest
           block2 = ['Grantee', 'Grantee Street Address', 'Grantee Street Address2', 'Grantee City', 'Grantee State', 'Grantee Country', 'Grantee Postal Code', 'Grantee URL', 'Grantee Tax Status', 'Grantee Tax ID',
             'Fiscal Org', 'Fiscal Street Address', 'Fiscal Street Address2', 'Fiscal City', 'Fiscal State', 'Fiscal Country', 'Fiscal Postal Code', 'Fiscal URL', 'Fiscal Tax Status', 'Fiscal Tax ID',
             'Lead PO/PD', 'Program', 'Sub Program', ['Date Request Received', :date], ['Duration', :integer], 
-            'Constituents', 'Means', 'Type of Org', 'Funding Source', ['Date Created', :date], ['Date Last Updated', :date],
+            'Constituents', 'Means', 'Type of Org', 'Funding Source', 
+            ['Final Proposal Date', :date],
+            ['Final Budget Date', :date],
+            ['Date Created', :date], ['Date Last Updated', :date],
             'Primary Contact First Name', 'Primary Contact Last Name', 'Primary Contact Email',
             'Program Lead First Name', 'Program Lead Last Name', 'Program Lead Contact Email',
             'Signatory First Name', 'Signatory Last Name', 'Signatory Email', "#{I18n.t(:fip_name)} Title",
@@ -170,6 +173,9 @@ module FluxxRequest
            WHERE meg_tax_class.name = 'tax_classes' and meg_tax_class.target_class_name = 'Request' and
            multi_element_group_id = meg_tax_class.id and program_organization.tax_class_id = mev_tax_class.id) org_tax_class,
           replace(group_concat(funding_sources.name, ', '), ', ', '') funding_source_name,
+          requests.ierf_proposed_end_at,
+          requests.ierf_budget_end_at,
+          
           requests.created_at, requests.updated_at, 
           owner_users.first_name, owner_users.last_name, owner_users.email,
           lead_users.first_name, lead_users.last_name, lead_users.email,
@@ -975,6 +981,10 @@ module FluxxRequest
     def letter_project_summary_without_leading_to
       request_project_summary = letter_project_summary || ''
       request_project_summary.gsub /^To/i, ''
+    end
+    
+    def first_transaction
+      request_transactions.order(:due_at).first
     end
 
     # Make the delta type 

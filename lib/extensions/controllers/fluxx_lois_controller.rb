@@ -72,7 +72,7 @@ module FluxxLoisController
           draft_state = Request.all_states_with_category("draft").first
           request.state = draft_state if draft_state
 
-          if request.save
+          if request.save(:validate => false)
             attributes_to_set = {}
             request_attributes = request.all_dynamic_attributes
             model.all_dynamic_attributes.each do |k,v|

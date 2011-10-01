@@ -61,7 +61,7 @@
           %td{:nowrap => 1}= (model.sub_initiative ? model.sub_initiative.name : '')
         %td{:nowrap => 1}= model.request_received_at.mdy if model.request_received_at
         %td{:nowrap => 1}= "#{model.duration_in_months} Mo" if model.duration_in_months
-        %td{:nowrap => 1}= model.request_funding_sources.map{|rfs| rfs.funding_source_allocation.funding_source.name}.join(', ');
+        %td{:nowrap => 1}= model.request_funding_sources.map{|rfs| rfs.funding_source_allocation.funding_source.name if rfs.funding_source_allocation && rfs.funding_source_allocation.funding_source}.compact.join(', ');
         %td{:nowrap => 1}= model.created_at.mdy if model.created_at
         %td{:nowrap => 1}= model.updated_at.mdy if model.updated_at
         %td{:nowrap => 1}= model.grantee_org_owner.full_name if model.grantee_org_owner
