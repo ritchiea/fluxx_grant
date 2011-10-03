@@ -25,7 +25,7 @@ module FluxxGrant
       defaults = AdminDefaults.singleton
       begin
         defaults.workflows = [['New Request Workflow', Request.name], ['New Report Workflow', RequestReport.name], ['New Transaction Workflow', RequestTransaction.name]]
-        defaults.alerts = [['New Report Alert', RequestReportsController.name]]
+        defaults.alerts = [['New Report Alert', RequestReportsController.name], ['Requests Alert', GrantRequestsController.name], ['Grants Alert', GrantedRequestsController.name]]
         defaults.roles = [['New Program Role', Program.name]]
         defaults.states = [['New Request State', Request.name], ['New Report State', RequestReport.name], ['New Transaction State', RequestTransaction.name]]
         defaults.attributes = [['New Request Attribute', Request.name], ['New Report Attribute', RequestReport.name], ['New Transaction Attribute', RequestTransaction.name], ['New LOI Attribute', Loi.name]]
