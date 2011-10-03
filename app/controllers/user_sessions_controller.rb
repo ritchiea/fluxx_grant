@@ -9,7 +9,11 @@ class UserSessionsController < ApplicationController
     @user_session = UserSession.new
     respond_to do |format|
       format.html do
-        render(:action => :portal, :layout => "portal")
+        if Fluxx.config(:classic_login_laf) == "1"
+          render :action => 'new.html.haml'
+        else
+          render(:action => :portal, :layout => "portal")
+        end
       end
       format.json do
         render :action => 'new.html.haml'
