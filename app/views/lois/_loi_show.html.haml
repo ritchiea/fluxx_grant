@@ -1,6 +1,6 @@
 %h1= model.project_title
 %hr
-%table
+%table.loi
   %tr
     %td Main Contact:
     %td
@@ -22,14 +22,14 @@
     %td
   %tr
     %td Organization:
-    %th
+    %td
       = model.organization_name
       %br
-      = render :partial => "insta/show/contact_info", :locals => {:location => model, :detailed => false}
+      = render :partial => "insta/show/contact_info_show", :locals => {:location => model, :detailed => false}
       -if model.organization
-        %br
         connected to
         = link_to model.organization.name, model.organization, :class => "new-detail", "data-insert" => "after"
+        %p
     %td
       -if model.organization
         = link_to "Disconnect", loi_path(model, :disconnect_organization => 1, :as_modal => 1), :class => 'as-put', 'data-on-success' => 'refreshCaller', "data-confirm" => "Are you sure you wish to disconnect the organization?"
