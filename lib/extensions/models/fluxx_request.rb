@@ -47,7 +47,7 @@ module FluxxRequest
   begin FAR_IN_THE_FUTURE.to_i rescue FAR_IN_THE_FUTURE = Time.now + 10.year end
 
   # for liquid_methods info see: https://github.com/tobi/liquid/blob/master/lib/liquid/module_ex.rb
-  LIQUID_METHODS = [:grant_id, :project_summary, :grant_agreement_at, :grant_begins_at, :grant_ends_at, :request_received_at, :fip_projected_end_at, :amount_requested, :amount_recommended, :duration_in_months, :program_lead, :signatory_contact, :signatory_user_org, :signatory_user_org_title, :address_org, :program, :initiative, :sub_program, :request_transactions, :request_reports, :letter_request_reports, :request_evaluation_metrics, :letter_project_summary_without_leading_to, :first_transaction, :ierf_proposed_end_at, :ierf_budget_end_at, :program_organization, :fiscal_organization, :grantee_org_owner_with_specific, :letter_project_summary, :signatory_contact_title, :request_funding_sources, :budget_requests, :state_to_english, :first_transaction, :board_authority_year ]  
+  LIQUID_METHODS = [:request_id, :grant_id, :project_summary, :grant_agreement_at, :grant_begins_at, :grant_ends_at, :request_received_at, :fip_projected_end_at, :amount_requested, :amount_recommended, :duration_in_months, :program_lead, :signatory_contact, :signatory_user_org, :signatory_user_org_title, :address_org, :program, :initiative, :sub_program, :request_transactions, :request_reports, :letter_request_reports, :request_evaluation_metrics, :letter_project_summary_without_leading_to, :first_transaction, :ierf_proposed_end_at, :ierf_budget_end_at, :program_organization, :fiscal_organization, :grantee_org_owner_with_specific, :letter_project_summary, :signatory_contact_title, :request_funding_sources, :budget_requests, :state_to_english, :first_transaction, :board_authority_year, :request_received_at_year ]  
 
   def self.included(base)
     base.send :include, AASM
@@ -946,7 +946,7 @@ module FluxxRequest
       end
     end
     
-    # OK, this a big bogus, but we don't have a definitive association between a request and a board authority year; this is really the best we can do
+    # OK, this is a bit bogus, but we don't have a definitive association between a request and a board authority year; this is really the best we can do
     def board_authority_year
       begin
         request_funding_sources.first.funding_source_allocation.funding_source_allocation_authorities.first.authority if request_funding_sources && 
@@ -956,6 +956,10 @@ module FluxxRequest
            request_funding_sources.first.funding_source_allocation.funding_source_allocation_authorities.first 
       rescue Exception => e
       end
+    end
+    
+    def request_received_at_year
+      request_received_at.year if request_received_at
     end
 
     def org_owner_user_ids
