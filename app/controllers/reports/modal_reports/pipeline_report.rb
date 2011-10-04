@@ -68,13 +68,15 @@ class PipelineReport < ActionController::ReportBase
       column = -1
       worksheet.write(row, column+=1, request_map[:entity_name], text_format)
       worksheet.write(row, column+=1, request_map[:amount], amount_format)
-      first_letter = column_letters[column+2]
-      last_letter = column_letters[sub_programs.size + column + 1]
-      worksheet.write(row, column+=1, ("=SUM(" + first_letter + (row+1).to_s + ":" + last_letter + (row+1).to_s + ")"), amount_format)
-      sub_programs.each_with_index do |sub_program, i|
-        cur_amount = program_request_map[sub_program.id][:funding_amount].to_i rescue ''
-        cur_amount = "" if cur_amount == 0
-        worksheet.write(row, column + 1 + i, cur_amount, amount_format)
+      if sub_programs && sub_programs.size > 0
+        first_letter = column_letters[column+2]
+        last_letter = column_letters[sub_programs.size + column + 1]
+        worksheet.write(row, column+=1, ("=SUM(" + first_letter + (row+1).to_s + ":" + last_letter + (row+1).to_s + ")"), amount_format)
+        sub_programs.each_with_index do |sub_program, i|
+          cur_amount = program_request_map[sub_program.id][:funding_amount].to_i rescue ''
+          cur_amount = "" if cur_amount == 0
+          worksheet.write(row, column + 1 + i, cur_amount, amount_format)
+        end
       end
     end
     worksheet.write(row+=1,  0, "Totals")
