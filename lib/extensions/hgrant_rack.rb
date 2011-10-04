@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 module Rack
+  
   class HgrantRack
+    MAX_RECORDS = 100000
+    MIN_RECORDS = 100
     def initialize app
       @app = app
     end
@@ -11,7 +14,10 @@ module Rack
           [200, {"Content-Type" => "text/html"}, ::RenderHgrantsRssResponse.new(requests, env['rack.url_scheme'] + '://' + Utils.unescape(env['HTTP_HOST']), true)]
         end
       elsif env["PATH_INFO"] =~ /^\/hgrantrss/
-        @requests = load_records ''
+        req = Rack::Request.new(env)
+        records_to_return = req.params["max"] || MIN_RECORDS
+        
+        @requests = load_records '', {}, records_to_return
         [200, {"Content-Type" => "application/rss+xml"}, ::RenderHgrantsRssResponse.new(@requests, env['rack.url_scheme'] + '://' + Utils.unescape(env['HTTP_HOST']))]
       end
       
@@ -24,18 +30,18 @@ module Rack
       end
     end
     
-    def load_request_ids sphinx_search, sphinx_conditions={}
-      ::Request.search_for_ids sphinx_search, :with => {:granted => 1, :deleted_at => 0, :filter_type => "GrantRequest".to_crc32, :skip_hgrant_flag => 0}.merge(sphinx_conditions), :limit => 100000, :order => 'id desc'
+    def load_request_ids sphinx_search, sphinx_conditions={}, max_records=MAX_RECORDS
+      ::Request.search_for_ids sphinx_search, :with => {:granted => 1, :deleted_at => 0, :filter_type => "GrantRequest".to_crc32, :skip_hgrant_flag => 0}.merge(sphinx_conditions), :limit => max_records, :order => 'grant_agreement_at desc'
     end
     
-    def load_records sphinx_search, sphinx_conditions={}
+    def load_records sphinx_search, sphinx_conditions={}, max_records=MAX_RECORDS
       ends_at_sql = if Fluxx.config(:dont_use_duration_in_requests) == "1"
         'grant_closed_at'
       else
         'date_add(date_add(grant_begins_at, interval duration_in_months MONTH), interval -1 DAY)'
       end
       
-      @request_ids = load_request_ids sphinx_search, sphinx_conditions
+      @request_ids = load_request_ids sphinx_search, sphinx_conditions, max_records
       # TODO ESH: make a way to take client_id into account
       @requests = GrantRequest.connection.execute(GrantRequest.send(:sanitize_sql, ["select requests.*, 
           #{ends_at_sql} grant_ends_at,
@@ -51,6 +57,7 @@ module Rack
         left outer join geo_states as program_org_country_states on program_org_country_states.id = program_organization.geo_state_id
         left outer join geo_countries as program_org_countries on program_org_countries.id = program_organization.geo_country_id
         WHERE requests.id in (?)
+        order by grant_agreement_at
       ", @request_ids]))
       
     end
