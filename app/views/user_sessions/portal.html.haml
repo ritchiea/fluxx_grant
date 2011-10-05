@@ -1,6 +1,6 @@
 .container.portal-login
   = render :partial => "lois/client_logo"
-  %h1.ac= "Welcome to the #{Fluxx.config(:grantor_name)}'s Grants Portal"
+  = render :partial => "lois/client_banner"
   %div.c60l
     - if @user_session.errors.any?
       %div.error_explanation
