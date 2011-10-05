@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110913223701) do
+ActiveRecord::Schema.define(:version => 20111005232456) do
 
   create_table "alert_emails", :force => true do |t|
     t.string   "mailer_method"
@@ -166,6 +166,7 @@ ActiveRecord::Schema.define(:version => 20110913223701) do
     t.decimal  "amount",                       :precision => 15, :scale => 2
     t.integer  "authority_id"
     t.integer  "funding_source_allocation_id"
+    t.text     "note"
   end
 
   add_index "funding_source_allocation_authorities", ["authority_id"], :name => "fsa_authorities_authority_id"
