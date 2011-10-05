@@ -19,8 +19,16 @@
 .container{"data-src".to_sym => url_for({:table => "requests", :page => @requests.current_page})}
   = render :partial => "grant_request_list", :locals => {:@data => @requests, :@title => "Requests"}
 .container{"data-src".to_sym => url_for({:table => "grants", :page => @grants.current_page})}
-  = render :partial => "grant_request_list", :locals => {:@data => @grants, :@title => "Grants"}                    
-.container{"data-src".to_sym => url_for({:table => "reports", :page => @reports.current_page}), :class => "reports"}
+  = render :partial => "grant_request_list", :locals => {:@data => @grants, :@title => "Grants"}
+
+= semantic_form_for ModelStub.generate_class_instance(RequestReport), :url => "grantee_portal", :html => { :method => :get, :class => "filter-reports"} do |form|
+  - form.object.report_filter = @filter if @filter
+  %table
+    %td{:width => "600"}
+      = form.input :report_filter, :label => 'Show all reports due within the next', :as => :select, :collection => [["30 days", 30], ["6 months", 180], ["1 year", 365], ["Show All", 0]]
+    %td
+      = form.submit :value => "Filter Reports"
+.container{"data-src".to_sym => url_for({:table => "reports", :page => @reports.current_page, "request_report[report_filter]" => @filter}), :class => "reports"}
   = render :partial => "report_list", :locals => {:@data => @reports}
 .container{"data-src".to_sym => url_for({:table => "transactions", :page => @transactions.current_page})}
   = render :partial => "transaction_list", :locals => {:@data => @transactions}

@@ -46,7 +46,15 @@ module FluxxGranteePortalController
         end
 
         if table == :all || table == "reports"
-          @reports = RequestReport.where({:request_id => request_ids, :deleted_at => nil, :report_type => RequestReport.external_report_type_names}).order("created_at desc").paginate :page => settings["pages"]["reports"], :per_page => ITEMS_PER_PAGE
+
+          filter =  params[:request_report] && params[:request_report][:report_filter] ? params[:request_report][:report_filter].to_i : nil
+          if filter && filter > 0
+            @filter = filter
+            @due_before = DateTime.now + filter
+            @reports = RequestReport.where("request_id in (?) AND deleted_at is null and report_type in (?) AND due_at < ? AND state in (?)", request_ids, RequestReport.external_report_type_names, @due_before, "new").order("created_at desc").paginate :page => settings["pages"]["reports"], :per_page => ITEMS_PER_PAGE
+          else
+            @reports = RequestReport.where({:request_id => request_ids, :deleted_at => nil, :report_type => RequestReport.external_report_type_names}).order("created_at desc").paginate :page => settings["pages"]["reports"], :per_page => ITEMS_PER_PAGE
+          end
           template = "_report_list"
         end
 

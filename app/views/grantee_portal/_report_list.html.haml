@@ -1,7 +1,7 @@
 - documentable_class = "RequestReport"
 .titlebar
   %h4
-    Reports
+    = @due_before ? "Reports Due Before #{@due_before.try(:mdy)}" : "Reports"
 .content
   - if @data.length == 0
     %p.caption= "No reports"

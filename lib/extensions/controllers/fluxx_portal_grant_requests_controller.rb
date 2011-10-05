@@ -19,7 +19,14 @@ module FluxxPortalGrantRequestsController
         format.html do |triple|
           controller_dsl, outcome, default_block = triple
           request_ids = @model.id
-          @reports = RequestReport.where(:request_id => request_ids).order("created_at desc")
+          filter =  params[:request_report] && params[:request_report][:report_filter] ? params[:request_report][:report_filter].to_i : nil
+          if filter && filter > 0
+            @filter = filter
+            @due_before = DateTime.now + filter
+            @reports = RequestReport.where("request_id in (?) AND deleted_at is null and report_type in (?) AND due_at < ? AND state in (?)", request_ids, RequestReport.external_report_type_names, @due_before, "new").order("created_at desc")
+          else
+            @reports = RequestReport.where(:request_id => request_ids).order("created_at desc")
+          end
           @transactions = RequestTransaction.where(:request_id => request_ids).order("created_at desc")
           grant_request_show_format_html controller_dsl, outcome, default_block
         end

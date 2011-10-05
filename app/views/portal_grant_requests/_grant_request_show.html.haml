@@ -10,6 +10,13 @@
     = render :partial => "grant_requests/grant_request_show", :locals => {:model => model}
 - if model.granted
   .container
+    = semantic_form_for ModelStub.generate_class_instance(RequestReport), :url => current_show_path(model), :html => { :method => :get, :class => "filter-reports"} do |form|
+      - form.object.report_filter = @filter if @filter
+      %table
+        %td{:width => "600"}
+          = form.input :report_filter, :label => 'Show all reports due within the next', :as => :select, :collection => [["30 days", 30], ["6 months", 180], ["1 year", 365], ["Show All", 0]]
+        %td
+          = form.submit :value => "Filter Reports"
     .reports{"data-src".to_sym => grantee_portal_index_path({:table => "reports", :page => 1})}
       = render :partial => "grantee_portal/report_list", :locals => {:@data => @reports}
 
