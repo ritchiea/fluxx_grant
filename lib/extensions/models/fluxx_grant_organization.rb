@@ -73,6 +73,7 @@ module FluxxGrantOrganization
       define_index :organization_first do
         # fields
         indexes "lower(organizations.name)", :as => :name, :sortable => true
+        indexes :name_foreign_language, :sortable => true
         indexes "lower(organizations.acronym)", :as => :acronym, :sortable => true
         indexes :vendor_number
 
@@ -95,6 +96,7 @@ module FluxxGrantOrganization
 
       define_index :organization_second do
         indexes "lower(organizations.name)", :as => :name, :sortable => true
+        indexes :name_foreign_language, :sortable => true
         indexes "lower(organizations.acronym)", :as => :acronym, :sortable => true
 
         # attributes
@@ -116,6 +118,7 @@ module FluxxGrantOrganization
 
       define_index :organization_third do
         indexes "lower(organizations.name)", :as => :name, :sortable => true
+        indexes :name_foreign_language, :sortable => true
         indexes "lower(organizations.acronym)", :as => :acronym, :sortable => true
 
         # attributes
@@ -137,6 +140,7 @@ module FluxxGrantOrganization
 
       define_index :organization_fourth do
         indexes "lower(organizations.name)", :as => :name, :sortable => true
+        indexes :name_foreign_language, :sortable => true
         indexes "lower(organizations.acronym)", :as => :acronym, :sortable => true
 
         # attributes
