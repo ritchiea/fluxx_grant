@@ -24,8 +24,9 @@
     <p>
   - form.object.retired = allocation.retired if allocation
   = form.input :retired, :as => :boolean, :label => "Retired:"
+  = form.input :note, :label => "Notes", :input_html => {:rows=> 4}
   %div.funding-source-amount-available
     - if model.funding_source
       = "#{number_to_currency(model.funding_source.amount_available || 0)} available"
   
-  = form.commit_button
+  = form.commit_button 'Update Funding Source'
