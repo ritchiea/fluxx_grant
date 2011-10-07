@@ -134,10 +134,16 @@ module FluxxGrantRequest
       new_state = RequestReport.all_new_states.first
       report_style = Fluxx.config(:report_generation_style)
       if report_style == 'simple'
-        request_reports << RequestReport.new(:request => self, :due_at => (grant_begins_at + 3.month).next_business_day, :report_type => RequestReport.final_monitor_type_name, :state => new_state)
-        request_reports << RequestReport.new(:request => self, :due_at => (grant_ends_at + 1.month).next_business_day, :report_type => RequestReport.final_budget_type_name, :state => new_state)
-        request_reports << RequestReport.new(:request => self, :due_at => (grant_ends_at + 1.month).next_business_day, :report_type => RequestReport.final_narrative_type_name, :state => new_state)
-        request_reports << RequestReport.new(:request => self, :due_at => (grant_ends_at + 2.month).next_business_day, :report_type => RequestReport.final_eval_type_name, :state => new_state)
+        
+        request_reports << RequestReport.new(:request => self, :due_at => (grant_begins_at + 10.months).next_business_day, :report_type => RequestReport.interim_budget_type_name, :state => new_state) if Fluxx.config("generate_#{RequestReport.interim_budget_type_name}".to_sym) == '1'
+        request_reports << RequestReport.new(:request => self, :due_at => (grant_begins_at + 10.months).next_business_day, :report_type => RequestReport.interim_narrative_type_name, :state => new_state) if Fluxx.config("generate_#{RequestReport.interim_narrative_type_name}".to_sym) == '1'
+        request_reports << RequestReport.new(:request => self, :due_at => (grant_begins_at + 10.month).next_business_day, :report_type => RequestReport.interim_eval_type_name, :state => new_state) if Fluxx.config("generate_#{RequestReport.interim_eval_type_name}".to_sym) == '1'
+
+        request_reports << RequestReport.new(:request => self, :due_at => (grant_ends_at + 1.month).next_business_day, :report_type => RequestReport.final_budget_type_name, :state => new_state) if Fluxx.config("generate_#{RequestReport.final_budget_type_name}".to_sym) == '1'
+        request_reports << RequestReport.new(:request => self, :due_at => (grant_ends_at + 1.month).next_business_day, :report_type => RequestReport.final_narrative_type_name, :state => new_state) if Fluxx.config("generate_#{RequestReport.final_narrative_type_name}".to_sym) == '1'
+        request_reports << RequestReport.new(:request => self, :due_at => (grant_ends_at + 2.month).next_business_day, :report_type => RequestReport.final_eval_type_name, :state => new_state) if Fluxx.config("generate_#{RequestReport.final_eval_type_name}".to_sym) == '1'
+        request_reports << RequestReport.new(:request => self, :due_at => (grant_begins_at + 3.month).next_business_day, :report_type => RequestReport.final_monitor_type_name, :state => new_state) if Fluxx.config("generate_#{RequestReport.final_monitor_type_name}".to_sym) == '1'
+
       else
         validate_for_grant
         new_grantee = program_organization.grants.select {|grant| grant.id != self.id}.empty?
