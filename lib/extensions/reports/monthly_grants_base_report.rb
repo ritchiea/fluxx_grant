@@ -77,9 +77,11 @@ module MonthlyGrantsBaseReport
         programs << program_id
         plot[:series] << { :label => row["program"]}
       end
-      date = Date.parse(row["date"])
-      end_date = date if !end_date || date > end_date
-      start_date = date if !start_date || date < start_date
+      date = Date.parse(row["date"]) rescue nil
+      if (date)
+        end_date = date if !end_date || date > end_date
+        start_date = date if !start_date || date < start_date
+      end
     end
     filter = params["request"]
     if (!filter)
