@@ -20,6 +20,12 @@ module FluxxFundingSource
     base.class_eval do
       include ModelInstanceMethods
     end
+    
+    base.insta_workflow do |insta|
+      insta.add_state_to_english :new, 'Pending', 'new'
+      insta.add_state_to_english :accepted, 'Accepted', 'accepted'
+    end
+    base.add_aasm
   end
 
   module ModelClassMethods
@@ -27,6 +33,13 @@ module FluxxFundingSource
       FundingSource.where(:retired => 0).order(:name).all
     end
     
+    def add_aasm
+      aasm_column :state
+      aasm_initial_state :new
+
+      aasm_state :new
+      aasm_state :accepted
+    end
   end
 
   module ModelInstanceMethods
