@@ -25,6 +25,7 @@ module FluxxFundingSource
       insta.add_state_to_english :new, 'Pending', 'new'
       insta.add_state_to_english :accepted, 'Accepted', 'accepted'
     end
+    base.send :include, AASM
     base.add_aasm
   end
 
