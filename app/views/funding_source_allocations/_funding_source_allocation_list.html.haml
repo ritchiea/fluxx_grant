@@ -22,6 +22,7 @@
 - if !models || models.empty?
   %p.caption= "There are no funding source allocations."
 - else
+  - global_totals = [0,0,0,0,0]
   - hierarchy.each do |level|
     - level[:models].each do |item|
       %p
@@ -72,3 +73,24 @@
             %td= totals[3].to_currency(:precision => 0)
             %td= totals[4].to_currency(:precision => 0)
       %p
+      - global_totals.size.times {|i| global_totals[i] += totals[i]}
+
+  -# TODO Drew: can you add a class to make this show above the totals table?  Per https://tools.projectfluxx.org/jira/browse/FLX-1903.
+  %table{:cellspacing => 0, :class => 'totals-table'}
+    %thead
+      %tr
+        %th Spending Year Funding
+        %th Allocated
+        %th Pipeline
+        %th Granted
+        %th Paid
+        %th Available
+    %tbody
+      %tr
+        %td Total
+        %td= global_totals[0].to_currency(:precision => 0)
+        %td= global_totals[1].to_currency(:precision => 0)
+        %td= global_totals[2].to_currency(:precision => 0)
+        %td= global_totals[3].to_currency(:precision => 0)
+        %td= global_totals[4].to_currency(:precision => 0)
+            
