@@ -22,8 +22,9 @@ module FluxxFundingSource
     end
     
     base.insta_workflow do |insta|
-      insta.add_state_to_english :new, 'Pending', 'new'
-      insta.add_state_to_english :accepted, 'Accepted', 'accepted'
+      insta.add_state_to_english :new, 'Pending Approval', 'new'
+      insta.add_state_to_english :approved, 'Ready to Spend', 'approved'
+      insta.add_event_to_english :approve, 'Approve'
     end
     base.send :include, AASM
     base.add_aasm
@@ -39,7 +40,11 @@ module FluxxFundingSource
       aasm_initial_state :new
 
       aasm_state :new
-      aasm_state :accepted
+      aasm_state :approved
+
+      aasm_event :approve do
+        transitions :from => :new, :to => :approved
+      end
     end
   end
 

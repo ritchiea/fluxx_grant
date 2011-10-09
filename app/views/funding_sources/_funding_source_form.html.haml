@@ -8,5 +8,5 @@
   = form.input :net_available_to_spend_amount, :label => "Net Available to Spend"
   = form.input :narrative_lead_user_id, :label => "Narrative Lead", :as => :select, :collection => Program.all_program_users.map {|user|[user.full_name, user.id]}
   = form.input :retired, :as => :boolean, :label => "Retired:"
-  = render :partial => 'funding_sources/funding_source_form_extra',  :locals => {:model => model}
+  = render :partial => 'funding_sources/funding_source_form_extra',  :locals => {:model => model, :form => form}
   = form.commit_button
