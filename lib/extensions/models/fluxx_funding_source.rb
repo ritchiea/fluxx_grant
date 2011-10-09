@@ -62,5 +62,9 @@ module FluxxFundingSource
         and deleted_at is null",
           self.id]))
     end
+    
+    def is_approved?
+      self.in_state_with_category? 'approved'
+    end
   end
 end
