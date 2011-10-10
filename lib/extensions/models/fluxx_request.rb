@@ -219,11 +219,18 @@ module FluxxRequest
     
     
     base.insta_search do |insta|
-      insta.filter_fields = SEARCH_ATTRIBUTES + [:group_ids, :greater_amount_recommended, :lesser_amount_recommended, :request_from_date, :request_to_date, :grant_begins_from_date, :grant_begins_to_date, :grant_ends_from_date, :grant_ends_to_date, :missing_request_id, :has_been_rejected, :funding_source_ids, :all_request_program_ids, :request_program_ids, :multi_element_value_ids, :funding_source_allocation_program_id, :funding_source_allocation_sub_program_id, :funding_source_allocation_initiative_id, :funding_source_allocation_sub_initiative_id, :funding_source_allocation_id, :base_request_id]
+      insta.filter_fields = SEARCH_ATTRIBUTES + [:group_ids, :greater_amount_recommended, :lesser_amount_recommended, :request_from_date, :request_to_date, :grant_begins_from_date, :grant_begins_to_date, :grant_ends_from_date, :grant_ends_to_date, :missing_request_id, :has_been_rejected, :funding_source_ids, :all_request_program_ids, :request_program_ids, :multi_element_value_ids, :funding_source_allocation_program_id, :funding_source_allocation_sub_program_id, :funding_source_allocation_initiative_id, :funding_source_allocation_sub_initiative_id, :funding_source_allocation_id, :base_request_id, :ending_within_days]
 
       
 
       insta.derived_filters = {
+          :ending_within_days => (lambda do |search_with_attributes, request_params, name, value|
+              value = value.first if value && value.is_a?(Array)
+              if value.to_s.is_numeric?
+                within_days_date = Time.now + value.to_i.days
+                search_with_attributes[:grant_ends_at] = (Time.now.to_i..within_days_date.to_i)
+              end || {}
+            end),
           :has_been_rejected => (lambda do |search_with_attributes, request_params, name, val|
             if val == '1'
               search_with_attributes.delete :has_been_rejected
@@ -540,7 +547,7 @@ module FluxxRequest
         has "if(granted = 1, (CONCAT(IFNULL(`program_organization_id`, '0'), ',', IFNULL(`fiscal_organization_id`, '0'))), null)", 
           :as => :related_grant_organization_ids, :type => :multi
         has "IF(requests.base_request_id IS NULL, 1, 0)", :as => :missing_request_id, :type => :boolean
-        has "null", :as => :grant_ends_at, :type => :datetime
+        has "date_add(date_add(grant_begins_at, interval duration_in_months MONTH), interval -1 DAY)", :as => :grant_ends_at, :type => :datetime
         has rejected_state_clause, :as => :has_been_rejected, :type => :boolean
 
         has :type, :type => :string, :crc => true, :as => :filter_type
@@ -670,7 +677,7 @@ module FluxxRequest
         has "null", :as => :related_request_organization_ids, :type => :multi
         has "null", :as => :related_grant_organization_ids, :type => :multi
         has "IF(requests.base_request_id IS NULL, 1, 0)", :as => :missing_request_id, :type => :boolean
-        has "null", :as => :grant_ends_at, :type => :datetime
+        has "date_add(date_add(grant_begins_at, interval duration_in_months MONTH), interval -1 DAY)", :as => :grant_ends_at, :type => :datetime
         has rejected_state_clause, :as => :has_been_rejected, :type => :boolean
 
         has :type, :type => :string, :crc => true, :as => :filter_type

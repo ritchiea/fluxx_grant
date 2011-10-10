@@ -9,6 +9,9 @@
 = form.input :lead_user_ids, :label => 'PO/Lead', :required => false, :as => :select, :collection => Program.all_program_users.map {|user|[user.full_name, user.id]}, :input_html => {:class => 'add-another'}
 = form.input :created_by_id, :as => :select, :required => false, :collection => Program.all_program_users.sort_by{|user| user.full_name ? user.full_name.downcase : ''}.map {|user|[user.full_name, user.id]}, :input_html => {:class => 'add-another'}
 = form.input :funding_source_ids, :label => "Funding Source", :as => :select, :required => false, :collection => FundingSource.all.sort_by{|source| source.name || ''}.map {|source|[source.name, source.id]}, :input_html => {:class => 'add-another'}
+
+= form.input :ending_within_days, :label => 'Ending within:', :required => false, :as => :select, :collection => (0..91).step(7).map{|num| [num, num]}, :aft => 'Days'
+
 Amount Recommended:
 = form.input :greater_amount_recommended, :label => 'Greater Than:', :required => false
 = form.input :lesser_amount_recommended, :label => 'Less Than:', :required => false
