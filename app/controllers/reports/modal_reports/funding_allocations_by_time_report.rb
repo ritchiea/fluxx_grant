@@ -58,7 +58,6 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
       #Budgeted
       query = "SELECT SUM(amount) AS amount FROM #{temp_table_name} WHERE retired=0 AND deleted_at IS NULL AND program_id IN (?) AND spending_year IN (?)"
       res = ReportUtility.single_value_query([query, program_ids, years])
-      # TODO DREW: fix the below please. Used to be granted.length, I switched it to total_granted.length so it will execute
       budgeted = Array.new.fill(0, 0, total_granted.length)
       budgeted << res["amount"].to_i
 
