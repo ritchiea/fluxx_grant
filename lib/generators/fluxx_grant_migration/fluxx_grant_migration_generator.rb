@@ -98,6 +98,7 @@ class FluxxGrantMigrationGenerator < Rails::Generators::Base
     handle_migration 'add_state_to_request_amendments_table.rb', 'db/migrate/fluxx_grant_add_state_to_request_amendments_table.rb'
     handle_migration 'add_note_to_request_migrations_table.rb', 'db/migrate/fluxx_grant_add_note_to_request_migrations_table.rb'
     handle_migration 'add_delta_field_to_request_amendments.rb', 'db/migrate/fluxx_grant_add_delta_field_to_request_amendments.rb'
+    handle_migration 'add_created_by_to_request_amendments.rb', 'db/migrate/fluxx_grant_add_created_by_to_request_amendments.rb'
   end
   
   private
