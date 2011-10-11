@@ -95,6 +95,7 @@ class FluxxGrantMigrationGenerator < Rails::Generators::Base
     handle_migration 'add_hgrant_omit_flag.rb', 'db/migrate/fluxx_grant_add_hgrant_omit_flag.rb'
     handle_migration 'add_notes_to_funding_source_allocation_authority.rb', 'db/migrate/fluxx_grant_add_notes_to_funding_source_allocation_authority.rb'
     handle_migration 'add_funding_source_fields_for_ef.rb', 'db/migrate/fluxx_grant_add_funding_source_fields_for_ef.rb'
+    handle_migration 'add_state_to_request_amendments_table.rb', 'db/migrate/fluxx_grant_add_state_to_request_amendments_table.rb'
   end
   
   private
