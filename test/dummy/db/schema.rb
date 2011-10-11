@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111011163404) do
+ActiveRecord::Schema.define(:version => 20111011172618) do
 
   create_table "alert_emails", :force => true do |t|
     t.string   "mailer_method"
@@ -658,6 +658,7 @@ ActiveRecord::Schema.define(:version => 20111011163404) do
     t.integer  "request_id"
     t.string   "request_type"
     t.string   "state"
+    t.text     "note"
   end
 
   create_table "request_evaluation_metrics", :force => true do |t|
