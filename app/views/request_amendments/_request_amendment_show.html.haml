@@ -1,0 +1,28 @@
+%h1
+  = raw render_program_name model.request
+  = raw render_grant_or_request_id model.request
+%h4.subhead= raw render_request_or_grant_amount model.request
+  
+%div.partial
+
+  - unless Fluxx.config(:dont_use_duration_in_requests) == "1"
+    .pairs
+      .key= "New Duration"
+      .value= model.duration
+  
+  
+  - else  
+    .pairs
+      .key= "New Start Date"
+      .value= model.start_date.mdy if model.start_date
+    .pairs
+      .key= "New End Date"
+      .value= model.end_date.mdy if model.end_date
+
+  .pairs
+    .key= "New Amount Recommended"
+    .value= model.amount_recommended.to_currency if model.amount_recommended
+  
+  Note:
+  %p= simple_format(model.note)
+
