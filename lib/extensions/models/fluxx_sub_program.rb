@@ -74,20 +74,32 @@ module FluxxSubProgram
     end
     
       
-    def sub_program_fsa_join_where_clause
-      "#{SUB_PROGRAM_FSA_JOIN_WHERE_CLAUSE} AND #{SUB_PROGRAM_FSA_JOIN_FUNDING_SOURCE_CLAUSE}"
+    def sub_program_fsa_join_where_clause restrict_to_approved=true
+      if restrict_to_approved
+        "#{SUB_PROGRAM_FSA_JOIN_WHERE_CLAUSE} AND #{SUB_PROGRAM_FSA_JOIN_FUNDING_SOURCE_CLAUSE}"
+      else
+        SUB_PROGRAM_FSA_JOIN_WHERE_CLAUSE
+      end
     end
     
     def funding_source_allocations options={}
       spending_year_clause = options[:spending_year] ? " spending_year = #{options[:spending_year]} and " : ''
       retired_clause = options[:show_retired] ? " retired != 1 or retired is null " : ''
-
-      FundingSourceAllocation.find_by_sql(FundingSourceAllocation.send(:sanitize_sql, ["select fsa.*,
+      
+      base_query = "select fsa.*,
         (select count(*) from funding_source_allocation_authorities where funding_source_allocation_id = fsa.id) num_allocation_authorities
         from funding_source_allocations fsa where 
-        #{spending_year_clause}
-        #{sub_program_fsa_join_where_clause}", 
-          self.id, self.id, self.id, FundingSource.approved_states])).select{|fsa| (fsa.num_allocation_authorities.to_i rescue 0) > 0}
+        #{spending_year_clause}"
+      
+      clause = if options[:show_unapproved]
+        [ "#{base_query} #{sub_program_fsa_join_where_clause(false)}", 
+        self.id, self.id, self.id]
+      else
+        [ "#{base_query} #{sub_program_fsa_join_where_clause(true)}", 
+        self.id, self.id, self.id, FundingSource.approved_states]
+      end
+      
+      FundingSourceAllocation.find_by_sql(FundingSourceAllocation.send(:sanitize_sql, clause)).select{|fsa| (fsa.num_allocation_authorities.to_i rescue 0) > 0}
     end
     
     def total_pipeline request_types=nil

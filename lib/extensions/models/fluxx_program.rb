@@ -176,21 +176,32 @@ module FluxxProgram
       user_query.order('last_name asc, first_name asc').group("users.id").compact
     end
     
-    def program_fsa_join_where_clause
-      "#{PROGRAM_FSA_JOIN_WHERE_CLAUSE} AND #{PROGRAM_FSA_JOIN_FUNDING_SOURCE_CLAUSE}"
+    def program_fsa_join_where_clause restrict_to_approved=true
+      if restrict_to_approved
+        "#{PROGRAM_FSA_JOIN_WHERE_CLAUSE} AND #{PROGRAM_FSA_JOIN_FUNDING_SOURCE_CLAUSE}"
+      else
+        PROGRAM_FSA_JOIN_WHERE_CLAUSE
+      end
     end
     
     def funding_source_allocations options={}
       spending_year_clause = options[:spending_year] ? " spending_year = #{options[:spending_year]} and " : ''
       retired_clause = options[:show_retired] ? " retired != 1 or retired is null " : ''
+      base_query = "select fsa.*, 
+        (select count(*) from funding_source_allocation_authorities where funding_source_allocation_id = fsa.id) num_allocation_authorities
+        from funding_source_allocations fsa where 
+        #{spending_year_clause}"
+        
+      # Include the approved states filter by default, but also allow an option to lift the restriction on approved
+      clause = if options[:show_unapproved]
+        [ "#{base_query} #{program_fsa_join_where_clause(false)}", 
+        self.id, self.id, self.id, self.id]
+      else
+        [ "#{base_query} #{program_fsa_join_where_clause(true)}", 
+        self.id, self.id, self.id, self.id, FundingSource.approved_states]
+      end
 
-      FundingSourceAllocation.find_by_sql(FundingSourceAllocation.send(:sanitize_sql, 
-        ["select fsa.*, 
-          (select count(*) from funding_source_allocation_authorities where funding_source_allocation_id = fsa.id) num_allocation_authorities
-          from funding_source_allocations fsa where 
-        #{spending_year_clause} #{program_fsa_join_where_clause}
-          ", 
-        self.id, self.id, self.id, self.id, FundingSource.approved_states])).select{|fsa| (fsa.num_allocation_authorities.to_i rescue 0) > 0}
+      FundingSourceAllocation.find_by_sql(FundingSourceAllocation.send(:sanitize_sql, clause)).select{|fsa| (fsa.num_allocation_authorities.to_i rescue 0) > 0}
     end
     
     def total_pipeline request_types=nil

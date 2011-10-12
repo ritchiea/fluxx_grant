@@ -82,20 +82,32 @@ module FluxxSubInitiative
     end
 
       
-    def sub_initiative_fsa_join_where_clause
-      "#{SUB_INITIATIVE_FSA_JOIN_WHERE_CLAUSE} AND #{SUB_INITIATIVE_FSA_JOIN_FUNDING_SOURCE_CLAUSE}"
+    def sub_initiative_fsa_join_where_clause restrict_to_approved=true
+      if restrict_to_approved
+        "#{SUB_INITIATIVE_FSA_JOIN_WHERE_CLAUSE} AND #{SUB_INITIATIVE_FSA_JOIN_FUNDING_SOURCE_CLAUSE}"
+      else
+        SUB_INITIATIVE_FSA_JOIN_WHERE_CLAUSE
+      end
     end
    
     def funding_source_allocations options={}
       spending_year_clause = options[:spending_year] ? " spending_year = #{options[:spending_year]} and " : ''
       retired_clause = options[:show_retired] ? " retired != 1 or retired is null " : ''
 
-      FundingSourceAllocation.find_by_sql(FundingSourceAllocation.send(:sanitize_sql, ["select fsa.*, 
-            (select count(*) from funding_source_allocation_authorities where funding_source_allocation_id = fsa.id) num_allocation_authorities
+      base_query = "select fsa.*,
+        (select count(*) from funding_source_allocation_authorities where funding_source_allocation_id = fsa.id) num_allocation_authorities
         from funding_source_allocations fsa where 
-            #{spending_year_clause}
-            #{sub_initiative_fsa_join_where_clause}", 
-            self.id, FundingSource.approved_states])).select{|fsa| (fsa.num_allocation_authorities.to_i rescue 0) > 0}
+        #{spending_year_clause}"
+
+      clause = if options[:show_unapproved]
+        [ "#{base_query} #{sub_initiative_fsa_join_where_clause(false)}", 
+        self.id]
+      else
+        [ "#{base_query} #{sub_initiative_fsa_join_where_clause(true)}", 
+        self.id, FundingSource.approved_states]
+      end
+
+      FundingSourceAllocation.find_by_sql(FundingSourceAllocation.send(:sanitize_sql, clause)).select{|fsa| (fsa.num_allocation_authorities.to_i rescue 0) > 0}
     end
 
     def total_pipeline request_types=nil
@@ -106,7 +118,7 @@ module FluxxSubInitiative
       	rfs.request_id = requests.id 
       	#{Request.prepare_request_types_for_where_clause(request_types)}
       	and rfs.funding_source_allocation_id = fsa.id and
-                #{sub_initiative_fsa_join_where_clause}",self.id]))
+                #{sub_initiative_fsa_join_where_clause}",self.id, FundingSource.approved_states]))
       total_amount.fetch_row.first.to_i
     end
 
@@ -116,7 +128,7 @@ module FluxxSubInitiative
           FundingSourceAllocation.send(:sanitize_sql, ["select sum(amount) from funding_source_allocations fsa where 
             #{spending_year_clause}
             #{sub_initiative_fsa_join_where_clause}", 
-            self.id]))
+            self.id, FundingSource.approved_states]))
       total_amount.fetch_row.first.to_i
     end
   end
