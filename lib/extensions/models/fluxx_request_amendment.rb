@@ -7,6 +7,9 @@ module FluxxRequestAmendment
     belongs_to :request, :polymorphic => true
     belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
     belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
+    has_many :notes, :as => :notable, :conditions => {:deleted_at => nil}
+    has_many :workflow_events, :as => :workflowable
+    acts_as_audited({:full_model_enabled => false, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta, :updated_by, :created_by, :audits]})
     
     insta_utc do |insta|
       insta.time_attributes = [:start_date, :end_date]

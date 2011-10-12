@@ -5,6 +5,10 @@
   
 %div.partial
 
+  .pairs
+    .key= "State"
+    .value= model.state_to_english
+
   - unless Fluxx.config(:dont_use_duration_in_requests) == "1"
     .pairs
       .key= "New Duration"
@@ -26,3 +30,5 @@
   Note:
   %p= simple_format(model.note)
 
+= render :partial => "notes/list_notes", :locals => { :model => model, :class_type => Request.name}
+= render :partial => "audits/list_audits", :locals => { :model => model}
