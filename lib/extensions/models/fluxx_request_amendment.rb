@@ -68,6 +68,9 @@ module FluxxRequestAmendment
   end
 
   instance_methods do
-    
+    def is_approved?
+      approved_state = RequestAmendment.all_states_with_category('approved').first
+      state == approved_state if approved_state
+    end
   end
 end
