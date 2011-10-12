@@ -1,0 +1,2 @@
+= form.input :filter_state, :as => :select, :label => "Status", :collection => RequestAmendment.all_states.map{|state|[RequestAmendment.state_to_english_translation(state), state]}, :input_html => {:class => 'add-another'}
+

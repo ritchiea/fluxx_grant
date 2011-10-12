@@ -1,0 +1,13 @@
+%fieldset.inputs
+  %ol
+  
+  - unless Fluxx.config(:dont_use_duration_in_requests) == "1"
+    = form.input :duration, :label => "New Duration:", :as => :select, :collection => 1..36
+  - else  
+    = form.input :start_date, :label => "New Grant Start Date:"
+    = form.input :end_date, :label => "New Grant End Date:"
+  
+  = form.input :amount_recommended
+  = form.input :note
+
+  = form.commit_button

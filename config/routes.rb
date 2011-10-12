@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :request_amendments
+
   resources :lois
 
   resources :budget_requests

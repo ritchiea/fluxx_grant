@@ -1,0 +1,3 @@
+class RequestAmendmentsController < ApplicationController
+  include FluxxRequestAmendmentsController
+end

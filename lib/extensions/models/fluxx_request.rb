@@ -1097,8 +1097,20 @@ module FluxxRequest
       end
     end
     
+    def original_amount_recommended
+      if self.request_amendments && !self.request_amendments.empty?
+        amendments = self.request_amendments.select {|amend| amend.amount_recommended && amend.original?}
+        amendments && !amendments.empty? ? amendments.first.amount_recommended : self.amount_recommended
+      elsif amount_recommended_changed?
+        changed_attributes['amount_recommended']
+      else
+        amount_recommended
+      end
+    end
+    
+    attr_accessor :skip_amendments
     def build_amendment
-      if amend?
+      if amend? && !skip_amendments
         if request_amendments.empty?
           # Create the original amendment
           a = request_amendments.build()
@@ -1124,17 +1136,28 @@ module FluxxRequest
         a[:original] = false
 
         append_amendment_note
+        a[:note] = amend_note
       end
 
       true # stop touching meee!
     end
+    
+    def find_new_amendment
+      amendments = self.request_amendments.select{|amend| !amend.original && amend.new_record?}
+      amendments && amendments.first
+    end
 
     def append_amendment_note
+      p "ESH: 111aaabbb in append_amendment_note in fluxx_request"
       note = []
       note << "Amount amended from #{amount_recommended_was ? amount_recommended_was.to_currency : ''} to #{amount_recommended ? amount_recommended.to_currency : ''}." if amount_recommended_changed?
       note << "Duration amended from #{duration_in_months_was} to #{duration_in_months}." if duration_in_months_changed?
+      note << "Start Date amended from #{grant_begins_at_was ? grant_begins_at_was.mdy : ''} to #{grant_begins_at ? grant_begins_at.mdy : ''}." if grant_begins_at_changed?
+      note << "End Date amended from #{fip_projected_end_at_was ? fip_projected_end_at_was.mdy : ''} to #{fip_projected_end_at ? fip_projected_end_at.mdy : ''}." if fip_projected_end_at_changed?
       note << amend_note unless amend_note.to_s.empty?
-      notes.build(:note => note.join(" "))
+      note_text = note.join(" ")
+      notes.build(:note => note_text, :created_by => self.updated_by, :updated_by => self.updated_by)
+      note_text
     end
     
     # Deal with wonky behavior of secondary request programs

@@ -77,6 +77,7 @@ module ApplicationGrantHelper
     links << "  '#{link_to grant_fip_name, granted_requests_path, :class => 'new-listing indent'}'" unless Fluxx.config(:hide_grants) == "1" || !current_user.has_listview_for_model?(Request)
     links << "  '#{link_to 'Grantee Reports', request_reports_path, :class => 'new-listing indent'}'" unless Fluxx.config(:hide_grantee_reports) == "1" || !current_user.has_listview_for_model?(RequestReport)
     links << "  '#{link_to 'Transactions', request_transactions_path, :class => 'new-listing indent'}'" unless Fluxx.config(:hide_transactions) == "1" || !current_user.has_listview_for_model?(RequestTransaction)
+    links << "  '#{link_to 'Amendments', request_amendments_path, :class => 'new-listing indent'}'" if Fluxx.config(:show_request_amendments_card) == "1" && current_user.has_listview_for_model?(RequestAmendment)
     links << "  '#{link_to 'Budgeting', admin_card_path(:id => 1), :class => 'new-detail indent'}'" unless Fluxx.config(:hide_admin_cards) == "1" || !current_user.has_listview_for_model?(Program)
 
     links << "  '<h3>CRM</h3>'";
