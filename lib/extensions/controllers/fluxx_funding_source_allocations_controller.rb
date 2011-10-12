@@ -28,7 +28,7 @@ module FluxxFundingSourceAllocationsController
           elsif prog_entity.is_a?(FundingSource)
             prog_entity.load_funding_source_allocations(:spending_year => params[:spending_year])
           else
-            prog_entity.funding_source_allocations(:spending_year => params[:spending_year], :deleted_at => nil)
+            prog_entity.funding_source_allocations(:show_unapproved => true, :spending_year => params[:spending_year], :deleted_at => nil)
           end
         else
           []
