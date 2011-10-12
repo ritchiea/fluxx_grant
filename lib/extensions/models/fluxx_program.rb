@@ -5,6 +5,7 @@ module FluxxProgram
   or fsa.sub_program_id in (select id from sub_programs where program_id = ?)
   or fsa.initiative_id in (select initiatives.id from initiatives, sub_programs where sub_program_id = sub_programs.id and sub_programs.program_id = ?)
   or fsa.sub_initiative_id in (select sub_initiatives.id from sub_initiatives, initiatives, sub_programs where initiative_id = initiatives.id and sub_program_id = sub_programs.id and sub_programs.program_id = ?)) and fsa.deleted_at is null"
+  PROGRAM_FSA_JOIN_FUNDING_SOURCE_CLAUSE = "funding_source_id in (select id from funding_sources where state in (?))"
 
   def self.included(base)
     base.acts_as_audited
@@ -176,7 +177,7 @@ module FluxxProgram
     end
     
     def program_fsa_join_where_clause
-      PROGRAM_FSA_JOIN_WHERE_CLAUSE
+      "#{PROGRAM_FSA_JOIN_WHERE_CLAUSE} AND #{PROGRAM_FSA_JOIN_FUNDING_SOURCE_CLAUSE}"
     end
     
     def funding_source_allocations options={}
@@ -189,7 +190,7 @@ module FluxxProgram
           from funding_source_allocations fsa where 
         #{spending_year_clause} #{program_fsa_join_where_clause}
           ", 
-        self.id, self.id, self.id, self.id])).select{|fsa| (fsa.num_allocation_authorities.to_i rescue 0) > 0}
+        self.id, self.id, self.id, self.id, FundingSource.approved_states])).select{|fsa| (fsa.num_allocation_authorities.to_i rescue 0) > 0}
     end
     
     def total_pipeline request_types=nil
@@ -200,7 +201,7 @@ module FluxxProgram
       	rfs.request_id = requests.id 
       	#{Request.prepare_request_types_for_where_clause(request_types)}
       	and rfs.funding_source_allocation_id = fsa.id and
-                #{program_fsa_join_where_clause}",self.id, self.id, self.id, self.id]))
+                #{program_fsa_join_where_clause}",self.id, self.id, self.id, self.id, FundingSource.approved_states]))
       total_amount.fetch_row.first.to_i
     end
     
@@ -210,7 +211,7 @@ module FluxxProgram
           FundingSourceAllocation.send(:sanitize_sql, ["select sum(amount) from funding_source_allocations fsa where 
             #{spending_year_clause}
             #{program_fsa_join_where_clause}", 
-            self.id, self.id, self.id, self.id]))
+            self.id, self.id, self.id, self.id, FundingSource.approved_states]))
       total_amount.fetch_row.first.to_i
     end
     

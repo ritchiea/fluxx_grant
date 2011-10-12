@@ -1,6 +1,7 @@
 module FluxxSubInitiative
   SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, [:program_id, 'sub_programs'], [:sub_program_id, 'initiatives'], :initiative_id, :retired]
   SUB_INITIATIVE_FSA_JOIN_WHERE_CLAUSE = "(fsa.sub_initiative_id = ?) and fsa.deleted_at is null"
+  SUB_INITIATIVE_FSA_JOIN_FUNDING_SOURCE_CLAUSE = "funding_source_id in (select id from funding_sources where state in (?))"
   
   def self.included(base)
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
@@ -82,7 +83,7 @@ module FluxxSubInitiative
 
       
     def sub_initiative_fsa_join_where_clause
-      SUB_INITIATIVE_FSA_JOIN_WHERE_CLAUSE
+      "#{SUB_INITIATIVE_FSA_JOIN_WHERE_CLAUSE} AND #{SUB_INITIATIVE_FSA_JOIN_FUNDING_SOURCE_CLAUSE}"
     end
    
     def funding_source_allocations options={}
@@ -94,7 +95,7 @@ module FluxxSubInitiative
         from funding_source_allocations fsa where 
             #{spending_year_clause}
             #{sub_initiative_fsa_join_where_clause}", 
-            self.id])).select{|fsa| (fsa.num_allocation_authorities.to_i rescue 0) > 0}
+            self.id, FundingSource.approved_states])).select{|fsa| (fsa.num_allocation_authorities.to_i rescue 0) > 0}
     end
 
     def total_pipeline request_types=nil

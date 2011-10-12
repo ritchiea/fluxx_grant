@@ -26,12 +26,12 @@
   - hierarchy.each do |level|
     - level[:models].each do |item|
       -models.each do |funding_source_allocation_model|
-        -next unless funding_source_allocation_model["#{level[:level]}_id"] == item.id
-        -global_totals[0] += (funding_source_allocation_model.amount || 0)
-        -global_totals[1] += (funding_source_allocation_model.amount_granted_in_queue || 0)
-        -global_totals[2] += (funding_source_allocation_model.amount_granted || 0)
-        -global_totals[3] += (funding_source_allocation_model.amount_paid || 0)
-        -global_totals[4] += (funding_source_allocation_model.amount_remaining || 0)
+        -if funding_source_allocation_model["#{level[:level]}_id"] == item.id && funding_source_allocation_model.funding_source.is_approved?
+          -global_totals[0] += (funding_source_allocation_model.amount || 0)
+          -global_totals[1] += (funding_source_allocation_model.amount_granted_in_queue || 0)
+          -global_totals[2] += (funding_source_allocation_model.amount_granted || 0)
+          -global_totals[3] += (funding_source_allocation_model.amount_paid || 0)
+          -global_totals[4] += (funding_source_allocation_model.amount_remaining || 0)
   %table{:cellspacing => 0, :class => 'totals-table', :style => "postion: relative;top: 0px;"}
     %thead
       %tr
@@ -68,7 +68,7 @@
           -models.each do |funding_source_allocation_model|
             -next unless funding_source_allocation_model["#{level[:level]}_id"] == item.id
             - allocation_is_approved = funding_source_allocation_model.funding_source.is_approved?
-            %tr{:class => (!allocation_is_approved ? 'approved' : '')}
+            %tr{:class => (!allocation_is_approved ? 'un_approved' : '')}
               %td
                 = funding_source_allocation_model.funding_source.name if funding_source_allocation_model.funding_source
                 %ul
@@ -78,19 +78,19 @@
                         %span.actions= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png"), funding_source_allocation_authority_path(model), {:class => "as-delete #{model.can_delete? ? '' : 'disabled'}", 'data-on-success' => 'refreshCaller'}
                         = raw "#{model.authority} - #{link_to((model.amount || 0).to_currency(:precision => 0), edit_funding_source_allocation_authority_path(model), :class => 'to-modal', :title => 'Update Funding Source', 'data-on-success' => 'refreshCaller,close')}"
               - allocated = (funding_source_allocation_model.amount || 0)
-              - totals[0] += allocated
+              - totals[0] += allocated if allocation_is_approved
               %td= allocated.to_currency(:precision => 0)
               - pipeline = (funding_source_allocation_model.amount_granted_in_queue || 0)
-              - totals[1] += pipeline
+              - totals[1] += pipeline if allocation_is_approved
               %td= link_to (pipeline.to_currency(:precision => 0)), grant_requests_path, 'data-filter' => "&request[funding_source_allocation_id][]=#{funding_source_allocation_model.id}", :class => 'new-listing', 'data-insert' => 'after', :title => 'Requests'
               - granted = (funding_source_allocation_model.amount_granted || 0)
-              - totals[2] += granted
+              - totals[2] += granted if allocation_is_approved
               %td= link_to (granted.to_currency(:precision => 0)), granted_requests_path, 'data-filter' => "&request[funding_source_allocation_id][]=#{funding_source_allocation_model.id}", :class => 'new-listing', 'data-insert' => 'after', :title => 'Grants'
               - paid = (funding_source_allocation_model.amount_paid || 0)
-              - totals[3] += paid
+              - totals[3] += paid if allocation_is_approved
               %td= link_to (paid.to_currency(:precision => 0)), request_transactions_path, 'data-filter' => "&request_transaction[filter_state][]=paid&request_transaction[funding_source_allocation_id][]=#{funding_source_allocation_model.id}", :class => 'new-listing', 'data-insert' => 'after', :title => 'Transactions'
               - available = (funding_source_allocation_model.amount_remaining || 0)
-              - totals[4] += available
+              - totals[4] += available if allocation_is_approved
               %td= available.to_currency(:precision => 0)
           %tr
             %td Total

@@ -3,6 +3,7 @@ module FluxxInitiative
   LIQUID_METHODS = [:name]
   INITIATIVE_FSA_JOIN_WHERE_CLAUSE = "(fsa.initiative_id = ?
     or fsa.sub_initiative_id in (select sub_initiatives.id from sub_initiatives where initiative_id = ?)) and fsa.deleted_at is null"
+  INITIATIVE_FSA_JOIN_FUNDING_SOURCE_CLAUSE = "funding_source_id in (select id from funding_sources where state in (?))"
     
   def self.included(base)
     base.belongs_to :sub_program
@@ -90,7 +91,7 @@ module FluxxInitiative
 
       
     def initiative_fsa_join_where_clause
-      INITIATIVE_FSA_JOIN_WHERE_CLAUSE
+      "#{INITIATIVE_FSA_JOIN_WHERE_CLAUSE} AND #{INITIATIVE_FSA_JOIN_FUNDING_SOURCE_CLAUSE}"
     end
    
     def funding_source_allocations options={}
@@ -102,7 +103,7 @@ module FluxxInitiative
         from funding_source_allocations fsa where 
         #{spending_year_clause}
         #{initiative_fsa_join_where_clause}",
-          self.id, self.id])).select{|fsa| (fsa.num_allocation_authorities.to_i rescue 0) > 0}
+          self.id, self.id, FundingSource.approved_states])).select{|fsa| (fsa.num_allocation_authorities.to_i rescue 0) > 0}
     end
     
     def total_pipeline request_types=nil
@@ -113,7 +114,7 @@ module FluxxInitiative
       	rfs.request_id = requests.id 
       	#{Request.prepare_request_types_for_where_clause(request_types)}
       	and rfs.funding_source_allocation_id = fsa.id and
-                #{initiative_fsa_join_where_clause}",self.id, self.id]))
+                #{initiative_fsa_join_where_clause}",self.id, self.id, FundingSource.approved_states]))
       total_amount.fetch_row.first.to_i
     end
 
@@ -123,7 +124,7 @@ module FluxxInitiative
           FundingSourceAllocation.send(:sanitize_sql, ["select sum(amount) from funding_source_allocations fsa where 
             #{spending_year_clause}
             #{initiative_fsa_join_where_clause}", 
-            self.id, self.id]))
+            self.id, self.id, FundingSource.approved_states]))
       total_amount.fetch_row.first.to_i
     end
   end

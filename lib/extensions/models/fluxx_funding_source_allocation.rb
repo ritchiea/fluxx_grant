@@ -52,7 +52,9 @@ module FluxxFundingSourceAllocation
     def build_temp_table
       temp_table = self.name.underscore + "_tmp"
       FundingSourceAllocation.connection.execute "DROP TABLE IF EXISTS #{temp_table}"
-      FundingSourceAllocation.connection.execute "create temporary table #{temp_table} 
+      
+      FundingSourceAllocation.connection.execute(
+        FundingSourceAllocation.send(:sanitize_sql, ["create temporary table #{temp_table} 
           select funding_source_allocations.id, 
             if(program_id is not null, program_id, 
               if(sub_program_id is not null, (select program_id from sub_programs where id = sub_program_id),
@@ -65,7 +67,8 @@ module FluxxFundingSourceAllocation
               if(sub_initiative_id is not null, (select initiative_id from sub_initiatives where sub_initiatives.id = sub_initiative_id), null)) initiative_id,
             sub_initiative_id,
            deleted_at, spending_year, retired, amount, funding_source_id
-           from funding_source_allocations"
+           from funding_source_allocations
+           where funding_source_id in (select id from funding_sources where state in (?))", FundingSource.approved_states]))
       retval = yield temp_table
       FundingSourceAllocation.connection.execute("DROP TABLE IF EXISTS #{temp_table}")
       retval

@@ -46,6 +46,10 @@ module FluxxFundingSource
         transitions :from => :new, :to => :approved
       end
     end
+    
+    def approved_states
+      self.all_states_with_category 'approved'
+    end
   end
 
   module ModelInstanceMethods
