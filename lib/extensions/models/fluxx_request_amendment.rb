@@ -76,7 +76,11 @@ module FluxxRequestAmendment
   instance_methods do
     def is_approved?
       approved_state = RequestAmendment.all_states_with_category('approved').first
-      state == approved_state if approved_state
+      state.to_s == approved_state.to_s if approved_state
+    end
+    
+    def is_original?
+      self.original
     end
     
     def related_grants
