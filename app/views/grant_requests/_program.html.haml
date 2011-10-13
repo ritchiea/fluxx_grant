@@ -3,22 +3,20 @@
 - unless Fluxx.config(:hide_program) == "1" || hide_element[:program]
   = form.input :program, :label => labels[:program_label] || I18n.t(:program_name), :as => :select, :collection => Program.load_all_nonrollup.map{|program| [program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child' => ".program-lead-select,.sub-program-select"}
 
--# Can't do the javascript in the portal right now
-- unless current_user.is_portal_user?
-  - unless Fluxx.config(:hide_sub_program) == "1" || hide_element[:sub_program]
-    - sub_programs = []
-    - sub_programs = form.object.program.load_sub_programs if form.object.program
-    = form.input :sub_program, :label => labels[:sub_program_label] || I18n.t(:sub_program_name), :as => :select, :collection => sub_programs.map{|sub_program| [sub_program.name, sub_program.id]}, :input_html => {:class => 'sub-program-select', 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => sub_programs_path(:format => 'autocomplete', :all_results => 1), 'data-related-child' => ".initiative-select"}
+- unless Fluxx.config(:hide_sub_program) == "1" || hide_element[:sub_program]
+  - sub_programs = []
+  - sub_programs = form.object.program.load_sub_programs if form.object.program
+  = form.input :sub_program, :label => labels[:sub_program_label] || I18n.t(:sub_program_name), :as => :select, :collection => sub_programs.map{|sub_program| [sub_program.name, sub_program.id]}, :input_html => {:class => 'sub-program-select', 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => sub_programs_path(:format => 'autocomplete', :all_results => 1), 'data-related-child' => ".initiative-select"}
 
-    - unless Fluxx.config(:hide_initiative) == "1" || hide_element[:initiative]
-      - initiatives = []
-      - initiatives = model.sub_program.load_initiatives if form.object.sub_program
-      = form.input :initiative, :label => labels[:initiative_label] || I18n.t(:initiative_name), :as => :select, :collection => initiatives.map{|initiative| [initiative.name, initiative.id]}, :input_html => {:class => 'initiative-select', 'data-param'.to_sym => 'initiative_id', 'data-src'.to_sym => initiatives_path(:format => 'autocomplete', :all_results => 1), 'data-related-child' => ".sub-initiative-select"}
+  - unless Fluxx.config(:hide_initiative) == "1" || hide_element[:initiative]
+    - initiatives = []
+    - initiatives = model.sub_program.load_initiatives if form.object.sub_program
+    = form.input :initiative, :label => labels[:initiative_label] || I18n.t(:initiative_name), :as => :select, :collection => initiatives.map{|initiative| [initiative.name, initiative.id]}, :input_html => {:class => 'initiative-select', 'data-param'.to_sym => 'initiative_id', 'data-src'.to_sym => initiatives_path(:format => 'autocomplete', :all_results => 1), 'data-related-child' => ".sub-initiative-select"}
 
-      - unless Fluxx.config(:hide_sub_initiative) == "1" || hide_element[:sub_initiative]
-        - sub_initiatives = []
-        - sub_initiatives = model.initiative.load_sub_initiatives if form.object.initiative
-        = form.input :sub_initiative, :label => labels[:sub_initiative_label] || I18n.t(:sub_initiative_name), :as => :select, :collection => sub_initiatives.map{|sub_initiative| [sub_initiative.name, sub_initiative.id]}, :input_html => {:class => 'sub-initiative-select', 'data-param'.to_sym => 'initiative_id', 'data-src'.to_sym => sub_initiatives_path(:format => 'autocomplete', :all_results => 1)}
+    - unless Fluxx.config(:hide_sub_initiative) == "1" || hide_element[:sub_initiative]
+      - sub_initiatives = []
+      - sub_initiatives = model.initiative.load_sub_initiatives if form.object.initiative
+      = form.input :sub_initiative, :label => labels[:sub_initiative_label] || I18n.t(:sub_initiative_name), :as => :select, :collection => sub_initiatives.map{|sub_initiative| [sub_initiative.name, sub_initiative.id]}, :input_html => {:class => 'sub-initiative-select', 'data-param'.to_sym => 'initiative_id', 'data-src'.to_sym => sub_initiatives_path(:format => 'autocomplete', :all_results => 1)}
 
   - program_leads = []
   - program_leads = form.object.program.load_users if form.object.program
