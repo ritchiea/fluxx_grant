@@ -34,6 +34,12 @@ module FluxxRequestAmendment
   end
 
   class_methods do
+    def model_name
+      u = ActiveModel::Name.new RequestAmendment
+      u.instance_variable_set '@human', 'Amendment'
+      u
+    end
+    
     def add_aasm
       aasm_column :state
       aasm_initial_state :approved
