@@ -6,7 +6,7 @@ module FluxxRequestAmendmentsController
   when_included do
     insta_index RequestAmendment do |insta|
       insta.template = 'request_amendment_list'
-      insta.filter_title = "RequestAmendments Filter"
+      insta.filter_title = "Amendments Filter"
       insta.filter_template = 'request_amendments/request_amendment_filter'
       insta.order_clause = 'updated_at desc'
       insta.icon_style = ICON_STYLE
