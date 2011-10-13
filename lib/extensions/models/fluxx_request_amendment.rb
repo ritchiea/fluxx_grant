@@ -4,7 +4,7 @@ module FluxxRequestAmendment
   extend FluxxModuleHelper
 
   when_included do
-    belongs_to :request, :polymorphic => true
+    belongs_to :request
     belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
     belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
     has_many :notes, :as => :notable, :conditions => {:deleted_at => nil}
@@ -76,7 +76,11 @@ module FluxxRequestAmendment
   instance_methods do
     def is_approved?
       approved_state = RequestAmendment.all_states_with_category('approved').first
-      state == approved_state if approved_state
+      state.to_s == approved_state.to_s if approved_state
+    end
+    
+    def is_original?
+      self.original
     end
     
     def related_grants

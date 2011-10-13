@@ -73,13 +73,12 @@ module FluxxLoisController
           request.state = draft_state if draft_state
 
           if request.save(:validate => false)
-            attributes_to_set = {}
             request_attributes = request.all_dynamic_attributes
             model.all_dynamic_attributes.each do |k,v|
-              attributes_to_set[k] = model.dyn_value_for(k) if request_attributes[k]
+              request.send(k, model.send(k)) if request_attributes[k]
             end
-            attributes_to_set[:project_title] = model.project_title if request_attributes[:project_title]
-            request.update_attributes attributes_to_set
+            request.project_title = model.project_title if model.respond_to? :project_title
+            request.save(:validate => false)
             model.update_attribute :request_id, request.id
           else
             flash[:error] = I18n.t(:unable_to_promote) + request.errors.full_messages.to_sentence + '.'

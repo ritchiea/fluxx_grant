@@ -3,8 +3,8 @@
 - else
   %h2= model.request.org_name_text if model.request
 
-%h4= [dollars_format(model.request.granted ? model.request.amount_recommended : model.request.amount_requested), mdy_date_format(model.request.request_received_at), (model.request.program ? model.request.program.name : '')].compact.join(' | ')
-%h4= model.request.grant_or_request_id
+%h4= [dollars_format(model.request && model.request.granted ? model.request.amount_recommended : model.request.amount_requested), mdy_date_format(model.request ? model.request.request_received_at : ''), (model.request && model.request.program ? model.request.program.name : '')].compact.join(' | ')
+%h4= model.request ? model.request.grant_or_request_id : ''
 
 - unless Fluxx.config(:dont_use_duration_in_requests) == "1"
   - if model.duration
