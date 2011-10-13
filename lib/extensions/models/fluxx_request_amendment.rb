@@ -82,5 +82,9 @@ module FluxxRequestAmendment
     def related_grants
       [request]
     end
+    
+    def title
+      "Amendment to #{self.request ? self.request.grant_or_request_id : ''}"
+    end
   end
 end

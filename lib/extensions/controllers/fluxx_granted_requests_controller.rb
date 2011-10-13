@@ -143,6 +143,21 @@ module FluxxGrantedRequestsController
         end
         related.display_template = '/projects/related_project'
       end
+      
+      insta.add_related do |related|
+        related.display_name = 'Amendments'
+        related.show_tab? do |args|
+          controller, model = args
+          controller.current_user.has_view_for_model?(RequestAmendment) && Fluxx.config(:show_request_amendments_card) == "1"
+        end
+        related.add_title_block do |model|
+          model.title if model
+        end
+        related.for_search do |model|
+          model.related_amendments
+        end
+        related.display_template = '/request_amendments/related_amendments'
+      end
     end
 
     base.extend(ModelClassMethods)

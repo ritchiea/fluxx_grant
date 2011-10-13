@@ -56,7 +56,7 @@ module FluxxRequest
     base.belongs_to :fiscal_organization, :class_name => 'Organization', :foreign_key => :fiscal_organization_id
     base.send :attr_accessor, :fiscal_organization_lookup
     base.has_many :request_organizations
-    base.has_many :request_amendments, :as => :request
+    base.has_many :request_amendments
     base.has_many :request_users
     base.has_many :project_requests
     base.has_many :projects, :through => :project_requests, :conditions => {:deleted_at => nil}
@@ -992,6 +992,10 @@ module FluxxRequest
     def related_request_reports limit_amount=50
       # (current_user.is_board_member? ? request_reports.where(:state => "approved") : request_reports).where(:deleted_at => nil).order('due_at asc').limit(limit_amount)
       (request_reports).where(:deleted_at => nil).order('due_at asc').limit(limit_amount)
+    end
+    
+    def related_amendments limit_amount=50
+      (request_amendments).order('id desc').limit(limit_amount)
     end
     
     def letter_project_summary
