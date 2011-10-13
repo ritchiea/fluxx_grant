@@ -30,7 +30,7 @@
           -global_totals[1] += (funding_source_allocation_model.amount_granted_in_queue || 0)
           -global_totals[2] += (funding_source_allocation_model.amount_granted || 0)
           -global_totals[3] += (funding_source_allocation_model.amount_paid || 0)
-          -global_totals[4] += (funding_source_allocation_model.amount_remaining || 0)
+          -global_totals[4] += (funding_source_allocation_model.amount_remaining || 0) - (funding_source_allocation_model.amount_granted_in_queue || 0)
   %table{:cellspacing => 0, :class => 'totals-table', :style => "postion: relative;top: 0px;"}
     %thead
       %tr
