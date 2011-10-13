@@ -6,25 +6,25 @@
 %div.partial
 
   .pairs
-    .key= "State"
+    .key= "State:"
     .value= model.state_to_english
 
   - unless Fluxx.config(:dont_use_duration_in_requests) == "1"
     .pairs
-      .key= "New Duration"
+      .key= "New Duration:"
       .value= model.duration
   
   
   - else  
     .pairs
-      .key= "New Start Date"
+      .key= "New Start Date:"
       .value= model.start_date.mdy if model.start_date
     .pairs
-      .key= "New End Date"
+      .key= "New End Date:"
       .value= model.end_date.mdy if model.end_date
 
   .pairs
-    .key= "New Amount Recommended"
+    .key= "New Amount Recommended:"
     .value= model.amount_recommended.to_currency if model.amount_recommended
   
   Note:

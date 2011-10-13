@@ -1,17 +1,19 @@
-%h2
-  - unless Fluxx.config(:dont_use_duration_in_requests) == "1"
-    = "Duration: #{model.duration}"
-    %br
-  - else
-    = "Start Date #{model.start_date.mdy if model.start_date}"
-    %br
-    = "End Date #{model.end_date.mdy if model.end_date}"
-    %br
-  = "Amount Recommended #{model.amount_recommended.to_currency if model.amount_recommended}"
-%h4
-  = model.request.grant_id if model.request
-  <br />
-  - if model.request && model.request.is_a?(FipRequest)
-    = model.request.fip_title
-  - else
-    = model.request.program_organization.display_name if model.request && model.request.program_organization
+- if model.request.is_a? FipRequest
+  %h2= model.request.fip_title if model.request
+- else
+  %h2= model.request.org_name_text if model.request
+
+%h4= [dollars_format(model.request.granted ? model.request.amount_recommended : model.request.amount_requested), mdy_date_format(model.request.request_received_at), (model.request.program ? model.request.program.name : '')].compact.join(' | ')
+%h4= model.request.grant_or_request_id
+
+- unless Fluxx.config(:dont_use_duration_in_requests) == "1"
+  - if model.duration
+    %p= "New Duration: #{model.duration}"
+- else  
+  - if model.start_date
+    %p= "New Start Date: #{model.start_date.mdy}"
+  - if model.end_date
+    %p= "New End Date: #{model.end_date.mdy}"
+- if model.amount_recommended
+  %p= "New Amount Recommended: #{model.amount_recommended.to_currency}"
+

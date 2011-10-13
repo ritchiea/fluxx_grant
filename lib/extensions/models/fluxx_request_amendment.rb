@@ -1,5 +1,5 @@
 module FluxxRequestAmendment
-  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :duration, :start_date, :end_date, :original, :request_id, :filter_state, :request_type, :amount_recommended]
+  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :duration, :start_date, :end_date, :original, :request_id, :filter_state, :request_type, :amount_recommended, :request_hierarchy, :lead_user_ids]
 
   extend FluxxModuleHelper
 
@@ -65,6 +65,9 @@ module FluxxRequestAmendment
         has "request_amendments.#{state_name}", :type => :string, :crc => true, :as => :filter_state
         has request_type, :type => :string, :crc => true, :as => :request_type
         has "ROUND(request_amendments.amount_recommended)", :as => :amount_recommended, :type => :integer
+        has request.program_lead(:id), :as => :lead_user_ids
+        has FluxxGrantSphinxHelper.request_hierarchy, :type => :multi, :as => :request_hierarchy
+
         set_property :delta => :delayed
       end
     end
@@ -74,6 +77,10 @@ module FluxxRequestAmendment
     def is_approved?
       approved_state = RequestAmendment.all_states_with_category('approved').first
       state == approved_state if approved_state
+    end
+    
+    def related_grants
+      [request]
     end
   end
 end
