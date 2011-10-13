@@ -45,7 +45,7 @@ class BudgetOverviewByYear < ActionController::ReportBase
       paid = ReportUtility.query_map_to_array([query, start_date, stop_date, program_ids], program_ids, "program_id", "amount")
 
       #Budgeted
-      query = "SELECT SUM(tmp.amount) AS amount, tmp.program_id AS program_id FROM #{temp_table_name} tmp WHERE tmp.retired=0 AND tmp.deleted_at IS NULL AND tmp.program_id IN (?) AND tmp.spending_year IN (?) GROUP BY tmp.program_id"
+      query = "SELECT SUM(tmp.amount) AS amount, tmp.program_id AS program_id FROM #{temp_table_name} tmp WHERE tmp.deleted_at IS NULL AND tmp.program_id IN (?) AND tmp.spending_year IN (?) GROUP BY tmp.program_id"
       budgeted = ReportUtility.query_map_to_array([query, program_ids, years], program_ids, "program_id", "amount")
 
       #Pipeline
@@ -144,7 +144,7 @@ class BudgetOverviewByYear < ActionController::ReportBase
             grant = [query, start_date, stop_date, program_ids, 'GrantRequest']
             fip = [query, start_date, stop_date, program_ids, 'FipRequest']
           when "Budgeted"
-            query = "SELECT SUM(tmp.amount) AS amount FROM #{temp_table_name} tmp WHERE tmp.retired=0 AND tmp.deleted_at IS NULL AND tmp.program_id IN (?) AND tmp.spending_year IN (?)"
+            query = "SELECT SUM(tmp.amount) AS amount FROM #{temp_table_name} tmp WHERE tmp.deleted_at IS NULL AND tmp.program_id IN (?) AND tmp.spending_year IN (?)"
             grant = [query, program_ids, years]
             fip = [query, program_ids, years]
           when "Pipeline"

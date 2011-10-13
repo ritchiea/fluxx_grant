@@ -70,7 +70,7 @@ module FundingAllocationsBaseReport
           grant = [query, start_date, stop_date, program_ids, 'GrantRequest']
           fip = [query, start_date, stop_date, program_ids, 'FipRequest']  
         when "Budgeted"
-          query = "SELECT SUM(tmp.amount) AS amount FROM #{temp_table_name} tmp WHERE tmp.retired=0 AND tmp.deleted_at IS NULL AND tmp.program_id IN (?) AND tmp.spending_year IN (?)"
+          query = "SELECT SUM(tmp.amount) AS amount FROM #{temp_table_name} tmp WHERE tmp.deleted_at IS NULL AND tmp.program_id IN (?) AND tmp.spending_year IN (?)"
           grant = [query, program_ids, years]
           fip = [query, program_ids, years]
         when "Pipeline"

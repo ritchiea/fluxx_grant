@@ -4,7 +4,7 @@ module FluxxRequestAmendment
   extend FluxxModuleHelper
 
   when_included do
-    belongs_to :request, :polymorphic => true
+    belongs_to :request
     belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
     belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
     has_many :notes, :as => :notable, :conditions => {:deleted_at => nil}
