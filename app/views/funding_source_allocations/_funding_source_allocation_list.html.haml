@@ -92,7 +92,7 @@
               - paid = (funding_source_allocation_model.amount_paid || 0)
               - totals[3] += paid if allocation_is_approved
               %td= link_to (paid.to_currency(:precision => 0)), request_transactions_path, 'data-filter' => "&request_transaction[filter_state][]=paid&request_transaction[funding_source_allocation_id][]=#{funding_source_allocation_model.id}", :class => 'new-listing', 'data-insert' => 'after', :title => 'Transactions'
-              - available = (funding_source_allocation_model.amount_remaining || 0)
+              - available = (funding_source_allocation_model.amount_remaining || 0) - (pipeline || 0)
               - totals[4] += available if allocation_is_approved
               %td= available.to_currency(:precision => 0)
           %tr
