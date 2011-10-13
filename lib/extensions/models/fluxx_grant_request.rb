@@ -71,11 +71,12 @@ module FluxxGrantRequest
       transaction_style = Fluxx.config(:transaction_generation_style)
       due_state = RequestTransaction.all_states_with_category 'due'
       tentatively_due_state = RequestTransaction.all_states_with_category 'tentatively_due'
+
+      validate_for_grant
       if transaction_style == 'simple'
         request_transactions << RequestTransaction.new(:request => self, :created_by_id => self.updated_by_id, :updated_by_id => self.updated_by_id,  
           :amount_due => amount_recommended, :due_at => grant_agreement_at, :state => due_state)
       else
-        validate_for_grant
         interim_request_document = request_reports.select{|rep| rep.is_interim_type?}.last
         final_request_document = request_reports.select{|rep| rep.is_final_type?}.last
         if self.is_er?
@@ -123,16 +124,21 @@ module FluxxGrantRequest
     end
     
     def validate_for_grant
-      raise I18n.t(:grant_begins_at_field_required) if grant_begins_at.blank?
-      raise I18n.t(:grant_ends_at_field_required) if grant_ends_at.blank?
-      raise I18n.t(:amount_recommended_field_required) if amount_recommended.blank?
-      raise I18n.t(:duration_in_months_field_required) if duration_in_months.blank?
+      errors = []
+      errors << I18n.t(:grant_begins_at_field_required) if grant_begins_at.blank?
+      errors << I18n.t(:grant_ends_at_field_required) if grant_ends_at.blank?
+      errors << I18n.t(:amount_recommended_field_required) if amount_recommended.blank?
+      errors << I18n.t(:duration_in_months_field_required) if duration_in_months.blank?
+      
+      raise errors.join ' ' unless errors.empty?
     end
     
     def generate_grant_reports
       
       new_state = RequestReport.all_new_states.first
       report_style = Fluxx.config(:report_generation_style)
+      validate_for_grant
+
       if report_style == 'simple'
         
         request_reports << RequestReport.new(:request => self, :due_at => (grant_begins_at + 10.months).next_business_day, :report_type => RequestReport.interim_budget_type_name, :state => new_state) if Fluxx.config("generate_#{RequestReport.interim_budget_type_name}".to_sym) == '1'
@@ -145,7 +151,6 @@ module FluxxGrantRequest
         request_reports << RequestReport.new(:request => self, :due_at => (grant_begins_at + 3.month).next_business_day, :report_type => RequestReport.final_monitor_type_name, :state => new_state) if Fluxx.config("generate_#{RequestReport.final_monitor_type_name}".to_sym) == '1'
 
       else
-        validate_for_grant
         new_grantee = program_organization.grants.select {|grant| grant.id != self.id}.empty?
         # Interim Reports
         if duration_in_months > 12

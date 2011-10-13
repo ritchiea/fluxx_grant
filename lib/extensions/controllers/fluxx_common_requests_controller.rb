@@ -97,7 +97,7 @@ module FluxxCommonRequestsController
         rescue Exception => e
           # p "ESH: have an exception=#{e.inspect}, backtrace=#{e.backtrace.inspect}"
           logger.error "Unable to paint the promote screen; have this error=#{e.inspect}, backtrace=#{e.backtrace.inspect}"
-          flash[:error] = I18n.t(:grant_failed_to_promote_with_exception) + e.to_s + '.'
+          flash[:error] = I18n.t(:grant_failed_to_promote_with_exception) + e.to_s
           instance_variable_set "@approve_grant_details_error", true
           redirect_to url_for(actual_local_model)
         end

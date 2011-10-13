@@ -24,6 +24,9 @@
     %td Organization:
     %td
       = model.organization_name
+      -if model.organization_name_foreign_language && !model.organization_name_foreign_language.empty?
+        %br
+        = model.organization_name_foreign_language
       %br
       = render :partial => "insta/show/contact_info_show", :locals => {:location => model, :detailed => false}
       -if model.organization

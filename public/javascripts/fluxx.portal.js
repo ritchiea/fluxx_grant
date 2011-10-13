@@ -215,6 +215,56 @@
                 }
               });
             }
+          ],
+          '[data-related-child]': [
+            'change', function (e) {
+              var updateChild = function ($child, parentId, relatedChildParam) {
+                // Prevent stacking updates
+                $child.data('updating', true);
+                var relatedChildParam = relatedChildParam ? relatedChildParam : $child.attr('data-param');
+                var query = {};
+                if ($child.attr('data-require-parent-id') && !parentId)
+                  return;
+                if ($child.attr('data-param-list')) {
+                  _.each($child.attr('data-param-list').split(','), function(field) {
+                    var names = field.split('=');
+                    if (names.length != 2)
+                      return;
+                    query[names[0]] = $(names[1]).val();
+                  });
+                } else {
+                  query[relatedChildParam] = parentId;
+                }
+                $.getJSON($child.attr('data-src'), query, function(data, status) {
+                  var oldVal = $child.val();
+                  if ($child.attr('data-required')) {
+                    $child.empty();
+                  } else {
+                    $child.html('<option></option>');
+                  }
+                  $.each(data, function(){
+                    $('<option></option>').val(this.value).html(this.label).appendTo($child)
+                  });
+                  $child.val(oldVal).trigger('options.updated').change();
+                });
+              };
+
+              var updateChildren = function($children, parentId, relatedChildParam) {
+                $children.each(function(){
+                  updateChild($(this), parentId, relatedChildParam);
+                });
+              }
+              var $parent   = $(this),
+                  $children = $($parent.attr('data-related-child'), $parent.parents('form').eq(0));
+              if ($parent.attr('data-sibling')) {
+                $('[data-sibling="'+ $parent.attr('data-sibling') +'"]', $parent.parent()).not($parent)
+                  .one('change', function(){
+                    updateChildren($children, $(this).val(), $parent.attr('data-related-child-param'));
+                  });
+              } else {
+                updateChildren($children, $parent.val(), $parent.attr('data-related-child-param'));
+              }
+            }
           ]
 		    }
 	    }
