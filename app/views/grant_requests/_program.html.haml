@@ -11,7 +11,7 @@
   - unless Fluxx.config(:hide_initiative) == "1" || hide_element[:initiative]
     - initiatives = []
     - initiatives = model.sub_program.load_initiatives if form.object.sub_program
-    = form.input :initiative, :label => labels[:initiative_label] || I18n.t(:initiative_name), :as => :select, :collection => initiatives.map{|initiative| [initiative.name, initiative.id]}, :input_html => {:class => 'initiative-select', 'data-param'.to_sym => 'initiative_id', 'data-src'.to_sym => initiatives_path(:format => 'autocomplete', :all_results => 1), 'data-related-child' => ".sub-initiative-select"}
+    = form.input :initiative, :label => labels[:initiative_label] || I18n.t(:initiative_name), :as => :select, :collection => initiatives.map{|initiative| [initiative.name, initiative.id]}, :input_html => {:class => 'initiative-select', 'data-param'.to_sym => 'sub_program_id', 'data-src'.to_sym => initiatives_path(:format => 'autocomplete', :all_results => 1), 'data-related-child' => ".sub-initiative-select"}
 
     - unless Fluxx.config(:hide_sub_initiative) == "1" || hide_element[:sub_initiative]
       - sub_initiatives = []
