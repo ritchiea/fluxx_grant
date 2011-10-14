@@ -92,4 +92,15 @@ class RequestReportTest < ActiveSupport::TestCase
     assert rep.approved_at
   end
   
+  test "multiple monitor report" do
+    request = GrantRequest.make
+    report = RequestReport.new :report_type => "#{RequestReport.final_monitor_type_name}_5", :due_at => Time.now, :request_id => request.id
+    a = report.multiyear_type_years
+    
+    assert_difference('RequestReport.count', 5) do
+      report.save
+    end
+    
+    p "ESH: have a #{RequestReport.all.inspect}"
+  end
 end

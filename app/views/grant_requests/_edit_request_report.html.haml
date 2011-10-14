@@ -4,5 +4,9 @@
   - if req_report.object.state.blank?
     - req_report.object.state = RequestReport.all_new_states.first
   =req_report.input :state, :as => :hidden
-  =req_report.input :report_type, :label => "Report Type", :as => :select, :collection => RequestReport.report_doc_types.map{|doc_type| [RequestReport.type_to_english_translation(doc_type), doc_type]},  :aft => ('<a href="#" class="delete-parent" data-parent=".form-row" data-hidden-destroy=".hidden-destroy" data-hidden-id=".hidden-id"><img src="/images/fluxx_engine/theme/default/icons/delete.png"/></a>')
+  - report_types = if req_report.object.new_record?
+    - RequestReport.new_report_doc_types
+  - else
+    - RequestReport.report_doc_types
+  =req_report.input :report_type, :label => "Report Type", :as => :select, :collection => report_types.map{|doc_type| [RequestReport.type_to_english_translation(doc_type), doc_type]},  :aft => ('<a href="#" class="delete-parent" data-parent=".form-row" data-hidden-destroy=".hidden-destroy" data-hidden-id=".hidden-id"><img src="/images/fluxx_engine/theme/default/icons/delete.png"/></a>')
   =req_report.input :due_at, :label => "Due", :id => nil

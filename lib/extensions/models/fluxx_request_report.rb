@@ -16,6 +16,7 @@ module FluxxRequestReport
     base.has_many :notes, :as => :notable, :conditions => {:deleted_at => nil}
     base.has_many :group_members, :as => :groupable
     base.has_many :groups, :through => :group_members
+    base.after_create :handle_multiple_reports
 
     base.acts_as_audited({:full_model_enabled => false, :except => [:created_by_id, :modified_by_id, :locked_until, :locked_by_id, :delta, :updated_by, :created_by, :audits]})
 
@@ -299,22 +300,43 @@ module FluxxRequestReport
       [final_budget_type_name, final_narrative_type_name, interim_budget_type_name, interim_narrative_type_name]
     end
 
+    def new_report_doc_types
+      doc_types = report_doc_types - [final_monitor_type_name, interim_monitor_type_name]
+      monitoring_years = [1, 5, 10, 20]
+      
+      # Include a time range of monitoring reports
+      monitoring_years.each{|i| doc_types << "#{final_monitor_type_name}_#{i}"}
+      monitoring_years.each{|i| doc_types << "#{interim_monitor_type_name}_#{i}"}
+      doc_types
+    end
+
     def report_doc_types
       [interim_budget_type_name, interim_narrative_type_name, final_budget_type_name, final_narrative_type_name, final_eval_type_name, interim_eval_type_name, final_monitor_type_name, interim_monitor_type_name]
     end
     
     def type_to_english_translation report_type
       case report_type
-        when RequestReport.final_monitor_type_name then 'Monitor'
         when RequestReport.final_eval_type_name then 'Final Eval'
         when RequestReport.interim_eval_type_name then 'Interim Eval'
         when RequestReport.final_budget_type_name then 'Final Financial'
         when RequestReport.final_narrative_type_name then 'Final Narrative'
         when RequestReport.interim_budget_type_name then 'Interim Financial'
         when RequestReport.interim_narrative_type_name then 'Interim Narrative'
+        when RequestReport.final_monitor_type_name then 'Monitor'
         when RequestReport.interim_monitor_type_name then I18n.t(:interim_monitor_name)
         else
-          report_type.to_s
+          report_type_name, num_years = multiyear_type_years_translation(report_type)
+          if report_type_name && num_years
+            "#{RequestReport.type_to_english_translation(report_type_name)} - #{num_years} Years"
+          else
+            report_type.to_s
+          end
+      end
+    end
+    
+    def multiyear_type_years_translation report_type
+      if report_type =~ /(.*)_(\d*)$/
+        [$1, ($2).to_i]
       end
     end
     
@@ -513,9 +535,33 @@ module FluxxRequestReport
         end
       end
     end
+    
+    def multiyear_type_years
+      RequestReport.multiyear_type_years_translation self.report_type
+    end
 
     def relates_to_user? user
       (user.primary_organization.id == self.request.program_organization_id) || (user.primary_organization.id == self.request.fiscal_organization_id)
+    end
+    
+    # If you choose a monitoring report that matches the format of: report_name_20, you will generate 19 additional reports.  options are 1, 5, 10, 20
+    def handle_multiple_reports
+      report_type_name, num_years = multiyear_type_years
+      
+      # Creating the other reports will cause another invocation of handle_multiple_reports, we do NOT want it to enter this loop again, as it could lead to an infinite loop
+      # So putting in extra checks to ensure this doesn't happen
+      if report_type_name && num_years && self.report_type != report_type_name && !(RequestReport.multiyear_type_years_translation(report_type_name))
+        # 1. Switch the type of this report to be `report_type_name`
+        self.report_type = report_type_name
+        self.save
+      
+        # 2. Figure out how many reports need to be generated and what dates
+        (1..(num_years-1)).each do |year_offset|
+          new_report = self.clone
+          new_report.due_at = self.due_at + year_offset.year
+          new_report.save
+        end
+      end
     end
   end
 end
