@@ -93,19 +93,7 @@
     .key Amount Recommended:
     .value
       = render :partial => "grant_requests/grant_request_amount_recommended", :locals => { :model => model }
-  - if model.is_grant?
-    -paid = model.amount_funded || 0
-    -pending = model.amount_pending || 0
-    .pairs
-      .key Amount Paid to Date:
-      .value= number_to_currency(paid, :precision => 2) if model.amount_funded
-    .pairs
-      .key Pending Payment:
-      .value=  number_to_currency(pending, :precision => 2) if model.amount_pending
-    - if model.is_a?(FipRequest)
-      .pairs
-        .key Available To Spend:
-        .value= number_to_currency((model.amount_recommended || 0) - ((paid || 0) + (pending || 0)), :precision => 2)
+  = render :partial => "grant_requests/amount_paid_to_date", :locals => { :model => model }
 
 
 = render :partial => "request_funding_sources/list_request_funding_sources", :locals => { :model => model}

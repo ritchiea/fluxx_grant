@@ -1,0 +1,13 @@
+- if model.is_grant? && !current_user.is_portal_user?
+  -paid = model.amount_funded || 0
+  -pending = model.amount_pending || 0
+  .pairs
+    .key Amount Paid to Date:
+    .value= number_to_currency(paid, :precision => 2) if model.amount_funded
+  .pairs
+    .key Pending Payment:
+    .value=  number_to_currency(pending, :precision => 2) if model.amount_pending
+  - if model.is_a?(FipRequest)
+    .pairs
+      .key Available To Spend:
+      .value= number_to_currency((model.amount_recommended || 0) - ((paid || 0) + (pending || 0)), :precision => 2)
