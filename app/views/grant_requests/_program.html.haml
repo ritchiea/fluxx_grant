@@ -18,6 +18,7 @@
       - sub_initiatives = model.initiative.load_sub_initiatives if form.object.initiative
       = form.input :sub_initiative, :label => labels[:sub_initiative_label] || I18n.t(:sub_initiative_name), :as => :select, :collection => sub_initiatives.map{|sub_initiative| [sub_initiative.name, sub_initiative.id]}, :input_html => {:class => 'sub-initiative-select', 'data-param'.to_sym => 'initiative_id', 'data-src'.to_sym => sub_initiatives_path(:format => 'autocomplete', :all_results => 1)}
 
+- unless current_user.is_portal_user?
   - program_leads = []
   - program_leads = form.object.program.load_users if form.object.program
   - employee_user_profile = UserProfile.employee_profile
