@@ -101,6 +101,7 @@ class FluxxGrantMigrationGenerator < Rails::Generators::Base
     handle_migration 'add_created_by_to_request_amendments.rb', 'db/migrate/fluxx_grant_add_created_by_to_request_amendments.rb'
     handle_migration 'add_program_listview_perms_for_grantee.rb', 'db/migrate/fluxx_grant_add_program_listview_perms_for_grantee.rb'
     handle_migration 'make_a_default_state_for_funding_sources.rb', 'db/migrate/fluxx_grant_make_a_default_state_for_funding_sources.rb'
+    handle_migration 'update_state_of_funding_sources.rb', 'db/migrate/fluxx_grant_update_state_of_funding_sources.rb'
   end
   
   private
