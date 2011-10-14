@@ -48,7 +48,7 @@ module FluxxFundingSource
     end
     
     def approved_states
-      self.all_states_with_category 'approved'
+      'approved'
     end
   end
 
@@ -68,7 +68,7 @@ module FluxxFundingSource
     end
     
     def is_approved?
-      self.in_state_with_category? 'approved'
+      true
     end
   end
 end

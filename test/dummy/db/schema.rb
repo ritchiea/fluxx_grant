@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111011230149) do
+ActiveRecord::Schema.define(:version => 20111014054446) do
 
   create_table "alert_emails", :force => true do |t|
     t.string   "mailer_method"
@@ -209,11 +209,11 @@ ActiveRecord::Schema.define(:version => 20111011230149) do
     t.decimal  "amount",                        :precision => 15, :scale => 2
     t.datetime "start_at"
     t.datetime "end_at"
-    t.boolean  "retired",                                                      :default => false, :null => false
+    t.boolean  "retired",                                                      :default => false,      :null => false
     t.decimal  "overhead_amount",               :precision => 15, :scale => 2
     t.decimal  "net_available_to_spend_amount", :precision => 15, :scale => 2
     t.integer  "narrative_lead_user_id"
-    t.string   "state"
+    t.string   "state",                                                        :default => "approved", :null => false
   end
 
   create_table "geo_cities", :force => true do |t|
