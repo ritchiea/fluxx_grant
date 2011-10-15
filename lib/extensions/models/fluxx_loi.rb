@@ -41,6 +41,8 @@ module FluxxLoi
       insta.remove_methods [:id]
     end
 
+    base.insta_formbuilder
+
     base.insta_favorite
     base.insta_utc do |insta|
       insta.time_attributes = [] 

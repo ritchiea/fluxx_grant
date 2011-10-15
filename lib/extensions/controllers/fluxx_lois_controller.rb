@@ -106,17 +106,11 @@ module FluxxLoisController
     end
     
     base.insta_new Loi do |insta|
-      insta.view = 'lois/new'
+      insta.layout = "portal"
       insta.icon_style = ICON_STYLE
+      insta.template = 'lois/loi_new'
       insta.pre_create_model = false
       insta.skip_permission_check = true
-      insta.format do |format|
-        format.html do |triple|
-          controller_dsl, outcome, default_block = triple
-          response.headers['fluxx_template'] = 'loi'
-          render :layout => "portal"
-        end
-      end
     end
 
     base.insta_post GrantRequest do |insta|
