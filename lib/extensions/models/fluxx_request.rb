@@ -503,6 +503,18 @@ module FluxxRequest
       end
     end
     
+    def rejected_state_clause state_name
+      result = if self.respond_to? :sphinx_rejected_state_clause
+        self.sphinx_rejected_state_clause
+      else
+        if defined? MachineState
+          Request.send :sanitize_sql, ["IF(lower(requests.#{state_name}) in (select name from machine_states where machine_states.client_id = requests.client_id and state_type = ? and model_type in (?)), 1, 0)", MachineState.rejected_state_type_name, Request.descendant_base_classes.map(&:name)]
+        else
+          "IF(lower(requests.#{state_name}) = 'rejected', 1, 0)"
+        end
+      end
+    end
+    
     def add_sphinx
       
       # Allow the overriding of the state name and rewriting of the rejected clause
@@ -512,11 +524,6 @@ module FluxxRequest
         'state'
       end
       
-      rejected_state_clause = if self.respond_to? :sphinx_rejected_state_clause
-        self.sphinx_rejected_state_clause
-      else
-        "IF(lower(requests.#{state_name}) = 'rejected', 1, 0)"
-      end
       
       # Note!!!: across multiple indices, the structure must be the same or the index can get corrupted and attributes, search filter will not work properly
       define_index :request_first do
@@ -548,7 +555,7 @@ module FluxxRequest
           :as => :related_grant_organization_ids, :type => :multi
         has "IF(requests.base_request_id IS NULL, 1, 0)", :as => :missing_request_id, :type => :boolean
         has "date_add(date_add(grant_begins_at, interval duration_in_months MONTH), interval -1 DAY)", :as => :grant_ends_at, :type => :datetime
-        has rejected_state_clause, :as => :has_been_rejected, :type => :boolean
+        has Request.rejected_state_clause(state_name), :as => :has_been_rejected, :type => :boolean
 
         has :type, :type => :string, :crc => true, :as => :filter_type
         has :base_request_id, :type => :string, :crc => true, :as => :base_request_id
@@ -609,7 +616,7 @@ module FluxxRequest
         has "null", :as => :related_grant_organization_ids, :type => :multi
         has "IF(requests.base_request_id IS NULL, 1, 0)", :as => :missing_request_id, :type => :boolean
         has "date_add(date_add(grant_begins_at, interval duration_in_months MONTH), interval -1 DAY)", :as => :grant_ends_at, :type => :datetime
-        has rejected_state_clause, :as => :has_been_rejected, :type => :boolean
+        has Request.rejected_state_clause(state_name), :as => :has_been_rejected, :type => :boolean
 
         has :type, :type => :string, :crc => true, :as => :filter_type
         has :base_request_id, :type => :string, :crc => true, :as => :base_request_id
@@ -678,7 +685,7 @@ module FluxxRequest
         has "null", :as => :related_grant_organization_ids, :type => :multi
         has "IF(requests.base_request_id IS NULL, 1, 0)", :as => :missing_request_id, :type => :boolean
         has "date_add(date_add(grant_begins_at, interval duration_in_months MONTH), interval -1 DAY)", :as => :grant_ends_at, :type => :datetime
-        has rejected_state_clause, :as => :has_been_rejected, :type => :boolean
+        has Request.rejected_state_clause(state_name), :as => :has_been_rejected, :type => :boolean
 
         has :type, :type => :string, :crc => true, :as => :filter_type
         has :base_request_id, :type => :string, :crc => true, :as => :base_request_id
