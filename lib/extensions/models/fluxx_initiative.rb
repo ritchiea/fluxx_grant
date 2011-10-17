@@ -7,6 +7,7 @@ module FluxxInitiative
     
   def self.included(base)
     base.belongs_to :sub_program
+    base.has_many :notes, :as => :notable, :conditions => {:deleted_at => nil}
     base.acts_as_audited
 
     base.validates_presence_of     :sub_program

@@ -6,6 +6,7 @@ module FluxxFundingSource
     base.has_many :funding_source_allocations, :conditions => {:deleted_at => nil}
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
     base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
+    base.has_many :notes, :as => :notable, :conditions => {:deleted_at => nil}
     base.acts_as_audited
 
     base.insta_search

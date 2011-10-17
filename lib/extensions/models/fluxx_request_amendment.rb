@@ -32,6 +32,10 @@ module FluxxRequestAmendment
     insta_realtime do |insta|
       insta.delta_attributes = SEARCH_ATTRIBUTES
       insta.updated_by_field = :updated_by_id
+      insta.suppress_when = (lambda do |model|
+        # Don't generate an RTU for records that are nil or original
+        !model || model.original?
+      end)
     end
     
     send :include, AASM
@@ -109,6 +113,10 @@ module FluxxRequestAmendment
     
     def filter_state
       request ? request.state : nil
+    end
+    
+    def lead_user_ids
+      (request && request.program_lead) ? request.program_lead.id : nil
     end
     
   end

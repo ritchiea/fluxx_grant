@@ -1,8 +1,8 @@
 - if model.request_amendments.select{|ra| ra.amount_recommended && (ra.is_approved? || ra.is_original?) }.empty?
-  = as_currency(model.amount_recommended)
+  = "#{as_currency(model.amount_recommended)} (Original)"
 - else
   - model.request_amendments.select{|ra| ra.is_approved? || ra.is_original?}.reverse.each do |amend|
     - if amend.amount_recommended
       %div
         = as_currency(amend.amount_recommended)
-        = "(#{amend.original? ? "Original" : "Amended #{amend.created_at.mdy}"})" if amend.created_at
+        = "(#{amend.original? ? "Original" : "Amended #{amend.created_at.mdy if amend.created_at}"})"

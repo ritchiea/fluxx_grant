@@ -16,6 +16,7 @@ module FluxxProgram
 
     base.belongs_to :parent_program, :class_name => 'Program', :foreign_key => :parent_id
     base.has_many :children_programs, :class_name => 'Program', :foreign_key => :parent_id
+    base.has_many :notes, :as => :notable, :conditions => {:deleted_at => nil}
     base.send :attr_accessor, :not_retired
     
     base.insta_search do |insta|

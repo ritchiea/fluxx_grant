@@ -5,6 +5,7 @@ module FluxxRequestAmendmentsController
 
   when_included do
     insta_index RequestAmendment do |insta|
+      insta.search_conditions = {:original => 0}
       insta.template = 'request_amendment_list'
       insta.filter_title = "Amendments Filter"
       insta.filter_template = 'request_amendments/request_amendment_filter'
