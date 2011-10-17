@@ -28,6 +28,12 @@ module FluxxRequestAmendment
       insta.add_state_to_english :approved, 'Approved', 'approved'
       insta.add_event_to_english :approve, 'Approve'
     end
+    
+    insta_realtime do |insta|
+      insta.delta_attributes = SEARCH_ATTRIBUTES
+      insta.updated_by_field = :updated_by_id
+    end
+    
     send :include, AASM
     add_aasm
     add_sphinx if respond_to?(:sphinx_indexes) && !(connection.adapter_name =~ /SQLite/i)
@@ -96,5 +102,14 @@ module FluxxRequestAmendment
     def title
       "Amendment to #{self.request ? self.request.grant_or_request_id : ''}"
     end
+    
+    def request_hierarchy
+      "#{request ? request.program_id : ''}-#{request ? request.sub_program_id : ''}-#{request ? request.initiative_id : ''}-#{request ? request.sub_initiative_id : ''}"
+    end
+    
+    def filter_state
+      request ? request.state : nil
+    end
+    
   end
 end
