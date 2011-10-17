@@ -12,7 +12,7 @@
 
 = form.input :ending_within_days, :label => 'Ending within:', :required => false, :as => :select, :collection => (0..91).step(7).map{|num| [num, num]}, :aft => 'Days'
 
-Amount Recommended:
+Amount Funded:
 = form.input :greater_amount_recommended, :label => 'Greater Than:', :required => false
 = form.input :lesser_amount_recommended, :label => 'Less Than:', :required => false
 %span

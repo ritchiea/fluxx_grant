@@ -9,5 +9,5 @@
     - if model.end_date
       %br= "New End Date: #{model.end_date.mdy}"
   - if model.amount_recommended
-    %br= "New Amount Recommended: #{model.amount_recommended.to_currency}"
+    %br= "New Amount Funded: #{model.amount_recommended.to_currency}"
   %br= "State: #{model.state_to_english}"
