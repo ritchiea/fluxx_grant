@@ -76,7 +76,7 @@ module FluxxGrantRequestsController
       insta.add_workflow
       insta.format do |format|
         format.html do |triple|
-          if @model and @model.granted?
+          if @model and @model.granted
             redirect_params = params.delete_if{|k,v| %w[controller action].include?(k) }
             fluxx_redirect granted_request_path(redirect_params)
           else

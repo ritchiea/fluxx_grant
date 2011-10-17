@@ -5,7 +5,7 @@
 - unless model.project_summary.blank?
   %p= simple_format(model.project_summary)
 
-= render :partial => "grant_requests/grant_request_show_warnings", :locals => { :model => model } unless model.granted?
+= render :partial => "grant_requests/grant_request_show_warnings", :locals => { :model => model } unless model.granted
   
 %div.partial
   - if model.is_a? FipRequest
@@ -90,7 +90,10 @@
     .key Amount Requested:
     .value= as_currency(model.amount_requested) if model.amount_requested
   .pairs
-    .key Amount Recommended:
+    - if model.granted
+      .key Amount Funded:
+    - else
+      .key Amount Recommended:
     .value
       = render :partial => "grant_requests/grant_request_amount_recommended", :locals => { :model => model }
   = render :partial => "grant_requests/amount_paid_to_date", :locals => { :model => model }
