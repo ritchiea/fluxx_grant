@@ -1,7 +1,7 @@
 module FluxxRequestAmendmentsController
   extend FluxxModuleHelper
 
-  ICON_STYLE = 'style-grant-requests'
+  ICON_STYLE = 'style-request-amendments'
 
   when_included do
     insta_index RequestAmendment do |insta|

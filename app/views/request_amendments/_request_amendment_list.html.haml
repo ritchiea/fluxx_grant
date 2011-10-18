@@ -3,17 +3,20 @@
 - else
   %h2= model.request.org_name_text if model.request
 
-%h4= [dollars_format(model.request && model.request.granted ? model.request.amount_recommended : model.request.amount_requested), mdy_date_format(model.request ? model.request.request_received_at : ''), (model.request && model.request.program ? model.request.program.name : '')].compact.join(' | ')
-%h4= model.request ? model.request.grant_or_request_id : ''
+%h4= [model.request ? model.request.grant_or_request_id : nil, (model.request && model.request.program ? model.request.program.name : nil)].compact.join(' | ')
+%h4= model.state_to_english
 
 - unless Fluxx.config(:dont_use_duration_in_requests) == "1"
   - if model.duration
-    %p= "New Duration: #{model.duration}"
+    %p= raw "model.request.duration_in_months &rarr; #{model.duration}"
 - else  
   - if model.start_date
-    %p= "New Start Date: #{model.start_date.mdy}"
+    %p= raw "#{model.request && model.request.grant_begins_at ? model.request.grant_begins_at.mdy : ''} &rarr; #{model.start_date.mdy}"
   - if model.end_date
-    %p= "New End Date: #{model.end_date.mdy}"
+    - if model.request && model.request.is_a?(FipRequest)
+      %p= raw "#{model.request && model.request.fip_projected_end_at ? model.request.fip_projected_end_at.mdy : ''} &rarr; #{model.end_date.mdy}"
+    - else
+      %p= raw "#{model.request && model.request.grant_closed_at ? model.request.grant_closed_at.mdy : ''} &rarr; #{model.end_date.mdy}"
 - if model.amount_recommended
-  %p= "New Amount Funded: #{model.amount_recommended.to_currency}"
+  %p= raw "#{model.request && model.request.amount_recommended ? model.request.amount_recommended.to_currency : ''} &rarr; #{model.amount_recommended.to_currency}"
 
