@@ -554,7 +554,7 @@ module FluxxRequest
         has "if(granted = 1, (CONCAT(IFNULL(`program_organization_id`, '0'), ',', IFNULL(`fiscal_organization_id`, '0'))), null)", 
           :as => :related_grant_organization_ids, :type => :multi
         has "IF(requests.base_request_id IS NULL, 1, 0)", :as => :missing_request_id, :type => :boolean
-        has "date_add(date_add(grant_begins_at, interval duration_in_months MONTH), interval -1 DAY)", :as => :grant_ends_at, :type => :datetime
+        has "if(duration_in_months is not null, date_add(date_add(grant_begins_at, interval duration_in_months MONTH), interval -1 DAY), if(fip_projected_end_at is not null, fip_projected_end_at, grant_closed_at))", :as => :grant_ends_at, :type => :datetime
         has Request.rejected_state_clause(state_name), :as => :has_been_rejected, :type => :boolean
 
         has :type, :type => :string, :crc => true, :as => :filter_type
@@ -615,7 +615,7 @@ module FluxxRequest
         has "null", :as => :related_request_organization_ids, :type => :multi
         has "null", :as => :related_grant_organization_ids, :type => :multi
         has "IF(requests.base_request_id IS NULL, 1, 0)", :as => :missing_request_id, :type => :boolean
-        has "date_add(date_add(grant_begins_at, interval duration_in_months MONTH), interval -1 DAY)", :as => :grant_ends_at, :type => :datetime
+        has "if(duration_in_months is not null, date_add(date_add(grant_begins_at, interval duration_in_months MONTH), interval -1 DAY), if(fip_projected_end_at is not null, fip_projected_end_at, grant_closed_at))", :as => :grant_ends_at, :type => :datetime
         has Request.rejected_state_clause(state_name), :as => :has_been_rejected, :type => :boolean
 
         has :type, :type => :string, :crc => true, :as => :filter_type
@@ -684,7 +684,7 @@ module FluxxRequest
         has "null", :as => :related_request_organization_ids, :type => :multi
         has "null", :as => :related_grant_organization_ids, :type => :multi
         has "IF(requests.base_request_id IS NULL, 1, 0)", :as => :missing_request_id, :type => :boolean
-        has "date_add(date_add(grant_begins_at, interval duration_in_months MONTH), interval -1 DAY)", :as => :grant_ends_at, :type => :datetime
+        has "if(duration_in_months is not null, date_add(date_add(grant_begins_at, interval duration_in_months MONTH), interval -1 DAY), if(fip_projected_end_at is not null, fip_projected_end_at, grant_closed_at))", :as => :grant_ends_at, :type => :datetime
         has Request.rejected_state_clause(state_name), :as => :has_been_rejected, :type => :boolean
 
         has :type, :type => :string, :crc => true, :as => :filter_type
