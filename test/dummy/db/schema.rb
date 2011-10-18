@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111014055503) do
+ActiveRecord::Schema.define(:version => 20111018232037) do
 
   create_table "alert_emails", :force => true do |t|
     t.string   "mailer_method"
@@ -339,16 +339,17 @@ ActiveRecord::Schema.define(:version => 20111014055503) do
     t.integer  "organization_id"
     t.boolean  "delta"
     t.string   "tax_id"
-    t.decimal  "amount_requested",                  :precision => 10, :scale => 2
+    t.decimal  "amount_requested",                                   :precision => 10, :scale => 2
     t.integer  "sub_program_id"
     t.integer  "duration_in_months"
     t.datetime "grant_begins_at"
     t.string   "street_address2"
-    t.string   "city",               :limit => 100
+    t.string   "city",                               :limit => 100
     t.integer  "geo_state_id"
     t.integer  "geo_country_id"
-    t.string   "postal_code",        :limit => 100
+    t.string   "postal_code",                        :limit => 100
     t.integer  "migrate_id"
+    t.string   "organization_name_foreign_language", :limit => 1500
   end
 
   add_index "lois", ["created_by_id"], :name => "lois_created_by_id"
@@ -653,15 +654,19 @@ ActiveRecord::Schema.define(:version => 20111014055503) do
     t.integer  "duration"
     t.datetime "start_date"
     t.datetime "end_date"
-    t.decimal  "amount_recommended", :precision => 15, :scale => 2
-    t.boolean  "original",                                          :default => false
+    t.decimal  "amount_recommended",     :precision => 15, :scale => 2
+    t.boolean  "original",                                              :default => false
     t.integer  "request_id"
     t.string   "request_type"
     t.string   "state"
     t.text     "note"
-    t.boolean  "delta",                                             :default => true,  :null => false
+    t.boolean  "delta",                                                 :default => true,  :null => false
     t.integer  "created_by_id"
     t.integer  "updated_by_id"
+    t.integer  "old_duration"
+    t.datetime "old_start_date"
+    t.datetime "old_end_date"
+    t.decimal  "old_amount_recommended", :precision => 15, :scale => 2
   end
 
   create_table "request_evaluation_metrics", :force => true do |t|
