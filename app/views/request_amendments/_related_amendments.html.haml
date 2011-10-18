@@ -1,13 +1,17 @@
-%span.fluxx-card-content-metadata-section-title= model.title
+%span.fluxx-card-content-metadata-section-title
 %span.fluxx-card-content-metadata-section-info
   - unless Fluxx.config(:dont_use_duration_in_requests) == "1"
     - if model.duration
-      %br= "New Duration: #{model.duration}"
+      = "New Duration: #{model.duration}"
+      %br
   - else  
     - if model.start_date
-      %br= "New Start Date: #{model.start_date.mdy}"
+      = "New Start Date: #{model.start_date.mdy}"
+      %br
     - if model.end_date
-      %br= "New End Date: #{model.end_date.mdy}"
+      = "New End Date: #{model.end_date.mdy}"
+      %br
   - if model.amount_recommended
-    %br= "New Amount Funded: #{model.amount_recommended.to_currency}"
-  %br= "State: #{model.state_to_english}"
+    = "New Amount Funded: #{model.amount_recommended.to_currency}"
+    %br
+  = "State: #{model.state_to_english}"
