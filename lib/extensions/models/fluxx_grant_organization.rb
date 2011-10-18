@@ -241,21 +241,22 @@ module FluxxGrantOrganization
     end
 
     def related_requests look_for_granted=false, limit_amount=20
+      all_org_ids = (satellite_ids + [self.id]).compact
       granted_param = look_for_granted ? 1 : 0
       query = <<-SQL
         SELECT requests.*
           FROM requests
-          WHERE deleted_at IS NULL AND (program_organization_id = ? or fiscal_organization_id = ?) AND granted = ?
+          WHERE deleted_at IS NULL AND (program_organization_id in (?) or fiscal_organization_id in (?)) AND granted = ?
           UNION
         SELECT requests.*
           FROM requests, request_organizations
-          WHERE deleted_at IS NULL AND requests.id = request_organizations.request_id AND request_organizations.organization_id = ?
+          WHERE deleted_at IS NULL AND requests.id = request_organizations.request_id AND request_organizations.organization_id in (?)
           AND granted = ?
         GROUP BY requests.id
         ORDER BY grant_agreement_at DESC, request_received_at DESC
         LIMIT ?
       SQL
-      Request.find_by_sql([query, self.id, self.id, granted_param, self.id, granted_param, limit_amount])
+      Request.find_by_sql([query, all_org_ids, all_org_ids, granted_param, all_org_ids, granted_param, limit_amount])
     end
 
     def related_grants limit_amount=20
