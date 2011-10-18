@@ -151,7 +151,7 @@ module FluxxGrantedRequestsController
           controller.current_user.has_view_for_model?(RequestAmendment) && Fluxx.config(:show_request_amendments_card) == "1"
         end
         related.add_title_block do |model|
-          model.title if model
+          ''
         end
         related.for_search do |model|
           model.related_amendments

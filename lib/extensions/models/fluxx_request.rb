@@ -1002,7 +1002,7 @@ module FluxxRequest
     end
     
     def related_amendments limit_amount=50
-      (request_amendments).order('id desc').limit(limit_amount)
+      request_amendments.where(:original => 0).order('id desc').limit(limit_amount)
     end
     
     def letter_project_summary
