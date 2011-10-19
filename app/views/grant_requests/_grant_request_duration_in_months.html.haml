@@ -9,9 +9,8 @@
   - model.request_amendments.select{|ra| ra.is_approved? || ra.is_original?}.reverse.each do |amend|
     - if amend.duration || amend.end_date
       %div
-        - if model.is_a?(FipRequest)
-          = "#{model.fip_projected_end_at ? model.fip_projected_end_at.mdy : ''}"
-        - elsif Fluxx.config(:dont_use_duration_in_requests) == "1"
-          = "#{model.grant_closed_at ? model.grant_closed_at.mdy : ''}"
+        - if model.is_a?(FipRequest) || Fluxx.config(:dont_use_duration_in_requests) == "1"
+          = "#{amend.end_date ? amend.end_date.mdy : ''}"
         - else
-          = "#{model.duration_in_months} months"
+          = "#{amend.duration} months"
+        = "(#{amend.original? ? "Original" : "Amended #{amend.created_at.mdy if amend.created_at}"})"

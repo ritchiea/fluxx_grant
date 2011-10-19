@@ -1140,13 +1140,18 @@ module FluxxRequest
         end
         a = request_amendments.build()
         a[:duration] = duration_in_months if duration_in_months_changed?
+        a[:old_duration] = changed_attributes['duration_in_months'] || duration_in_months
         a[:start_date] = grant_begins_at if grant_begins_at_changed?
+        a[:old_start_date] = changed_attributes['grant_begins_at'] || grant_begins_at
         if self.is_a?(FipRequest)
           a[:end_date] = fip_projected_end_at if fip_projected_end_at_changed?
+          a[:old_end_date] = changed_attributes['fip_projected_end_at'] || fip_projected_end_at
         else
           a[:end_date] = grant_closed_at if grant_closed_at_changed?
+          a[:old_end_date] = changed_attributes['grant_closed_at'] || grant_closed_at
         end
         a[:amount_recommended] = amount_recommended if amount_recommended_changed?
+        a[:old_amount_recommended] = changed_attributes['amount_recommended'] || amount_recommended
         a[:original] = false
 
         append_amendment_note

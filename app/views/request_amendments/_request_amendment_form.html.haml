@@ -1,11 +1,11 @@
 %fieldset.inputs
   %ol
   
-  - unless Fluxx.config(:dont_use_duration_in_requests) == "1"
-    = form.input :duration, :label => "New Duration:", :as => :select, :collection => 1..36
-  - else  
-    = form.input :start_date, :label => "New Grant Start Date:"
+  = form.input :start_date, :label => "New Grant Start Date:"
+  - if Fluxx.config(:dont_use_duration_in_requests) == "1" || (model.request && model.request.is_a?(FipRequest))
     = form.input :end_date, :label => "New Grant End Date:"
+  - else  
+    = form.input :duration, :label => "New Duration:", :as => :select, :collection => 1..36
   
   = form.input :amount_recommended, :label => 'Amount Funded'
   = form.input :note

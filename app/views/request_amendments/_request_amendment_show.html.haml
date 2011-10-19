@@ -9,6 +9,9 @@
     .key= "State:"
     .value= model.state_to_english
 
+  .pairs
+    .key= "New Start Date:"
+    .value= model.start_date.mdy if model.start_date
   - unless Fluxx.config(:dont_use_duration_in_requests) == "1"
     .pairs
       .key= "New Duration:"
@@ -16,9 +19,6 @@
   
   
   - else  
-    .pairs
-      .key= "New Start Date:"
-      .value= model.start_date.mdy if model.start_date
     .pairs
       .key= "New End Date:"
       .value= model.end_date.mdy if model.end_date
