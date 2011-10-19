@@ -2,4 +2,4 @@
 
 - if model.request
   %p
-    = "Grant #{model.request.grant_id} - #{model.request.program_organization.display_name}"
+    = "Grant #{model.request.grant_id} - #{model.request && model.request.program_organization ? model.request.program_organization.display_name : ''}"

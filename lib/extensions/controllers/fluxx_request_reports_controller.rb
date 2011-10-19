@@ -32,7 +32,7 @@ module FluxxRequestReportsController
           controller_dsl, outcome, default_block = triple
           if params[:view_states]
             local_model = instance_variable_get '@model'
-            send :fluxx_show_card, controller_dsl, {:template => 'request_reports/view_states', :footer_template => 'insta/simple_footer'}
+            send :fluxx_show_card, controller_dsl, {:template => 'insta/view_states', :footer_template => 'insta/simple_footer'}
           else
            default_block.call
           end

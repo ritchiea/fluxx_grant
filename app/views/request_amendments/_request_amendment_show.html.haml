@@ -6,8 +6,12 @@
 %div.partial
 
   .pairs
-    .key= "State:"
+    .key= "Status:"
     .value= model.state_to_english
+  .pairs
+    .key Status:
+    .value.with-more-info
+      = link_to model.state_to_english,  url_for(:action => :show, :view_states => true, :id => model.id), :class => 'to-modal', :title => 'View Workflow', 'data-on-success' => 'refreshCaller'
 
   .pairs
     .key= "New Start Date:"
