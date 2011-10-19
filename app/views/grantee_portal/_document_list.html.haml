@@ -15,7 +15,9 @@
         -@data.each do |file|
           %tr
             %td
-              - filename = file["filename"] ? file["filename"] : file
-              - name = file["name"] ? file["name"] : filename.humanize.gsub('.pdf', '')
-              = link_to name, "/documents/#{filename}", :target => "_blank", :class => "file-type file-type-pdf"
+              - path = file["path"]
+              - path ||= file["filename"] ? file["filename"] : file
+              - name = file["name"] ? file["name"] : path.humanize.gsub('.pdf', '')
+
+              = link_to name, path =~ /^http\:/ ? path : "/documents/#{path}", :target => "_blank", :class => "file-type file-type-pdf"
   = render :partial => "grantee_portal/paging_actions"
