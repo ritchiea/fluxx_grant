@@ -5,7 +5,9 @@
       %span.fluxx-card-content-metadata-section-info
         = "Granted #{element['year_authorized']} - #{element['duration_months']} months"
         %br
-        = element["foundation_name"]        
+        = element["foundation_name"]
+        %p
+        = element["Description"]
   - if @show_paging
     %li.entry
       %span.paging
