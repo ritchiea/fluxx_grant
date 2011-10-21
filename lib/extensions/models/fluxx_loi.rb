@@ -91,9 +91,10 @@ module FluxxLoi
         indexes "lower(lois.applicant)", :as => :applicant, :sortable => true
         indexes "lower(lois.organization_name)", :as => :organization_name, :sortable => true
         indexes "lower(lois.project_title)", :as => :project_title, :sortable => true
+        indexes "lower(lois.email)", :as => :email, :sortable => true
 
         # attributes
-        has created_at, updated_at, deleted_at
+        has created_at, updated_at, deleted_at, program_id
         
         has organization_name, :as => :loi_organization_name, :crc => true 
         has applicant, :as => :loi_applicant, :crc => true 
