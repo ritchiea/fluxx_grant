@@ -25,6 +25,26 @@ module FluxxLoi
       insta.delta_attributes = SEARCH_ATTRIBUTES
       insta.updated_by_field = :updated_by_id
     end
+    base.insta_json do |insta|
+      insta.add_only 'applicant'
+      insta.add_only 'organization_name'
+      insta.add_only 'project_title'
+      insta.add_only 'email'
+      insta.add_only 'phone'
+      insta.add_only 'project_summary'
+      insta.add_only 'address'
+      insta.add_only 'program_id'
+      insta.add_only 'amount_requested'
+      insta.add_only 'sub_program_id'
+      insta.add_only 'duration_in_months'
+      insta.add_only 'grant_begins_at'
+      insta.add_only 'city'
+      insta.add_only 'postal_code'
+      insta.add_only 'organization_name_foreign_language'
+      
+      insta.copy_style :simple, :detailed
+    end
+    
     base.insta_multi
     base.insta_export do |insta|
       insta.filename = 'loi'

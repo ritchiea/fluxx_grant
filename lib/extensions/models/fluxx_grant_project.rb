@@ -28,6 +28,11 @@ module FluxxGrantProject
                       where projects.id IN (?)"
     end
     
+    base.insta_json do |insta|
+      insta.add_method 'related_requests', :detailed
+      insta.add_method 'related_grants', :detailed
+    end
+    
     
     base.extend(ModelClassMethods)
     base.class_eval do

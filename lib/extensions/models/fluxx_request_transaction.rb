@@ -143,6 +143,20 @@ module FluxxRequestTransaction
       insta.delta_attributes = SEARCH_ATTRIBUTES
       insta.updated_by_field = :updated_by_id
     end
+    base.insta_json do |insta|
+      insta.add_only 'request_id'
+      insta.add_only 'amount_paid'
+      insta.add_only 'amount_due'
+      insta.add_only 'due_at'
+      insta.add_only 'paid_at'
+      insta.add_only 'state'
+      
+      insta.copy_style :simple, :detailed
+      insta.add_method 'related_users', :detailed
+      insta.add_method 'related_organizations', :detailed
+      insta.add_method 'related_grants', :detailed
+      insta.add_method 'related_transactions', :detailed
+    end
     base.insta_multi
     base.insta_lock
     base.insta_utc do |insta|

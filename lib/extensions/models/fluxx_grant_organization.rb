@@ -60,6 +60,15 @@ module FluxxGrantOrganization
       insta.delta_attributes = SEARCH_ATTRIBUTES
       insta.updated_by_field = :updated_by_id
     end
+    base.insta_json do |insta|
+      insta.add_method 'related_users', :detailed
+      insta.add_method 'related_requests', :detailed
+      insta.add_method 'related_grants', :detailed
+      insta.add_method 'related_reports', :detailed
+      insta.add_method 'related_transactions', :detailed
+      insta.add_method 'related_users', :detailed
+    end
+    
 
     base.extend(ModelClassMethods)
     base.class_eval do

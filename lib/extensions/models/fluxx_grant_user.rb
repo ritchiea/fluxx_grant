@@ -43,6 +43,13 @@ module FluxxGrantUser
       insta.delta_attributes = SEARCH_ATTRIBUTES
       insta.updated_by_field = :updated_by_id
     end
+    
+    base.insta_json do |insta|
+      insta.add_method 'related_requests', :detailed
+      insta.add_method 'related_grants', :detailed
+      insta.add_method 'related_grants', :detailed
+    end
+    
     base.insta_export do |insta|
       insta.filename = 'user'
       insta.headers = [['Date Created', :date], ['Date Updated', :date], 'salutation', 'first_name', 'last_name', 'email', 'personal_email', 'prefix', 'middle_initial', 'personal_phone', 

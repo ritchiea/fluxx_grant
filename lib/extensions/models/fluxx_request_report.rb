@@ -80,6 +80,22 @@ module FluxxRequestReport
       insta.delta_attributes = SEARCH_ATTRIBUTES
       insta.updated_by_field = :updated_by_id
     end
+
+    base.insta_json do |insta|
+      insta.add_only 'request_id'
+      insta.add_only 'approved_by_user_id'
+      insta.add_only 'state'
+      insta.add_only 'report_type'
+      insta.add_only 'due_at'
+      insta.add_only 'approved_at'
+      
+      insta.copy_style :simple, :detailed
+      insta.add_method 'related_users', :detailed
+      insta.add_method 'related_organizations', :detailed
+      insta.add_method 'related_grants', :detailed
+      insta.add_method 'related_reports', :detailed
+    end
+    
     base.insta_multi
     base.insta_lock
     base.insta_utc do |insta|

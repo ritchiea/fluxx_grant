@@ -303,6 +303,43 @@ module FluxxRequest
       insta.delta_attributes = SEARCH_ATTRIBUTES
       insta.updated_by_field = :updated_by_id
     end
+    base.insta_json do |insta|
+      insta.add_only 'base_request_id'
+      insta.add_only 'amount_requested'
+      insta.add_only 'amount_recommended'
+      insta.add_only 'duration_in_months'
+      insta.add_only 'granted'
+      insta.add_only 'state'
+      insta.add_only 'type'
+      insta.add_only 'project_summary'
+      insta.add_only 'request_received_at'
+      insta.add_only 'grant_approved_at'
+      insta.add_only 'grant_agreement_at'
+      insta.add_only 'fip_projected_end_at'
+      insta.add_only 'fip_title'
+      insta.add_method 'title'
+      insta.add_method 'program_name'
+      insta.add_method 'sub_program_name'
+      insta.add_method 'program_org_name'
+      insta.add_method 'fiscal_org_name'
+      insta.add_method 'program_lead_name'
+      insta.add_method 'grantee_owner_name'
+      insta.add_method 'fiscal_owner_name'
+      insta.add_method 'grantee_signatory_name'
+      insta.add_method 'fiscal_signatory_name'
+      insta.add_method 'grant_or_request_id'
+      
+      insta.copy_style :simple, :detailed
+      insta.add_method 'related_users', :detailed
+      insta.add_method 'related_organizations', :detailed
+      insta.add_method 'related_amendments', :detailed
+      insta.add_method 'related_projects', :detailed
+      insta.add_method 'related_request_reports', :detailed
+      insta.add_method 'related_request_transactions', :detailed
+    end
+    
+
+    
     base.insta_utc do |insta|
       insta.time_attributes = [:request_received_at, :grant_approved_at, :grant_agreement_at, :grant_amendment_at, :grant_begins_at, :grant_closed_at, :fip_projected_end_at, :ierf_proposed_end_at, :ierf_budget_end_at]
     end
@@ -865,7 +902,43 @@ module FluxxRequest
         'your'
       end
     end
+    
+    def program_name
+      program.name if program
+    end
 
+    def sub_program_name
+      sub_program.name if sub_program
+    end
+    
+    def program_org_name
+      program_organization.name if program_organization
+    end
+
+    def fiscal_org_name
+      fiscal_organization.name if fiscal_organization
+    end
+    
+    def program_lead_name
+      program_lead.full_name if program_lead
+    end
+    
+    def grantee_owner_name
+      grantee_org_owner.full_name if grantee_org_owner
+    end
+    
+    def fiscal_owner_name
+      fiscal_org_owner.full_name if fiscal_org_owner
+    end
+    
+    def grantee_signatory_name
+      grantee_signatory.full_name if grantee_signatory
+    end
+    
+    def fiscal_signatory_name
+      fiscal_signatory.full_name if fiscal_signatory
+    end
+    
     def proposal_date_text
       proposal_date = if ierf_proposed_end_at
         ierf_proposed_end_at.full 
