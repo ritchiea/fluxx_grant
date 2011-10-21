@@ -507,7 +507,7 @@ module FluxxRequest
       result = if self.respond_to? :sphinx_rejected_state_clause
         self.sphinx_rejected_state_clause
       else
-        if defined? MachineState
+        if defined?(MachineState) && self.respond_to?(:client_id)
           Request.send :sanitize_sql, ["IF(lower(requests.#{state_name}) in (select name from machine_states where machine_states.client_id = requests.client_id and state_type = ? and model_type in (?)), 1, 0)", MachineState.rejected_state_type_name, Request.descendant_base_classes.map(&:name)]
         else
           "IF(lower(requests.#{state_name}) = 'rejected', 1, 0)"
