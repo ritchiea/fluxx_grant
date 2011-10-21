@@ -1,5 +1,21 @@
 module FluxxLoi
   SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :loi_applicant, :loi_organization_name, :loi_email, :loi_phone, :loi_project_title, :program_id]
+  def self.prepare_program_ids search_with_attributes, name, val
+    program_id_strings = val
+    programs = Program.where(:id => program_id_strings).all.compact
+    program_ids = programs.map do |program| 
+      children = program.children_programs
+      if children.empty?
+        program
+      else
+        [program] + children
+      end
+    end.compact.flatten.map &:id
+    
+    if program_ids && !program_ids.empty?
+      search_with_attributes[name] = program_ids
+    end
+  end
   
   def self.included(base)
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
@@ -18,7 +34,10 @@ module FluxxLoi
 
     base.insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES + [:organization_linked, :applicant_linked]
-      insta.derived_filters = {}
+      insta.derived_filters = {:program_id => (lambda do |search_with_attributes, request_params, name, val|
+        prepare_program_ids search_with_attributes, name, val
+      end),
+      }
     end
 
     base.insta_realtime do |insta|
