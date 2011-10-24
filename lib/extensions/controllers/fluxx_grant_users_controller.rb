@@ -53,6 +53,20 @@ module FluxxGrantUsersController
         end
         related.display_template = '/organizations/related_organization'
       end
+      insta.add_related do |related|
+        related.display_name = 'Tasks'
+        related.show_tab? do |args|
+          controller, model = args
+          controller.current_user.has_view_for_model? WorkTask
+        end
+        related.for_search do |model|
+          model.related_work_tasks
+        end
+        related.add_title_block do |model|
+          ""
+        end
+        related.display_template = '/work_tasks/related_work_task'
+      end
     end
 
     base.extend(ModelClassMethods)
