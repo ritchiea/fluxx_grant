@@ -154,7 +154,7 @@ module FluxxGrantUser
       Request.select(:id).where(:deleted_at => nil).where(['program_lead_id = ? OR fiscal_org_owner_id = ? OR grantee_signatory_id = ? OR fiscal_signatory_id = ? OR grantee_org_owner_id = ?', self.id, self.id, self.id, self.id, self.id]).map &:id
     end
     
-    def related_requests look_for_granted=false, limit_amount=20
+    def related_requests look_for_granted=false, limit_amount=50
       granted_param = look_for_granted ? 1 : 0
       Request.find_by_sql ["SELECT requests.* 
         FROM requests 
@@ -181,7 +181,7 @@ module FluxxGrantUser
       is_grantee? || is_reviewer?
     end
     
-    def related_grants limit_amount=20
+    def related_grants limit_amount=50
       related_requests true, limit_amount
     end
     

@@ -249,7 +249,7 @@ module FluxxGrantOrganization
       []
     end
 
-    def related_requests look_for_granted=false, limit_amount=20
+    def related_requests look_for_granted=false, limit_amount=50
       all_org_ids = (satellite_ids + [self.id]).compact
       granted_param = look_for_granted ? 1 : 0
       query = <<-SQL
@@ -268,19 +268,19 @@ module FluxxGrantOrganization
       Request.find_by_sql([query, all_org_ids, all_org_ids, granted_param, all_org_ids, granted_param, limit_amount])
     end
 
-    def related_grants limit_amount=20
+    def related_grants limit_amount=50
       related_requests true, limit_amount
     end
 
-    def related_transactions limit_amount=20
+    def related_transactions limit_amount=50
       grants = related_grants limit_amount
-      RequestTransaction.where(:deleted_at => nil).where(:request_id => grants.map(&:id)).order('due_at asc').limit(limit_amount)
+      RequestTransaction.where(:deleted_at => nil).where(:request_id => grants.map(&:id)).order('due_at desc').limit(limit_amount)
     end
 
-    def related_reports limit_amount=20
+    def related_reports limit_amount=50
       grants = related_grants limit_amount
-      # (current_user.is_board_member? ? RequestReport.where(:state => "approved") : RequestReport).where(:deleted_at => nil).where(:request_id => grants.map(&:id)).order('due_at asc').limit(limit_amount)
-      (RequestReport).where(:deleted_at => nil).where(:request_id => grants.map(&:id)).order('due_at asc').limit(limit_amount)
+      # (current_user.is_board_member? ? RequestReport.where(:state => "approved") : RequestReport).where(:deleted_at => nil).where(:request_id => grants.map(&:id)).order('due_at desc').limit(limit_amount)
+      (RequestReport).where(:deleted_at => nil).where(:request_id => grants.map(&:id)).order('due_at desc').limit(limit_amount)
     end
 
     def is_trusted?

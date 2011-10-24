@@ -60,7 +60,7 @@ module FluxxRequest
     base.has_many :request_users
     base.has_many :project_requests
     base.has_many :projects, :through => :project_requests, :conditions => {:deleted_at => nil}
-    base.has_many :request_transactions, :order => "due_at", :conditions => {:deleted_at => nil}
+    base.has_many :request_transactions, :order => "due_at desc", :conditions => {:deleted_at => nil}
     base.has_many :budget_requests, :foreign_key => :request_id, :conditions => {:deleted_at => nil}
     base.accepts_nested_attributes_for :request_transactions, :allow_destroy => true
     base.has_many :request_funding_sources
@@ -82,7 +82,7 @@ module FluxxRequest
     # base.after_commit :update_related_data
     base.send :attr_accessor, :before_save_blocks
 
-    base.has_many :request_reports, :conditions => 'request_reports.deleted_at IS NULL', :order => "due_at"
+    base.has_many :request_reports, :conditions => 'request_reports.deleted_at IS NULL', :order => "due_at desc"
     base.has_many :letter_request_reports, :class_name => 'RequestReport', :foreign_key => :request_id, :conditions => "request_reports.deleted_at IS NULL AND request_reports.report_type <> 'Eval'", :order => "due_at"
     base.accepts_nested_attributes_for :request_reports, :allow_destroy => true
     
@@ -1058,20 +1058,20 @@ module FluxxRequest
     end
     
     def related_organizations
-      (request_organizations.map{|ro| ro.organization} + [program_organization, fiscal_organization]).compact.sort_by{|o| o.name || ''}.reject{|o| o.deleted_at}
+      (request_organizations.joins(:organization).where(:organizations => {:deleted_at => nil}).order(:name).map{|ro| ro.organization} + [program_organization, fiscal_organization]).compact.reject{|o| o.deleted_at}
     end
     
     def related_projects limit_amount=50
-      projects.limit(limit_amount)
+      projects.order('projects.created_at desc').limit(limit_amount)
     end
 
     def related_request_transactions limit_amount=50
-      request_transactions.where(:deleted_at => nil).order('due_at asc').limit(limit_amount)
+      request_transactions.where(:deleted_at => nil).order('due_at desc').limit(limit_amount)
     end
 
     def related_request_reports limit_amount=50
-      # (current_user.is_board_member? ? request_reports.where(:state => "approved") : request_reports).where(:deleted_at => nil).order('due_at asc').limit(limit_amount)
-      (request_reports).where(:deleted_at => nil).order('due_at asc').limit(limit_amount)
+      # (current_user.is_board_member? ? request_reports.where(:state => "approved") : request_reports).where(:deleted_at => nil).order('due_at desc').limit(limit_amount)
+      (request_reports).where(:deleted_at => nil).order('due_at desc').limit(limit_amount)
     end
     
     def related_amendments limit_amount=50
