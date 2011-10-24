@@ -328,6 +328,8 @@ module FluxxRequest
       insta.add_method 'grantee_signatory_name'
       insta.add_method 'fiscal_signatory_name'
       insta.add_method 'grant_or_request_id'
+      insta.add_method 'grant_title'
+      insta.add_method 'view_amount'
       
       insta.copy_style :simple, :detailed
       insta.add_method 'related_users', :detailed
@@ -336,6 +338,7 @@ module FluxxRequest
       insta.add_method 'related_projects', :detailed
       insta.add_method 'related_request_reports', :detailed
       insta.add_method 'related_request_transactions', :detailed
+      
     end
     
 
@@ -973,6 +976,18 @@ module FluxxRequest
       
     def grant_or_request_id
       is_grant? ? grant_id : request_id
+    end
+
+    def view_amount
+      self.granted ? self.amount_recommended : self.amount_requested
+    end
+    
+    def grant_title
+      if self.is_a? FipRequest
+        self.fip_title
+      else
+        self.org_name_text
+      end
     end
 
     def generate_grant_dates
