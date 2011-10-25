@@ -5,7 +5,7 @@ class AmendmentAndExtensionReport < ActionController::ReportBase
     insta.report_description = 'List of grants where amendment/extension updates to end-date or amount have been entered'
   end
 
-  def compute_show_document_headers controller, show_object, params, report_vars
+  def compute_document_headers controller, show_object, params, report_vars, models
     ['fluxx_' + 'amendment_and_extension' + '_' + Time.now.strftime("%m%d%y") + ".xls", 'application/vnd.ms-excel']
   end
 
