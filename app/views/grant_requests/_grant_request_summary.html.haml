@@ -4,15 +4,27 @@
       %tr
         %td
           %h1= @number_in_pipeline
-          %h3 Requests in Pipeline
+          %h3
+            -if @grants
+              = "Grants/#{I18n.t(:fip_name).pluralize}"
+            -else
+              Requests in Pipeline
       %tr
         %td
           %h1= number_to_currency(@amount_in_pipeline, :precision => 0)
-          %h3= "#{CurrencyHelper.current_long_name.pluralize} in Pipeline"
+          %h3
+            -if @grants
+              = "#{CurrencyHelper.current_long_name.pluralize} Total Grants/#{I18n.t(:fip_name).pluralize}"
+            -else
+              = "#{CurrencyHelper.current_long_name.pluralize} in Pipeline"
       %tr
         %td
           %h1= number_to_currency(@average_amount, :precision => 0)
-          %h3 Average Request Amount
+          %h3
+            -if @grants
+              Average Amount
+            -else
+              Average Request Amount
       %tr
         %td
           %h1= number_with_precision(@average_days, :precision => 0)

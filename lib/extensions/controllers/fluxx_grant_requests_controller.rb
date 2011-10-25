@@ -23,6 +23,7 @@ module FluxxGrantRequestsController
           query = "SELECT SUM(r.amount_requested) AS amount, AVG(DATEDIFF(CURDATE(), r.created_at)) as days, AVG(r.amount_requested) AS average, COUNT(r.id) AS count FROM requests r WHERE r.id IN (?)"
           ids=  @models.map(&:id)
           results = ReportUtility.single_value_query([query, ids])
+          @grants = false
           @amount_in_pipeline = results["amount"]
           @number_in_pipeline = results["count"]
           @average_amount = results["average"]

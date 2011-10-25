@@ -21,6 +21,42 @@ module FluxxGrantedRequestsController
           grant_request_index_format_html controller_dsl, outcome, default_block
         end
       end
+      insta.summary_view do |format|
+        format.html do |triple|
+          controller_dsl, outcome, default_block = triple
+          query = "SELECT SUM(r.amount_requested) AS amount, AVG(DATEDIFF(CURDATE(), r.created_at)) as days, AVG(r.amount_requested) AS average, COUNT(r.id) AS count FROM requests r WHERE r.id IN (?)"
+          ids=  @models.map(&:id)
+          results = ReportUtility.single_value_query([query, ids])
+          @grants = true
+          @amount_in_pipeline = results["amount"]
+          @number_in_pipeline = results["count"]
+          @average_amount = results["average"]
+          @average_days = results["days"]
+          @pipeline = []
+          query = "SELECT sum(r.amount_requested) as amount, count(r.id) as count, p.name AS program FROM requests r left outer join programs p on p.id = r.program_id  WHERE r.id IN (?) group by p.name"
+          req = Request.connection.execute(Request.send(:sanitize_sql, [query, ids]))
+          max = 0
+          i = 0
+          dummy_model = Request.new
+          req.each_hash do |res|
+            amount = res["amount"] ? res["amount"].to_i : 0
+            count = res["count"] ? res["count"].to_i : 0
+            max = count if count > max
+            @pipeline[i] = {:count => count, :amount  => amount, :state => res["program"]}
+            i += 1
+          end
+          max = max.to_f
+          @pipeline.each{|stats| stats[:percentage] = (max > 0 ? stats[:count] / max : 1) * 100}
+
+          default_block.call
+        end
+      end
+      insta.spreadsheet_view do |format|
+        format.html do |triple|
+          controller_dsl, outcome, default_block = triple
+          default_block.call
+        end
+      end
     end
     base.insta_report do |insta|
       insta.report_name_path = 'granted_requests'
