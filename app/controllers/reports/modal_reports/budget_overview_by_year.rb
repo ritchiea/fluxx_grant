@@ -1,19 +1,15 @@
 class BudgetOverviewByYear < ActionController::ReportBase
-  set_type_as_show
-  set_order -10
-
-  def report_label
-    "Budget Overview Chart (Annual Tracker)"
+  insta_report(:plot) do |insta|
+    insta.filter_template = 'modal_reports/funding_year_and_program_filter'
+    insta.report_order = -10
+    insta.report_label = 'Budget Overview Chart (Annual Tracker)'
+    insta.report_description = "View current status of each allocation - amount spent, in the pipeline and allocated (Bar Chart)"
   end
 
-  def report_description
-    "Data visualization to track Program's annual budgeting and grant throughput. (Bar Chart)"
-  end
-
-  def compute_show_plot_data controller, index_object, params, report_vars
+  def compute_plot_data controller, index_object, params, report_vars, models
     filter = params["active_record_base"]
     hash = {}
-    hash[:title] = report_label
+    hash[:title] = index_object.report_label
     FundingSourceAllocation.build_temp_table do |temp_table_name|
 
       program_ids= ReportUtility.get_program_ids filter["program_id"]
@@ -22,9 +18,7 @@ class BudgetOverviewByYear < ActionController::ReportBase
 
       # Never include these requests
       rejected_states = Request.send(:sanitize_sql, ['(?)', Request.all_rejected_states])
-      # TODO: this isn't working
-#      paid_states = Request.send(:sanitize_sql, ['(?)', RequestTransaction.all_states_with_category('paid').map{|state| state.to_s}])
-      paid_states = "('paid')"
+      paid_states = Request.send(:sanitize_sql, ['(?)', RequestTransaction.all_states_with_category('paid').map{|state| state.to_s}])
 
       always_exclude = "r.deleted_at IS NULL AND r.state not in #{rejected_states}"
 
@@ -73,14 +67,6 @@ class BudgetOverviewByYear < ActionController::ReportBase
 
   #------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  def initialize report_id
-    super report_id
-    self.filter_template = 'modal_reports/funding_year_and_program_filter'
-  end
-
-  def report_description
-    "View current status of each allocation - amount spent, in the pipeline and allocated"
-  end
 
   def get_date_range filter
     start_string = '1/1/' + filter["funding_year"] if filter && filter["funding_year"]
@@ -92,13 +78,13 @@ class BudgetOverviewByYear < ActionController::ReportBase
     return start_date, start_date.end_of_year()
   end
 
-  def report_filter_text controller, index_object, params, report_vars
+  def report_filter_text controller, index_object, params, report_vars, models
     start_date, stop_date = get_date_range params["active_record_base"]
     stop_date = Time.now if (stop_date > Time.now.to_date)
     "#{start_date.strftime('%B %d, %Y')} to #{stop_date.strftime('%B %d, %Y')}"
   end
 
-  def report_summary controller, index_object, params, report_vars
+  def report_summary controller, index_object, params, report_vars, models
     filter = params["active_record_base"]
     start_date, stop_date = get_date_range filter
     program_ids= if filter
@@ -112,7 +98,7 @@ class BudgetOverviewByYear < ActionController::ReportBase
     summary_text
   end
 
-  def report_legend controller, index_object, params, report_vars
+  def report_legend controller, index_object, params, report_vars, models
     filter = params["active_record_base"]
     start_date, stop_date = get_date_range filter
     years = ReportUtility.get_years start_date, stop_date
@@ -165,5 +151,4 @@ class BudgetOverviewByYear < ActionController::ReportBase
     end
    legend
   end
-
 end

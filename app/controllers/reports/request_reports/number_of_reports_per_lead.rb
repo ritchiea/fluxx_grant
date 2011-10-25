@@ -1,10 +1,9 @@
 class NumberOfReportsPerLead < ActionController::ReportBase
-
-  set_type_as_index
-  def report_label
-    "Reports Pending Lead Approval"
+  insta_report(:plot) do |insta|
+    insta.report_label = 'Reports Pending Lead Approval'
   end
-  def compute_index_plot_data controller, index_object, params, models, report_vars
+
+  def compute_plot_data controller, index_object, params, report_vars, models
     hash = {:library => "jqplot"}
     hash[:title] = report_label
     hash[:data] = []
@@ -44,18 +43,15 @@ class NumberOfReportsPerLead < ActionController::ReportBase
     hash[:type] = "bar"
 
     hash.to_json
-
   end
 
-  def report_filter_text controller, index_object, params, models, report_vars
-
+  def report_filter_text controller, index_object, params, report_vars, models
   end
 
-  def report_summary controller, index_object, params, models, report_vars
-
+  def report_summary controller, index_object, params, report_vars, models
   end
 
-  def report_legend controller, index_object, params, models, report_vars
+  def report_legend controller, index_object, params, report_vars, models
     legend = [{:table => ['Report Type', 'Number of Reports Due']}]
     query = "select count(rr.id) as count, report_type from request_reports rr where report_type != '' and rr.state != 'approved' and id in (?) group by report_type order by report_type"
     filter = []
@@ -74,5 +70,4 @@ class NumberOfReportsPerLead < ActionController::ReportBase
     end
     legend
   end
-
 end

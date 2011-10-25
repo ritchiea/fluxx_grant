@@ -1,16 +1,13 @@
 class FundingAllocationsByTimeReport < ActionController::ReportBase
   include FundingAllocationsBaseReport
-  set_type_as_show
 
-  def report_label
-    "Budget Overview Chart (Monthly Tracker)"
+  insta_report(:plot) do |insta|
+    insta.filter_template = 'modal_reports/funding_year_and_program_filter'
+    insta.report_label = 'Budget Overview Chart (Monthly Tracker)'
+    insta.report_description = 'Data visualization to track monthly budgeting and grant throughput. (Bar Chart)'
   end
 
-  def report_description
-    "Data visualization to track monthly budgeting and grant throughput. (Bar Chart)"
-  end
-
-  def compute_show_plot_data controller, index_object, params, report_vars
+  def compute_plot_data controller, index_object, params, report_vars, models
     filter = params["active_record_base"] || {}
     hash = {}
     hash[:title] = report_label
@@ -30,7 +27,7 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
       # Never include these requests
       rejected_states = Request.send(:sanitize_sql, ['(?)', Request.all_rejected_states])
       # TODO: this isn't working
-#      paid_states = Request.send(:sanitize_sql, ['(?)', RequestTransaction.all_states_with_category('paid').map{|state| state.to_s}])
+      # paid_states = Request.send(:sanitize_sql, ['(?)', RequestTransaction.all_states_with_category('paid').map{|state| state.to_s}])
       paid_states = "('paid')"
 
 

@@ -1,24 +1,15 @@
 class GrantAndFipDetailsReport < ActionController::ReportBase
-  set_type_as_show
-
-  def initialize report_id
-    super report_id
-    self.filter_template = 'modal_reports/grant_and_fips_paid_filter'
+  insta_report(:download) do |insta|
+    insta.filter_template = 'modal_reports/grant_and_fips_paid_filter'
+    insta.report_label = 'Payment Transaction Report'
+    insta.report_description = 'Detailed report on transactions recorded as paid.  (Excel Report)'
   end
 
-  def report_label
-    'Payment Transaction Report'
-  end
-
-  def report_description
-    'Detailed report on transactions recorded as paid.  (Excel Report)'
-  end
-
-  def compute_show_document_headers controller, show_object, params, report_vars
+  def compute_document_headers controller, show_object, params, report_vars, models
     ['fluxx_' + 'grant_fips_paid' + '_' + Time.now.strftime("%m%d%y") + ".xls", 'application/vnd.ms-excel']
   end
 
-  def compute_show_document_data controller, show_object, params, report_vars
+  def compute_document_data controller, show_object, params, report_vars, models
     active_record_params = params[:active_record_base] || {}
     
     case active_record_params[:date_range_type]

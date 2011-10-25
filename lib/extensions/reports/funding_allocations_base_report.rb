@@ -1,14 +1,5 @@
 module FundingAllocationsBaseReport
 
-  def initialize report_id
-    super report_id
-    self.filter_template = 'modal_reports/funding_year_and_program_filter'
-  end
-
-  def report_description
-    "View current status of each allocation - amount spent, in the pipeline and allocated"
-  end
-
   def get_date_range filter
     start_string = '1/1/' + filter["funding_year"] if filter && filter["funding_year"]
     start_date = if start_string
@@ -19,12 +10,12 @@ module FundingAllocationsBaseReport
     return start_date, start_date.end_of_year()
   end
 
-  def report_filter_text controller, index_object, params, report_vars
+  def report_filter_text controller, index_object, params, report_vars, models
     start_date, stop_date = get_date_range params["active_record_base"]
     "#{start_date.strftime('%B %d, %Y')} to #{stop_date.strftime('%B %d, %Y')}"
   end
 
-  def report_summary controller, index_object, params, report_vars
+  def report_summary controller, index_object, params, report_vars, models
     filter = params["active_record_base"]
     start_date, stop_date = get_date_range filter
     program_ids= if filter
@@ -38,7 +29,7 @@ module FundingAllocationsBaseReport
     summary_text
   end
 
-  def report_legend controller, index_object, params, report_vars
+  def report_legend controller, index_object, params, report_vars, models
     filter = params["active_record_base"]
     start_date, stop_date = get_date_range filter
     years = ReportUtility.get_years start_date, stop_date

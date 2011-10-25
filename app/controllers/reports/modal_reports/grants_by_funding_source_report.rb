@@ -1,24 +1,15 @@
 class GrantsByFundingSourceReport < ActionController::ReportBase
-  set_type_as_show
-
-  def initialize report_id
-    super report_id
-    self.filter_template = 'modal_reports/grants_by_funding_source_filter'
+  insta_report(:download) do |insta|
+    insta.filter_template = 'modal_reports/grants_by_funding_source_filter'
+    insta.report_label = 'Funder Detail Report'
+    insta.report_description = 'Grant listing of funds committed, by Funder (Excel Table)'
   end
 
-  def report_label
-    'Funder Detail Report'
-  end
-
-  def report_description
-    'Grant listing of funds committed, by Funder (Excel Table)'
-  end
-
-  def compute_show_document_headers controller, show_object, params, report_vars
+  def compute_document_headers controller, show_object, params, report_vars, models
     ['fluxx_' + 'grants_by_funding_source' + '_' + Time.now.strftime("%m%d%y") + ".xls", 'application/vnd.ms-excel']
   end
 
-  def compute_show_document_data controller, show_object, params, report_vars
+  def compute_document_data controller, show_object, params, report_vars, models
     active_record_params = params[:active_record_base] || {}
     
     case active_record_params[:date_range_type]
