@@ -25,10 +25,11 @@
               Average Amount
             -else
               Average Request Amount
-      %tr
-        %td
-          %h1= number_with_precision(@average_days, :precision => 0)
-          %h3 Average Request Age
+      -unless @grants
+        %tr
+          %td
+            %h1= number_with_precision(@average_days, :precision => 0)
+            %h3 Average Request Age
 .panel{"data-title" => "Pipeline"}
   .content
     %table
