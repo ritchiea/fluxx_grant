@@ -1,4 +1,8 @@
-%h3
-  Thank you for your request. An administrator will be in contact with you.
+- loi_text = Fluxx.config(:loi_response_to_submission_text)
+- unless loi_text.blank?
+  = raw loi_text
+- else
+  %h3
+    Thank you for your request. An administrator will be in contact with you.
 %p
 = link_to "Return to login screen", portal_path
