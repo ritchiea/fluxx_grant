@@ -29,8 +29,7 @@ module FluxxGrantProject
     end
     
     base.insta_json do |insta|
-      insta.add_method 'related_requests', :detailed
-      insta.add_method 'related_grants', :detailed
+      insta.add_method 'all_related_requests', :detailed
     end
     
     
@@ -59,6 +58,10 @@ module FluxxGrantProject
   end
 
   module ModelInstanceMethods
+    def all_related_requests 
+      related_requests(false) + related_grants
+    end
+    
     def related_requests granted_param=false
       project_requests.where({:granted => granted_param}).map{|pr| pr.request}.reject{|req| !req || req.deleted_at}.compact.sort_by{|req| [req.grant_agreement_at.to_i*-1, req.request_received_at.to_i*-1]}
     end

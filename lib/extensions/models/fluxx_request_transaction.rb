@@ -154,7 +154,7 @@ module FluxxRequestTransaction
       insta.copy_style :simple, :detailed
       insta.add_method 'related_users', :detailed
       insta.add_method 'related_organizations', :detailed
-      insta.add_method 'related_grants', :detailed
+      insta.add_method 'all_related_requests', :detailed
       insta.add_method 'related_transactions', :detailed
     end
     base.insta_multi
@@ -328,6 +328,10 @@ module FluxxRequestTransaction
       if request
         request.related_organizations
       end || []
+    end
+    
+    def all_related_requests
+      [request]
     end
     
     def related_grants

@@ -62,8 +62,7 @@ module FluxxGrantOrganization
     end
     base.insta_json do |insta|
       insta.add_method 'related_users', :detailed
-      insta.add_method 'related_requests', :detailed
-      insta.add_method 'related_grants', :detailed
+      insta.add_method 'all_related_requests', :detailed
       insta.add_method 'related_reports', :detailed
       insta.add_method 'related_transactions', :detailed
       insta.add_method 'related_users', :detailed
@@ -247,6 +246,10 @@ module FluxxGrantOrganization
 
     def related_org_ids
       []
+    end
+    
+    def all_related_requests limit_amount=50
+      related_requests(false, limit_amount) + related_grants(limit_amount)
     end
 
     def related_requests look_for_granted=false, limit_amount=50

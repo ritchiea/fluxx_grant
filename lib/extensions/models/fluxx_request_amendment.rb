@@ -99,6 +99,10 @@ module FluxxRequestAmendment
       self.original
     end
     
+    def all_related_requests
+      [request]
+    end
+    
     def related_grants
       [request]
     end

@@ -1384,5 +1384,10 @@ module FluxxRequest
     def created_by_with_create_date
       "#{created_by.full_name if created_by} (#{created_at.mdy if created_at})"
     end
+    
+    def as_json(options = nil)
+      super((options || {}).merge(:root => 'request'))
+    end
+    
   end
 end

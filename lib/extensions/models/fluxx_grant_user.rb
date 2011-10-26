@@ -45,9 +45,7 @@ module FluxxGrantUser
     end
     
     base.insta_json do |insta|
-      insta.add_method 'related_requests', :detailed
-      insta.add_method 'related_grants', :detailed
-      insta.add_method 'related_grants', :detailed
+      insta.add_method 'all_related_requests', :detailed
     end
     
     base.insta_export do |insta|
@@ -146,7 +144,11 @@ module FluxxGrantUser
   end
 
   module ModelInstanceMethods
-    def all_related_requests
+    def all_related_requests limit_amount=50
+      related_requests(false, limit_amount) + related_grants(limit_amount)
+    end
+    
+    def full_related_requests
       Request.where(:id => request_ids).all
     end
     
@@ -190,11 +192,11 @@ module FluxxGrantUser
     end
 
     def grant_program_ids
-     all_related_requests.map{|req| req.program.id if req && req.program}.flatten.compact
+     full_related_requests.map{|req| req.program.id if req && req.program}.flatten.compact
     end
 
     def grant_sub_program_ids
-      all_related_requests.map{|req| req.sub_program.id if req && req.sub_program}.flatten.compact
+      full_related_requests.map{|req| req.sub_program.id if req && req.sub_program}.flatten.compact
     end
 
     def organization_id
