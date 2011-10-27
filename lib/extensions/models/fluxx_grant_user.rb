@@ -86,6 +86,8 @@ module FluxxGrantUser
         # fields
         indexes "lower(users.first_name)", :as => :first_name, :sortable => true
         indexes "lower(users.last_name)", :as => :last_name, :sortable => true
+        indexes :first_name_foreign_language, :sortable => true
+        indexes :last_name_foreign_language, :sortable => true
         indexes "lower(users.email)", :as => :email, :sortable => true
         indexes "lower(TRIM(CONCAT(CONCAT(IFNULL(users.first_name, ' '), ' '), IFNULL(users.last_name, ' '))))", :as => :full_name, :sortable => true
         indexes "lower(TRIM(CONCAT(CONCAT(IFNULL(users.last_name, ' '), ' '), IFNULL(users.first_name, ' '))))", :as => :last_full_name, :sortable => true
@@ -112,6 +114,8 @@ module FluxxGrantUser
         # fields
         indexes "lower(users.first_name)", :as => :first_name, :sortable => true
         indexes "lower(users.last_name)", :as => :last_name, :sortable => true
+        indexes :first_name_foreign_language, :sortable => true
+        indexes :last_name_foreign_language, :sortable => true
         indexes "lower(users.email)", :as => :email, :sortable => true
         indexes "lower(TRIM(CONCAT(CONCAT(IFNULL(users.first_name, ' '), ' '), IFNULL(users.last_name, ' '))))", :as => :full_name, :sortable => true
         indexes "lower(TRIM(CONCAT(CONCAT(IFNULL(users.last_name, ' '), ' '), IFNULL(users.first_name, ' '))))", :as => :last_full_name, :sortable => true
