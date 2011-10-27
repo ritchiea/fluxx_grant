@@ -31,6 +31,7 @@ class UserSessionsController < ApplicationController
               # this is bad because if somebody had legitimately toggled the delta to reindex this user, it will not get reindexed
               User.connection.execute User.send(:sanitize_sql, ["update users set delta = 0 where id = ?", @user_session.user.id])
               flash[:notice] = "Login successful!"
+              response.headers['fluxx_result_success'] = 'create'
               if @user_session.user.is_grantee?
                 redirect_back_or_default grantee_portal_index_path
               elsif @user_session.user.is_reviewer?
@@ -39,6 +40,7 @@ class UserSessionsController < ApplicationController
                 redirect_back_or_default dashboard_index_path
               end
             else
+              response.headers['fluxx_result_failure'] = 'create'
               if params["user_session"] && params["user_session"]["portal"]
                   render :action => :portal, :layout => "portal"
               else
