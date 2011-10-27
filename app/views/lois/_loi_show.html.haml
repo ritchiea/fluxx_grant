@@ -50,6 +50,10 @@
           %br
           connected to
           = link_to render_grant_or_request_id(model.request), model.request, :class => "new-detail", "data-insert" => "after"
+    %tr
+      %td Date Created:
+      %td
+        = model.created_at.mdy if model.created_at
 
 %h3 Project Summary
 %p= model.project_summary
