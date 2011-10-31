@@ -1,1 +1,3 @@
-= form.input :not_retired, :as => :boolean, :label => "Exclude Retired Funding Sources"
+= form.input :not_retired, :as => :boolean, :label => "Exclude Retired Funding Sources:"
+= form.input :state, :label => 'Status:', :required => false, :as => :select, :collection => FundingSource.all_states.map{|state|[FundingSource.state_to_english_translation(state), state]}, :input_html => {:class => 'add-another'}
+

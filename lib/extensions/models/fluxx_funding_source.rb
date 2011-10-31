@@ -1,6 +1,7 @@
 module FluxxFundingSource
   LIQUID_METHODS = [ :name ]  
-
+SEARCH_ATTRIBUTES = [:state]
+  
   def self.included(base)
     base.has_many :request_funding_sources
     base.has_many :funding_source_allocations, :conditions => {:deleted_at => nil}
@@ -9,7 +10,9 @@ module FluxxFundingSource
     base.has_many :notes, :as => :notable, :conditions => {:deleted_at => nil}
     base.acts_as_audited
 
-    base.insta_search
+    base.insta_search do |insta|
+      insta.filter_fields = SEARCH_ATTRIBUTES
+    end
     base.insta_export
     base.insta_realtime
     base.insta_filter_amount do |insta|
