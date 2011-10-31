@@ -104,6 +104,7 @@ class FluxxGrantMigrationGenerator < Rails::Generators::Base
     handle_migration 'update_state_of_funding_sources.rb', 'db/migrate/fluxx_grant_update_state_of_funding_sources.rb'
     handle_migration 'add_organization_foreign_name_to_loi.rb', 'db/migrate/fluxx_grant_add_organization_foreign_name_to_loi.rb'
     handle_migration 'add_old_value_fields_to_request_amendments_table.rb', 'db/migrate/fluxx_grant_add_old_value_fields_to_request_amendments_table.rb'
+    handle_migration 'add_doc_view_privs_for_board_members.rb', 'db/migrate/fluxx_grant_add_doc_view_privs_for_board_members.rb'
   end
   
   private
