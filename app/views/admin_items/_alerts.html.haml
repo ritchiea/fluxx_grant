@@ -1,0 +1,10 @@
+.inline-list
+  .right
+%div{:class => "horizontal-tabs", :name => "admin-workflow-tabs"}
+  %ul
+    %li
+      %a{:href => alerts_path(:alert => {:model_controller_type => "RequestReportsController"}, :admin => true)} Report Alerts
+    %li
+      %a{:href => alerts_path(:alert => {:model_controller_type => "GrantRequestsController"}, :admin => true)} Request Alerts
+    %li
+      %a{:href => alerts_path(:alert => {:model_controller_type => "GrantedRequestsController"}, :admin => true)} Grant Alerts
