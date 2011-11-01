@@ -1,0 +1,1 @@
+= form.input :model_controller_type, :label => "Model Controller Type", :as => :select, :required => false, :collection => Alert.group('model_controller_type').order(:model_controller_type).map{|elem| elem.model_controller_type}, :input_html => {:class => 'add-another'}
