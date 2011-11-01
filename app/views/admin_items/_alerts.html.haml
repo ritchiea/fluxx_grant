@@ -3,8 +3,8 @@
 %div{:class => "horizontal-tabs", :name => "admin-workflow-tabs"}
   %ul
     %li
-      %a{:href => alerts_path(:alert => {:model_controller_type => "RequestReportsController"}, :admin => true)} Report Alerts
+      %a{:href => alerts_path(:alert => {:model_controller_type => "RequestReportsController"}, :admin => true, :all_results => 1)} Report Alerts
     %li
-      %a{:href => alerts_path(:alert => {:model_controller_type => "GrantRequestsController"}, :admin => true)} Request Alerts
+      %a{:href => alerts_path(:alert => {:model_controller_type => "GrantRequestsController"}, :admin => true, :all_results => 1)} Request Alerts
     %li
-      %a{:href => alerts_path(:alert => {:model_controller_type => "GrantedRequestsController"}, :admin => true)} Grant Alerts
+      %a{:href => alerts_path(:alert => {:model_controller_type => "GrantedRequestsController"}, :admin => true, :all_results => 1)} Grant Alerts

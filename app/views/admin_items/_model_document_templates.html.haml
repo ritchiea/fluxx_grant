@@ -1,0 +1,8 @@
+.inline-list
+  .right
+%div{:class => "horizontal-tabs", :name => "admin-workflow-tabs"}
+  %ul
+    %li
+      %a{:href => model_document_templates_path(:model_document_template => {:model_type => "GrantRequest"}, :admin => true, :all_results => 1)} Request Documents
+    %li
+      %a{:href => model_document_templates_path(:model_document_template => {:model_type => "SimpleDocketReport"}, :admin => true, :all_results => 1)} Docket Report
