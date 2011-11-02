@@ -15,6 +15,7 @@ module FluxxGrantedRequestsController
       insta.icon_style = ICON_STYLE
       insta.report_icon_style = REPORT_ICON_STYLE
       insta.delta_type = GrantedRequestsController.translate_delta_type true # Vary the request type based on whether a request has been granted yet or not
+      insta.include_relation = [:program_lead, :grantee_org_owner, :grantee_signatory, :fiscal_org_owner, :fiscal_signatory, :program_organization, :fiscal_organization, :program]
       insta.format do |format|
         format.html do |triple|
           controller_dsl, outcome, default_block = triple

@@ -9,6 +9,8 @@ module FluxxGrantRequestsController
       insta.filter_title = "Requests Filter"
       insta.filter_template = 'grant_requests/grant_request_filter'
       insta.order_clause = 'updated_at desc'
+      insta.include_relation = [:program_lead, :grantee_org_owner, :grantee_signatory, :fiscal_org_owner, :fiscal_signatory, :program_organization, :fiscal_organization, :program]
+      
       insta.icon_style = ICON_STYLE
       insta.delta_type = GrantRequestsController.translate_delta_type false # Vary the request type based on whether a request has been granted yet or not
       insta.format do |format|
