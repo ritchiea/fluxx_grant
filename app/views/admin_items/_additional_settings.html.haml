@@ -1,0 +1,20 @@
+.inline-list
+  .right
+%div{:class => "horizontal-tabs", :name => "admin-workflow-tabs"}
+  %ul
+    %li
+      %a{:href => funding_sources_path(:admin => true, :all_results => 1)} Funding Sources
+    %li
+      %a{:href => groups_path(:admin => true, :all_results => 1)} Groups
+    - unless Fluxx.config(:hide_program) == "1"
+      %li
+        %a{:href => programs_path(:admin => true, :all_results => 1)}= I18n.t(:program_name)
+    - unless Fluxx.config(:hide_sub_program) == "1"
+      %li
+        %a{:href => sub_programs_path(:admin => true, :all_results => 1)}= I18n.t(:sub_program_name)
+    - unless Fluxx.config(:hide_initiative) == "1"
+      %li
+        %a{:href => initiatives_path(:admin => true, :all_results => 1)}= I18n.t(:initiative_name)
+    - unless Fluxx.config(:hide_sub_initiative) == "1"
+      %li
+        %a{:href => sub_initiatives_path(:admin => true, :all_results => 1)}= I18n.t(:sub_initiative_name)

@@ -13,6 +13,18 @@ module FluxxInitiativesController
         end
       end)
       insta.icon_style = ICON_STYLE
+      insta.template_map = {:admin => 'initiative_list_admin'}
+      insta.format do |format|
+        format.html do |triple|
+          controller_dsl, outcome, default_block = triple
+          if params[:admin]
+            @suppress_model_iteration = true
+          else
+            @suppress_model_iteration = false
+          end
+          default_block.call
+        end
+      end
     end
     base.insta_show Initiative do |insta|
       insta.template = 'initiative_show'

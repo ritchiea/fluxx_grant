@@ -12,6 +12,18 @@ module FluxxSubProgramsController
         end
       end)
       insta.icon_style = ICON_STYLE
+      insta.template_map = {:admin => 'sub_program_list_admin'}
+      insta.format do |format|
+        format.html do |triple|
+          controller_dsl, outcome, default_block = triple
+          if params[:admin]
+            @suppress_model_iteration = true
+          else
+            @suppress_model_iteration = false
+          end
+          default_block.call
+        end
+      end
     end
     base.insta_show SubProgram do |insta|
       insta.template = 'sub_program_show'

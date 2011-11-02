@@ -12,6 +12,18 @@ module FluxxFundingSourcesController
           '(funding_sources.retired is null or funding_sources.retired = 0)'
         end
       end)
+      insta.template_map = {:admin => 'funding_sources_list_admin'}
+      insta.format do |format|
+        format.html do |triple|
+          controller_dsl, outcome, default_block = triple
+          if params[:admin]
+            @suppress_model_iteration = true
+          else
+            @suppress_model_iteration = false
+          end
+          default_block.call
+        end
+      end
     end
     base.insta_show FundingSource do |insta|
       insta.template = 'funding_source_show'

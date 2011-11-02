@@ -1,0 +1,31 @@
+-name= I18n.t(:initiative_name)
+-klass= Initiative
+-new_path = new_initiative_path
+-plural_name = name.titleize.pluralize
+%h3
+  = link_to plural_name, current_index_path, :title => plural_name, :class => 'new-listing'
+  - if current_user.has_create_for_model?(klass)
+    &nbsp;&nbsp;
+    = link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_path, :title => "Add A #{name}", :class => 'to-modal', 'data-on-success' => 'refreshCaller,close'
+
+- if !models || models.empty?
+  %p= "No #{plural_name} available"
+- else
+  - models.each do |model|
+    -edit_path = edit_initiative_path(:id => model, :as_modal => '1')
+    %div
+      %span.actions
+        - if current_user.has_delete_for_model?(model)
+          = link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png", :class => 'delete-button'), model, :class => 'as-delete', 'data-on-success' => 'refreshCaller'
+      %dl.inline
+        %dt Name:
+        %dd
+          - if current_user.has_update_for_model?(model)
+            = link_to model.name, edit_path, :class => 'to-modal', 'data-on-success' => 'refreshCaller,close'
+          - else
+            = model.name
+        %dt=link_to "View Funding Sources", current_show_path(model), :class => 'new-detail', :title => model.name
+        %dd
+        - if model.retired
+          = "#{plural_name} is Retired"
+      %hr

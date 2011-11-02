@@ -1,0 +1,35 @@
+%h3
+  = link_to "Funding Sources", current_index_path, :title => "Funding Sources", :class => 'new-listing'
+  - if current_user.has_create_for_model?(FundingSource)
+    &nbsp;&nbsp;
+    = link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_funding_source_path, :title => 'Add A Funding Source', :class => 'to-modal', 'data-on-success' => 'refreshCaller,close'
+
+- if !models || models.empty?
+  %p= "No Funding Sources available"
+- else
+  - models.each do |model|
+    %div
+      %span.actions
+        - if current_user.has_delete_for_model?(model)
+          = link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png", :class => 'delete-button'), model, :class => 'as-delete', 'data-on-success' => 'refreshCaller'
+      %dl.inline
+        %dt Name:
+        %dd
+          - if current_user.has_update_for_model?(model)
+            = link_to model.name, edit_funding_source_path(:id => model, :as_modal => '1'), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close'
+          - else
+            = model.name
+        %dt=link_to "View Funding Allocations", current_show_path(model), :class => 'new-detail', :title => model.name
+        %dd
+        %dt Start Date:
+        %dd= model.start_at.mdy if model.start_at
+        %dt End Date:
+        %dd= model.end_at.mdy if model.end_at
+        %dt Amount Allocated:
+        %dd= as_currency(model.amount) if model.amount
+        %dt State:
+        %dd= model.state_to_english.empty? ? model.state : model.state_to_english
+        - if model.retired
+          Funding Source is Retired
+
+      %hr
