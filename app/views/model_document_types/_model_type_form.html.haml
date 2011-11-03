@@ -1,0 +1,4 @@
+-model_types = ["GrantRequest", "Organization", "Project", "RequestReport", "User", "WorkTask", "RequestTransactions"]
+-unless Fluxx.config(:hide_fips) == "1"
+  model_types << "FipRequest"
+= form.input :model_type, :as => :select, :label => "Type", :collection => model_types.sort
