@@ -16,7 +16,7 @@ SEARCH_ATTRIBUTES = [:state]
     base.insta_export
     base.insta_realtime
     base.insta_filter_amount do |insta|
-      insta.amount_attributes = [:amount]
+      insta.amount_attributes = [:amount, :overhead_amount, :net_available_to_spend_amount]
     end
     base.liquid_methods *( LIQUID_METHODS )    
     
