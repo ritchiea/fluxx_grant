@@ -1,0 +1,6 @@
+-program = Program.find(model.program_id) if model.program_id
+-sub_program = SubProgram.find(model.sub_program_id) if model.sub_program_id && !(Fluxx.config(:hide_sub_program) == "1")
+-initiative = Initiative.find(model.initiative_id) if model.initiative_id && !(Fluxx.config(:hide_initiative) == "1")
+-sub_initiative = SubInitiative.find(model.sub_initiative_id) if model.sub_initiative_id && !(Fluxx.config(:sub_hide_initiative) == "1")
+%dt Program Hierarchy:
+%dd= [program, sub_program, initiative, sub_initiative].compact.join(' - ')
