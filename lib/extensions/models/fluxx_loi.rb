@@ -67,10 +67,29 @@ module FluxxLoi
     base.insta_multi
     base.insta_export do |insta|
       insta.filename = 'loi'
-      insta.headers = [['Date Created', :date], ['Date Updated', :date]]
-      insta.sql_query = "created_at, updated_at
-                from lois
-                where id IN (?)"
+      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'Applicant', 
+      'Organization Name', 'Foreign Organization Name',
+         'Address', "Address 2", 'City', 'State', 'Country',
+         'Postal Code',
+         'Email', 'Phone', 
+         'Project Title', 'Project Summary',
+         'Program Name', 'Amount Requested', 'Duration in Months', 
+         'Grant Begins At'
+      ]
+      insta.sql_query = "lois.created_at, lois.updated_at, lois.applicant, 
+          lois.organization_name, lois.organization_name_foreign_language,
+          lois.address, lois.street_address2, lois.city, geo_states.name state_name, geo_countries.name country_name, 
+          lois.postal_code,
+          lois.email, lois.phone, 
+          lois.project_title, lois.project_summary, 
+          (select name from programs where programs.id = lois.program_id) program_name, 
+          lois.amount_requested, lois.duration_in_months, 
+          lois.grant_begins_at 
+          
+        from lois
+        left outer join geo_states on geo_states.id = lois.geo_state_id
+        left outer join geo_countries on geo_countries.id = lois.geo_country_id
+        where lois.id IN (?)"
     end
     base.insta_lock
 
