@@ -26,10 +26,10 @@ module FluxxGrantRequestsController
           ids=  @models.map(&:id)
           results = ReportUtility.single_value_query([query, ids])
           @grants = false
-          @amount_in_pipeline = results["amount"]
-          @number_in_pipeline = results["count"]
-          @average_amount = results["average"]
-          @average_days = results["days"]
+          @amount_in_pipeline = results[:amount]
+          @number_in_pipeline = results[:count]
+          @average_amount = results[:average]
+          @average_days = results[:days]
           @pipeline = []
           exclude_states = GrantRequest.all_states_with_category :granted
           query = "SELECT sum(r.amount_requested) as amount, count(r.id) as count, r.state AS state FROM requests r WHERE r.id IN (?) and r.state not in (?) group by r.state"
@@ -37,10 +37,10 @@ module FluxxGrantRequestsController
           max = 0
           i = 0
           dummy_model = Request.new
-          req.each_hash do |res|
-            amount = res["amount"] ? res["amount"].to_i : 0
-            count = res["count"] ? res["count"].to_i : 0
-            dummy_model.state = res["state"]
+          req.each(:cache_rows => false, :symbolize_keys => true, :as => :hash) do |res|
+            amount = res[:amount]
+            count = res[:count]
+            dummy_model.state = res[:state]
             max = count if count > max
             @pipeline[i] = {:count => count, :amount  => amount, :state => dummy_model.state_to_english}
             i += 1

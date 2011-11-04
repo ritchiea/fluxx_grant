@@ -29,21 +29,21 @@ module FluxxGrantedRequestsController
           ids=  @models.map(&:id)
           results = ReportUtility.single_value_query([query, ids])
           @grants = true
-          @amount_in_pipeline = results["amount"]
-          @number_in_pipeline = results["count"]
-          @average_amount = results["average"]
-          @average_days = results["days"]
+          @amount_in_pipeline = results[:amount]
+          @number_in_pipeline = results[:count]
+          @average_amount = results[:average]
+          @average_days = results[:days]
           @pipeline = []
           query = "SELECT sum(r.amount_requested) as amount, count(r.id) as count, p.name AS program FROM requests r left outer join programs p on p.id = r.program_id  WHERE r.id IN (?) group by p.name"
           req = Request.connection.execute(Request.send(:sanitize_sql, [query, ids]))
           max = 0
           i = 0
           dummy_model = Request.new
-          req.each_hash do |res|
-            amount = res["amount"] ? res["amount"].to_i : 0
-            count = res["count"] ? res["count"].to_i : 0
+          req.each(:cache_rows => false, :symbolize_keys => true, :as => :hash) do |res|
+            amount = res[:amount]
+            count = res[:count]
             max = count if count > max
-            @pipeline[i] = {:count => count, :amount  => amount, :state => res["program"]}
+            @pipeline[i] = {:count => count, :amount  => amount, :state => res[:program]}
             i += 1
           end
           max = max.to_f

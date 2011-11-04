@@ -58,17 +58,17 @@ class GrantsByFundingSourceReport < ActionController::ReportBase
     
     
     requests = FundingSourceAllocation.build_temp_table do |temp_table_name|
-      Request.find_by_sql [%{select (select name from programs where id = temp_table.program_id) program_name, 
-                  (select name from sub_programs where id = temp_table.sub_program_id) sub_program_name,
-                  (select name from initiatives where id = temp_table.initiative_id) initiative_name,
-                  (select name from sub_initiatives where id = temp_table.sub_initiative_id) sub_initiative_name,
-                  if(type = 'GrantRequest', (select name from organizations where id = program_organization_id), fip_title) grant_name,
+      Request.find_by_sql [%{select (select name from programs where id = temp_table.program_id) report_program_name, 
+                  (select name from sub_programs where id = temp_table.sub_program_id) report_sub_program_name,
+                  (select name from initiatives where id = temp_table.initiative_id) report_initiative_name,
+                  (select name from sub_initiatives where id = temp_table.sub_initiative_id) report_sub_initiative_name,
+                  if(type = 'GrantRequest', (select name from organizations where id = program_organization_id), fip_title) report_grant_name,
                   base_request_id,
                   amount_recommended,
-                  grant_begins_at begin_date,
-                  if(grant_begins_at is not null and duration_in_months is not null, date_add(date_add(req.grant_begins_at, INTERVAL duration_in_months month), interval -1 DAY), grant_begins_at) end_date,
-                  (select name from funding_sources where funding_sources.id = temp_table.funding_source_id) funder_name,
-                  rfs.funding_amount
+                  grant_begins_at report_begin_date,
+                  if(grant_begins_at is not null and duration_in_months is not null, date_add(date_add(req.grant_begins_at, INTERVAL duration_in_months month), interval -1 DAY), grant_begins_at) report_end_date,
+                  (select name from funding_sources where funding_sources.id = temp_table.funding_source_id) report_funder_name,
+                  rfs.funding_amount report_funding_amount
                   from #{temp_table_name} temp_table, request_funding_sources rfs, requests req
                   where temp_table.id = rfs.funding_source_allocation_id and rfs.funding_source_allocation_id is not null and
                   rfs.request_id = req.id and
@@ -121,17 +121,17 @@ class GrantsByFundingSourceReport < ActionController::ReportBase
      row = row_start
      
      requests.each do |request|
-      worksheet.write(row += 1, 0, request.program_name)
-      worksheet.write(row, 1, request.sub_program_name)
-      worksheet.write(row, 2, request.initiative_name)
-      worksheet.write(row, 3, request.sub_initiative_name)
-      worksheet.write(row, 4, request.grant_name)
+      worksheet.write(row += 1, 0, request.report_program_name)
+      worksheet.write(row, 1, request.report_sub_program_name)
+      worksheet.write(row, 2, request.report_initiative_name)
+      worksheet.write(row, 3, request.report_sub_initiative_name)
+      worksheet.write(row, 4, request.report_grant_name)
       worksheet.write(row, 5, request.base_request_id)
-      worksheet.write(row, 6, (request.amount_recommended.to_i rescue 0), amount_format)
-      worksheet.write(row, 7, (request.begin_date ? (Time.parse(request.begin_date).mdy rescue '') : ''), date_format)
-      worksheet.write(row, 8, (request.end_date ? (Time.parse(request.end_date).mdy rescue '') : ''), date_format)
-      worksheet.write(row, 9, request.funder_name)
-      worksheet.write(row, 10, (request.funding_amount.to_i rescue 0), amount_format)
+      worksheet.write(row, 6, (request.amount_recommended), amount_format)
+      worksheet.write(row, 7, (request.report_begin_date ? request.report_begin_date.mdy : nil), date_format)
+      worksheet.write(row, 8, (request.report_end_date ? request.report_end_date.mdy : nil), date_format)
+      worksheet.write(row, 9, request.report_funder_name)
+      worksheet.write(row, 10, (request.report_funding_amount), amount_format)
     end
 
     workbook.close

@@ -24,7 +24,7 @@ module MonthlyGrantsBaseReport
     legend_table = ["Program", "Grants", "Grant #{CurrencyHelper.current_long_name.pluralize}"]
     legend_table << [I18n.t(:fip_name).pluralize, "#{I18n.t(:fip_name)} #{CurrencyHelper.current_long_name.pluralize} By Organizaton"] unless Fluxx.config(:hide_fips) == "1"
     
-    legend = [{ :table => legend_table, :filter => "", "listing_url".to_sym => "", "card_title".to_sym => ""}]
+    legend = [{ :table => legend_table, :filter => "", :listing_url => "", :card_title => ""}]
     filter = []
     params["request"].each do |key, value|
       next if key == "program_id"
@@ -34,12 +34,12 @@ module MonthlyGrantsBaseReport
         filter << "request[#{key}]=#{value}"
       end
     end if params["request"]
-    req.each_hash do |result|
-      legend_table = [result["program"], result["grants"], number_to_currency(result["grant_dollars"])]
-      legend_table << [result["fips"], number_to_currency(result["fip_dollars"])] unless Fluxx.config(:hide_fips) == "1"
+    req.each(:cache_rows => false, :symbolize_keys => true, :as => :hash) do |result|
+      legend_table = [result[:program], result[:grants], number_to_currency(result[:grant_dollars])]
+      legend_table << [result[:fips], number_to_currency(result[:fip_dollars])] unless Fluxx.config(:hide_fips) == "1"
       legend << { :table => legend_table,
-        :filter =>  filter.join("&") + "&request[program_id][]=#{result['program_id']}",
-        "listing_url".to_sym => controller.granted_requests_path, "card_title".to_sym => "#{result['program']} Grants"}
+        :filter =>  filter.join("&") + "&request[program_id][]=#{result[:program_id]}",
+        :listing_url => controller.granted_requests_path, :card_title => "#{result[:program]} Grants"}
     end
    legend
   end
@@ -68,16 +68,16 @@ module MonthlyGrantsBaseReport
     query = "select #{aggregate} as num, requests.grant_agreement_at as date, YEAR(requests.grant_agreement_at) as year, MONTH(requests.grant_agreement_at) as month, requests.program_id as program_id, programs.name as program 
       from requests left join programs on programs.id = requests.program_id where grant_agreement_at IS NOT NULL and requests.id in (?) group by requests.program_id, YEAR(grant_agreement_at), MONTH(grant_agreement_at) ORDER BY program"
     req = Request.connection.execute(Request.send(:sanitize_sql, [query, request_ids]))
-    req.each_hash do |row|
-      year = row["year"].to_i
-      month = row["month"].to_i
-      program_id = row["program_id"].to_i
-      store_hash data, year, month, program_id, row["num"].to_i
+    req.each(:cache_rows => false, :symbolize_keys => true, :as => :hash) do |row|
+      year = row[:year]
+      month = row[:month]
+      program_id = row[:program_id]
+      store_hash data, year, month, program_id, row[:num]
       if !programs.find_index program_id
         programs << program_id
-        plot[:series] << { :label => row["program"]}
+        plot[:series] << { :label => row[:program]}
       end
-      date = Date.parse(row["date"]) rescue nil
+      date = row[:date]
       if (date)
         end_date = date if !end_date || date > end_date
         start_date = date if !start_date || date < start_date

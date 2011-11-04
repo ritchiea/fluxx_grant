@@ -19,15 +19,15 @@ class NumberOfReportsPerLead < ActionController::ReportBase
     report_types = []
     report_count = {}
     max = 0
-    data.each_hash do |row|
-      if !user_ids.include?(row["user_id"])
-        user_ids << row["user_id"]
-        xaxis << "#{row['first_name']} #{row['last_name']}"
+    data.each(:cache_rows => false, :symbolize_keys => true, :as => :hash) do |row|
+      if !user_ids.include?(row[:user_id])
+        user_ids << row[:user_id]
+        xaxis << "#{row[:first_name]} #{row[:last_name]}"
       end
-      report_types << row["report_type"] unless report_types.include?(row["report_type"])
-      report_count[row["report_type"]] = {} unless report_count[row["report_type"]]
-      report_count[row["report_type"]][row["user_id"]] = row["count"]
-      max = row["count"].to_i if max < row["count"].to_i
+      report_types << row[:report_type] unless report_types.include?(row[:report_type])
+      report_count[row[:report_type]] = {} unless report_count[row[:report_type]]
+      report_count[row[:report_type]][row[:user_id]] = row[:count]
+      max = row[:count] if max < row[:count]
     end
 
     report_count.sort.each do |report_type, counts_by_user|
@@ -37,6 +37,7 @@ class NumberOfReportsPerLead < ActionController::ReportBase
       end
     end
 
+    hash[:data] = ReportUtility.convert_bigdecimal_to_f_in_array hash[:data]
     hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :max => max + 10, :tickOptions => { :formatString => "%.0f" } }}
     hash[:series] = report_types.map{|report_type| {:label => report_type}}
     hash[:stackSeries] = false;
@@ -63,10 +64,10 @@ class NumberOfReportsPerLead < ActionController::ReportBase
         filter << "request_report[#{key}]=#{value}"
       end
     end if params["request_report"]
-    RequestReport.connection.execute(Request.send(:sanitize_sql, [query, models.map(&:id)])).each_hash do |result|
-      legend << { :table => [result["report_type"], result["count"]],
-                  :filter =>  filter.join("&") + "&request_report[report_type][]=#{result['report_type']}",
-        "listing_url".to_sym => controller.request_reports_path, "card_title".to_sym => "#{result['report_type']} Reports"}
+    RequestReport.connection.execute(Request.send(:sanitize_sql, [query, models.map(&:id)])).each(:cache_rows => false, :symbolize_keys => true, :as => :hash) do |result|
+      legend << { :table => [result[:report_type], result[:count]],
+                  :filter =>  filter.join("&") + "&request_report[report_type][]=#{result[:report_type]}",
+        :listing_url => controller.request_reports_path, :card_title => "#{result[:report_type]} Reports"}
     end
     legend
   end

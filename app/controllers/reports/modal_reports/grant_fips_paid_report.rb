@@ -43,7 +43,7 @@ class GrantAndFipDetailsReport < ActionController::ReportBase
     end || []
     programs = programs.compact
     
-    requests = Request.find_by_sql [%{select req.type request_type, req.program_id, (select name from programs where programs.id = req.program_id) program_name,
+    requests = Request.find_by_sql [%{select req.type request_type, req.program_id, (select name from programs where programs.id = req.program_id) report_program_name,
       rt.payment_type, rt.payment_confirmation_number, payment_confirmed_by.first_name, payment_confirmed_by.last_name, rt.paid_at, 
       program_organization.name program_org_name, req.base_request_id, rt.amount_paid
       from request_transactions rt

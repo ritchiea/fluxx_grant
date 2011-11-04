@@ -22,7 +22,7 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
 
       # Funding sources for selected programs
       query = "SELECT id FROM #{temp_table_name} WHERE program_id IN (?) AND retired=0 AND deleted_at IS NULL"
-      allocation_ids = ReportUtility.extract_ids [query, program_ids]
+      allocation_ids = ReportUtility.array_query [query, program_ids]
 
       # Never include these requests
       rejected_states = Request.send(:sanitize_sql, ['(?)', Request.all_rejected_states])
@@ -38,34 +38,34 @@ class FundingAllocationsByTimeReport < ActionController::ReportBase
       # Total Granted
       query = "SELECT SUM(amount_recommended) AS amount, YEAR(grant_agreement_at) AS year, MONTH(grant_agreement_at) AS month FROM requests r WHERE #{always_exclude} AND granted = 1 AND grant_agreement_at >= ?
         AND grant_agreement_at <= ? AND program_id IN (?) GROUP BY YEAR(grant_agreement_at), MONTH(grant_agreement_at)"
-      total_granted = ReportUtility.normalize_month_year_query([query, start_date, stop_date, program_ids], start_date, stop_date, "amount")
+      total_granted = ReportUtility.normalize_month_year_query([query, start_date, stop_date, program_ids], start_date, stop_date)
 
       #Pipeline
       query = "SELECT SUM(r.amount_requested) AS amount, COUNT(DISTINCT r.id) AS count FROM requests r  WHERE #{always_exclude} AND r.granted = 0 AND r.program_id IN (?) AND r.state NOT IN (?)"
       res = ReportUtility.single_value_query([query, program_ids, ReportUtility.pre_pipeline_states])
       pipeline = Array.new.fill(0, 0, total_granted.length)
-      pipeline << res["amount"].to_i
+      pipeline << res[:amount]
 
       #Paid
       query = "select sum(rtfs.amount) AS amount,  YEAR(r.grant_agreement_at) AS year, MONTH(r.grant_agreement_at) AS month from request_transactions rt, request_transaction_funding_sources rtfs, request_funding_sources rfs, #{temp_table_name} fsa, requests r
         WHERE #{always_exclude} AND rt.state in #{paid_states} AND rt.id = rtfs.request_transaction_id AND rfs.id = rtfs.request_funding_source_id AND fsa.id = rfs.funding_source_allocation_id AND r.id = rt.request_id
         AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND fsa.program_id IN (?) and rt.deleted_at is null GROUP BY YEAR(grant_agreement_at), MONTH(grant_agreement_at)"
-      paid = ReportUtility.normalize_month_year_query([query, start_date, stop_date, program_ids], start_date, stop_date, "amount")
+      paid = ReportUtility.normalize_month_year_query([query, start_date, stop_date, program_ids], start_date, stop_date)
 
       #Budgeted
       query = "SELECT SUM(amount) AS amount FROM #{temp_table_name} WHERE retired=0 AND deleted_at IS NULL AND program_id IN (?) AND spending_year IN (?)"
       res = ReportUtility.single_value_query([query, program_ids, years])
       budgeted = Array.new.fill(0, 0, total_granted.length)
-      budgeted << res["amount"].to_i
+      budgeted << res[:amount]
 
       # Rollups
       xaxis = ReportUtility.get_xaxis(start_date, stop_date)
       xaxis << "Year to Date"
-      total_granted << total_granted.inject {|sum, amount| sum + amount }
+      total_granted << total_granted.inject(0) {|sum, amount| sum + (amount || 0) }
 
       plot = {:library => "jqplot"}
 
-      hash[:data] = [budgeted, pipeline, total_granted, paid]
+      hash[:data] = ReportUtility.convert_bigdecimal_to_f_in_array [budgeted, pipeline, total_granted, paid]
       hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => "#{I18n.t 'number.currency.format.unit'}%'.2f" }}}
       hash[:series] = [ {:label => "Budgeted"}, {:label => "Pipeline"}, {:label => "Granted"}, {:label => "Paid"} ]
       hash[:stackSeries] = false;

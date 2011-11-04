@@ -24,28 +24,28 @@ class BudgetOverviewByYear < ActionController::ReportBase
 
       # Selected Programs
       query = "SELECT name, id FROM programs WHERE id IN (?)"
-      programs = ReportUtility.query_map_to_array([query, program_ids], program_ids, "id", "name", false)
+      programs = ReportUtility.query_map_to_array([query, program_ids], program_ids, :id, :name)
       xaxis = []
       i = 0
       programs.each { |program| xaxis << program }
       #Total Granted
       query = "SELECT sum(amount_recommended) as amount, program_id FROM requests r WHERE #{always_exclude} AND granted = 1 AND grant_agreement_at >= ? AND grant_agreement_at <= ? AND program_id IN (?) GROUP BY program_id"
-      total_granted = ReportUtility.query_map_to_array([query, start_date, stop_date, program_ids], program_ids, "program_id", "amount")
+      total_granted = ReportUtility.query_map_to_array([query, start_date, stop_date, program_ids], program_ids, :program_id, :amount)
 
       #Paid
       query = "select sum(rtfs.amount) AS amount,  fsa.program_id AS program_id from request_transactions rt, request_transaction_funding_sources rtfs, request_funding_sources rfs, #{temp_table_name} fsa, requests r
         WHERE #{always_exclude} AND rt.state in #{paid_states} AND rt.id = rtfs.request_transaction_id AND rfs.id = rtfs.request_funding_source_id AND fsa.id = rfs.funding_source_allocation_id AND r.id = rt.request_id
         AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND fsa.program_id IN (?) and rt.deleted_at is null GROUP BY fsa.program_id"
-      paid = ReportUtility.query_map_to_array([query, start_date, stop_date, program_ids], program_ids, "program_id", "amount")
+      paid = ReportUtility.query_map_to_array([query, start_date, stop_date, program_ids], program_ids, :program_id, :amount)
 
       #Budgeted
       query = "SELECT SUM(tmp.amount) AS amount, tmp.program_id AS program_id FROM #{temp_table_name} tmp WHERE tmp.deleted_at IS NULL AND tmp.program_id IN (?) AND tmp.spending_year IN (?) GROUP BY tmp.program_id"
-      budgeted = ReportUtility.query_map_to_array([query, program_ids, years], program_ids, "program_id", "amount")
+      budgeted = ReportUtility.query_map_to_array([query, program_ids, years], program_ids, :program_id, :amount)
 
       #Pipeline
       #TODO: Check this
       query = "SELECT SUM(r.amount_requested) AS amount, r.program_id as program_id FROM requests r  WHERE #{always_exclude} AND r.granted = 0 AND r.program_id IN (?) AND r.state NOT IN (?) GROUP BY r.program_id"
-      pipeline = ReportUtility.query_map_to_array([query, program_ids, ReportUtility.pre_pipeline_states], program_ids, "program_id", "amount")
+      pipeline = ReportUtility.query_map_to_array([query, program_ids, ReportUtility.pre_pipeline_states], program_ids, :program_id, :amount)
 
       hash = {:library => "jqPlot"}
 
@@ -55,7 +55,7 @@ class BudgetOverviewByYear < ActionController::ReportBase
 
       paid.each_index{|i| paid[i] -= (budgeted[i] + pipeline[i] + total_granted[i]) }
 
-      hash[:data] = [pipeline, total_granted, budgeted, paid ]
+      hash[:data] = ReportUtility.convert_bigdecimal_to_f_in_array [pipeline, total_granted, budgeted, paid ]
 
       hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => "#{I18n.t 'number.currency.format.unit'}%'.0f" }}}
       hash[:series] = [ {:label => "Pipeline", :renderer => "$.jqplot.BarRenderer"}, {:label => "Granted", :renderer => "$.jqplot.BarRenderer"}, {:label => "Budgeted"}, {:label => "Paid"} ]
@@ -108,7 +108,7 @@ class BudgetOverviewByYear < ActionController::ReportBase
     always_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
     legend_table = ["Status", "Grants", "Grant #{CurrencyHelper.current_long_name.pluralize}"]
     legend_table = legend_table.concat [I18n.t(:fip_name).pluralize, "#{I18n.t(:fip_name)} #{CurrencyHelper.current_long_name.pluralize}"] unless Fluxx.config(:hide_fips) == "1"
-    legend = [{:table => legend_table, :filter => "", "listing_url".to_sym => "", "card_title".to_sym => ""}]
+    legend = [{:table => legend_table, :filter => "", :listing_url => "", :card_title => ""}]
     categories = ["Pipeline", "Granted", "Budgeted", "Paid"]
     start_date_string = start_date.strftime('%m/%d/%Y')
     stop_date_string = stop_date.strftime('%m/%d/%Y')
@@ -143,10 +143,9 @@ class BudgetOverviewByYear < ActionController::ReportBase
         end
         grant_result = ReportUtility.single_value_query(grant)
         fip_result = ReportUtility.single_value_query(fip)
-        legend_table = [program, grant_result["count"], number_to_currency(grant_result["amount"] ? grant_result["amount"] : 0 )]
-        legend_table = legend_table.concat [fip_result["count"], number_to_currency(fip_result["amount"] ? fip_result["amount"] : 0)] unless Fluxx.config(:hide_fips) == "1"
-        legend << { :table => legend_table,
-                    :filter => card_filter, "listing_url".to_sym => listing_url, "card_title".to_sym => card_title}
+        legend_table = [program, grant_result[:count], number_to_currency(grant_result[:amount] ? grant_result[:amount] : 0 )]
+        legend_table = legend_table.concat [fip_result[:count], number_to_currency(fip_result[:amount] ? fip_result[:amount] : 0)] unless Fluxx.config(:hide_fips) == "1"
+        legend << { :table => legend_table, :filter => card_filter, :listing_url => listing_url, :card_title => card_title}
       end
     end
    legend
