@@ -21,6 +21,10 @@ class UserSessionsController < ApplicationController
     end
   end
   
+  def impersonate
+    create
+  end
+  
   def create
     @user_session = UserSession.new(params[:user_session])
     User.suspended_delta(false) do
