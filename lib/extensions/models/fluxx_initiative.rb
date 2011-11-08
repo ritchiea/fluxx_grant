@@ -13,6 +13,7 @@ module FluxxInitiative
     base.validates_presence_of     :sub_program
     base.validates_presence_of     :name
     base.validates_length_of       :name,    :within => 3..255
+    base.before_destroy :clear_out_allocation_references
     base.send :attr_accessor, :not_retired
     
     base.insta_search do |insta|
@@ -139,6 +140,11 @@ module FluxxInitiative
             #{initiative_fsa_join_where_clause}", 
             self.id, self.id, FundingSource.approved_states]))
       total_amount.fetch_row.first.to_i
+    end
+
+    def clear_out_allocation_references
+      FundingSourceAllocation.where(:initiative_id => self.id).where('deleted_at is not null').update_all(:initiative_id => nil)
+      Request.where(:initiative_id => self.id).where('deleted_at is not null').update_all(:initiative_id => nil)
     end
   end
 end

@@ -8,6 +8,7 @@ SEARCH_ATTRIBUTES = [:state]
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
     base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
     base.has_many :notes, :as => :notable, :conditions => {:deleted_at => nil}
+    base.before_destroy :clear_out_allocation_references
     base.acts_as_audited
 
     base.insta_search do |insta|
@@ -73,6 +74,10 @@ SEARCH_ATTRIBUTES = [:state]
     
     def is_approved?
       true
+    end
+    
+    def clear_out_allocation_references
+      FundingSourceAllocation.where(:funding_source_id => self.id).where('deleted_at is not null').update_all(:funding_source_id => nil)
     end
   end
 end

@@ -17,6 +17,7 @@ module FluxxProgram
     base.belongs_to :parent_program, :class_name => 'Program', :foreign_key => :parent_id
     base.has_many :children_programs, :class_name => 'Program', :foreign_key => :parent_id
     base.has_many :notes, :as => :notable, :conditions => {:deleted_at => nil}
+    base.before_destroy :clear_out_allocation_references
     base.send :attr_accessor, :not_retired
     
     base.insta_search do |insta|
@@ -233,6 +234,12 @@ module FluxxProgram
 
     def to_s
       autocomplete_to_s
+    end
+
+    def clear_out_allocation_references
+      FundingSourceAllocation.where(:program_id => self.id).where('deleted_at is not null').update_all(:program_id => nil)
+      Loi.where(:program_id => self.id).where('deleted_at is not null').update_all(:program_id => nil)
+      Request.where(:program_id => self.id).where('deleted_at is not null').update_all(:program_id => nil)
     end
   end
 end

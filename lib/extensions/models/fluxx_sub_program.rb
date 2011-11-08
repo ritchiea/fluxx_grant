@@ -10,6 +10,7 @@ module FluxxSubProgram
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
     base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
     base.belongs_to :program
+    base.before_destroy :clear_out_allocation_references
     base.has_many :notes, :as => :notable, :conditions => {:deleted_at => nil}
     base.send :attr_accessor, :not_retired
 
@@ -123,6 +124,12 @@ module FluxxSubProgram
             #{sub_program_fsa_join_where_clause}", 
             self.id, self.id, self.id, FundingSource.approved_states]))
       total_amount.fetch_row.first.to_i
+    end
+
+    def clear_out_allocation_references
+      FundingSourceAllocation.where(:sub_program_id => self.id).where('deleted_at is not null').update_all(:sub_program_id => nil)
+      Loi.where(:sub_program_id => self.id).where('deleted_at is not null').update_all(:sub_program_id => nil)
+      Request.where(:sub_program_id => self.id).where('deleted_at is not null').update_all(:sub_program_id => nil)
     end
   end
 end
