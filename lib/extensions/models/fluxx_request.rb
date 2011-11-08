@@ -576,10 +576,10 @@ module FluxxRequest
         indexes :type, :sortable => true
         indexes program_organization.name, :as => :program_org_name, :sortable => true
         indexes program_organization.acronym, :as => :program_org_acronym, :sortable => true
-        indexes "(select acronym from organizations parent_org where parent_org.id = organizations.parent_org_id)", :sortable => true, :as => :parent_program_acronym, :sortable => true
+        indexes FluxxGrantSphinxHelper.generate_parent_program_acronym('requests'), :sortable => true, :as => :parent_program_acronym, :sortable => true
         indexes fiscal_organization.name, :as => :fiscal_org_name, :sortable => true
         indexes fiscal_organization.acronym, :as => :fiscal_org_acronym, :sortable => true
-        indexes "(select acronym from organizations parent_org where parent_org.id = fiscal_organizations_requests.parent_org_id)", :sortable => true, :as => :parent_fiscal_acronym, :sortable => true
+        indexes FluxxGrantSphinxHelper.generate_parent_fiscal_acronym('requests'), :sortable => true, :as => :parent_fiscal_acronym, :sortable => true
         indexes program.name, :as => :program_name, :sortable => true
 
         # attributes
@@ -618,14 +618,14 @@ module FluxxRequest
         has "CONCAT(requests.program_id, CONCAT(',', GROUP_CONCAT(DISTINCT IFNULL(`request_programs`.`program_id`, '0') SEPARATOR ',')))", :type => :multi, :as => :all_request_program_ids
         has "CONCAT(program_organization_id, ',', fiscal_organization_id)", :type => :multi, :as => :program_or_fiscal_org_ids
         has multi_element_choices.multi_element_value(:id), :type => :multi, :as => :multi_element_value_ids
-        has "null", :type => :multi, :as => :funding_source_allocation_program_id
-        has "null", :type => :multi, :as => :funding_source_allocation_sub_program_id
-      	has "null", :type => :multi, :as => :funding_source_allocation_initiative_id
-        has "null", :type => :multi, :as => :funding_source_allocation_sub_initiative_id
+        has FluxxGrantSphinxHelper.funding_source_allocation_program('requests'), :type => :multi, :as => :funding_source_allocation_program_id
+        has FluxxGrantSphinxHelper.funding_source_allocation_sub_program_id('requests'), :type => :multi, :as => :funding_source_allocation_sub_program_id
+      	has FluxxGrantSphinxHelper.funding_source_allocation_initiative_id('requests'), :type => :multi, :as => :funding_source_allocation_initiative_id
+        has "funding_source_allocations.sub_initiative_id", :type => :multi, :as => :funding_source_allocation_sub_initiative_id
         has request_funding_sources.funding_source_allocation(:id), :type => :multi, :as => :funding_source_allocation_id
         
         has FluxxGrantSphinxHelper.request_hierarchy, :type => :multi, :as => :request_hierarchy
-        has FluxxGrantSphinxHelper.allocation_hierarchy, :type => :multi, :as => :allocation_hierarchy
+        has FluxxGrantSphinxHelper.allocation_hierarchy('requests'), :type => :multi, :as => :allocation_hierarchy
             
         set_property :delta => :delayed
       end
@@ -639,10 +639,10 @@ module FluxxRequest
         indexes :type, :sortable => true
         indexes program_organization.name, :as => :program_org_name, :sortable => true
         indexes program_organization.acronym, :as => :program_org_acronym, :sortable => true
-        indexes "(select acronym from organizations parent_org where parent_org.id = organizations.parent_org_id)", :sortable => true, :as => :parent_program_acronym, :sortable => true
+        indexes FluxxGrantSphinxHelper.generate_parent_program_acronym('requests'), :sortable => true, :as => :parent_program_acronym, :sortable => true
         indexes fiscal_organization.name, :as => :fiscal_org_name, :sortable => true
         indexes fiscal_organization.acronym, :as => :fiscal_org_acronym, :sortable => true
-        indexes "(select acronym from organizations parent_org where parent_org.id = fiscal_organizations_requests.parent_org_id)", :sortable => true, :as => :parent_fiscal_acronym, :sortable => true
+        indexes FluxxGrantSphinxHelper.generate_fiscal_program_acronym('requests'), :sortable => true, :as => :parent_fiscal_acronym, :sortable => true
         indexes program.name, :as => :program_name, :sortable => true
 
         # attributes
@@ -680,20 +680,14 @@ module FluxxRequest
         has "null", :type => :multi, :as => :multi_element_value_ids
 
         # NOTE ESH: this is very simmilar to the fluxx_funding_source_allocation.rb build_temp_table method
-        has "if (funding_source_allocations.program_id is not null, funding_source_allocations.program_id, 
-              if(funding_source_allocations.sub_program_id is not null, (select program_id from sub_programs where id = funding_source_allocations.sub_program_id),
-                if(funding_source_allocations.initiative_id is not null, (select program_id from sub_programs where id = (select sub_program_id from initiatives where initiatives.id = funding_source_allocations.initiative_id)), 
-                  if(funding_source_allocations.sub_initiative_id is not null, (select program_id from sub_programs where id = (select sub_program_id from initiatives where initiatives.id = (select initiative_id from sub_initiatives where sub_initiatives.id = funding_source_allocations.sub_initiative_id))), null))))", :type => :multi, :as => :funding_source_allocation_program_id
-        has "if(funding_source_allocations.sub_program_id is not null, funding_source_allocations.sub_program_id,
-      		    if(funding_source_allocations.initiative_id is not null, (select sub_program_id from initiatives where initiatives.id = funding_source_allocations.initiative_id),
-                if(funding_source_allocations.sub_initiative_id is not null, (select sub_program_id from initiatives where initiatives.id = (select initiative_id from sub_initiatives where sub_initiatives.id = funding_source_allocations.sub_initiative_id)), null)))", :type => :multi, :as => :funding_source_allocation_sub_program_id
-      	has "if(funding_source_allocations.initiative_id is not null, funding_source_allocations.initiative_id, 
-              if(funding_source_allocations.sub_initiative_id is not null, (select initiative_id from sub_initiatives where sub_initiatives.id = funding_source_allocations.sub_initiative_id), null))", :type => :multi, :as => :funding_source_allocation_initiative_id
+        has FluxxGrantSphinxHelper.funding_source_allocation_program('requests'), :type => :multi, :as => :funding_source_allocation_program_id
+        has FluxxGrantSphinxHelper.funding_source_allocation_sub_program_id('requests'), :type => :multi, :as => :funding_source_allocation_sub_program_id
+      	has FluxxGrantSphinxHelper.funding_source_allocation_initiative_id('requests'), :type => :multi, :as => :funding_source_allocation_initiative_id
         has "funding_source_allocations.sub_initiative_id", :type => :multi, :as => :funding_source_allocation_sub_initiative_id
         has request_funding_sources.funding_source_allocation(:id), :type => :multi, :as => :funding_source_allocation_id
         has FluxxGrantSphinxHelper.request_hierarchy, :type => :multi, :as => :request_hierarchy
         
-        has FluxxGrantSphinxHelper.allocation_hierarchy, :type => :multi, :as => :allocation_hierarchy
+        has FluxxGrantSphinxHelper.allocation_hierarchy('requests'), :type => :multi, :as => :allocation_hierarchy
         
 
         set_property :delta => :delayed
@@ -708,10 +702,10 @@ module FluxxRequest
         indexes :type, :sortable => true
         indexes program_organization.name, :as => :program_org_name, :sortable => true
         indexes program_organization.acronym, :as => :program_org_acronym, :sortable => true
-        indexes "(select acronym from organizations parent_org where parent_org.id = organizations.parent_org_id)", :sortable => true, :as => :parent_program_acronym, :sortable => true
+        indexes FluxxGrantSphinxHelper.generate_parent_program_acronym('requests'), :sortable => true, :as => :parent_program_acronym, :sortable => true
         indexes fiscal_organization.name, :as => :fiscal_org_name, :sortable => true
         indexes fiscal_organization.acronym, :as => :fiscal_org_acronym, :sortable => true
-        indexes "(select acronym from organizations parent_org where parent_org.id = fiscal_organizations_requests.parent_org_id)", :sortable => true, :as => :parent_fiscal_acronym, :sortable => true
+        indexes FluxxGrantSphinxHelper.generate_fiscal_program_acronym('requests'), :sortable => true, :as => :parent_fiscal_acronym, :sortable => true
         indexes program.name, :as => :program_name, :sortable => true
 
         # attributes
@@ -746,13 +740,13 @@ module FluxxRequest
         has "null", :type => :multi, :as => :all_request_program_ids
         has "CONCAT(program_organization_id, ',', fiscal_organization_id)", :type => :multi, :as => :program_or_fiscal_org_ids
         has "null", :type => :multi, :as => :multi_element_value_ids
-        has "null", :type => :multi, :as => :funding_source_allocation_program_id
-        has "null", :type => :multi, :as => :funding_source_allocation_sub_program_id
-      	has "null", :type => :multi, :as => :funding_source_allocation_initiative_id
-        has "null", :type => :multi, :as => :funding_source_allocation_sub_initiative_id
+        has FluxxGrantSphinxHelper.funding_source_allocation_program('requests'), :type => :multi, :as => :funding_source_allocation_program_id
+        has FluxxGrantSphinxHelper.funding_source_allocation_sub_program_id('requests'), :type => :multi, :as => :funding_source_allocation_sub_program_id
+      	has FluxxGrantSphinxHelper.funding_source_allocation_initiative_id('requests'), :type => :multi, :as => :funding_source_allocation_initiative_id
+        has "funding_source_allocations.sub_initiative_id", :type => :multi, :as => :funding_source_allocation_sub_initiative_id
         has request_funding_sources.funding_source_allocation(:id), :type => :multi, :as => :funding_source_allocation_id
         has FluxxGrantSphinxHelper.request_hierarchy, :type => :multi, :as => :request_hierarchy
-        has FluxxGrantSphinxHelper.allocation_hierarchy, :type => :multi, :as => :allocation_hierarchy
+        has FluxxGrantSphinxHelper.allocation_hierarchy('requests'), :type => :multi, :as => :allocation_hierarchy
        
         set_property :delta => :delayed
       end

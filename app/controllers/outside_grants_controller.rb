@@ -1,6 +1,7 @@
 class OutsideGrantsController < ApplicationController
   def index
     org = Organization.find(params[:id])    
+    org = org.parent_org if org && !params[:show_satellite] && org.parent_org # The tax_id is usually linked to the HQ org not the satellite
     @data = org.outside_grants(params[:pagenum])
     if @data && @data.is_a?(Array) && @data.count > 0
       @show_paging = @data.first["total_pages_available"].to_i > 1

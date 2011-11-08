@@ -245,7 +245,7 @@ module FluxxRequestTransaction
         has group_members.group(:id), :type => :multi, :as => :group_ids
         has favorites.user(:id), :as => :favorite_user_ids
         has request_transaction_funding_sources.request_funding_source.funding_source_allocation(:id), :as => :funding_source_allocation_id
-        has FluxxGrantSphinxHelper.allocation_hierarchy, :type => :multi, :as => :allocation_hierarchy
+        has FluxxGrantSphinxHelper.allocation_hierarchy('request_transactions'), :type => :multi, :as => :allocation_hierarchy
         has FluxxGrantSphinxHelper.request_hierarchy, :type => :multi, :as => :request_hierarchy
       end
     end

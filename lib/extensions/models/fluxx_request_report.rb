@@ -276,7 +276,7 @@ module FluxxRequestReport
         
         has FluxxGrantSphinxHelper.request_hierarchy, :type => :multi, :as => :request_hierarchy
         has grant.request_funding_sources.funding_source_allocation.funding_source(:id), :as => :funding_source_ids
-        has FluxxGrantSphinxHelper.allocation_hierarchy, :type => :multi, :as => :allocation_hierarchy
+        has FluxxGrantSphinxHelper.allocation_hierarchy('request_reports'), :type => :multi, :as => :allocation_hierarchy
       end
     end
 
