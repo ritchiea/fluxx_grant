@@ -193,6 +193,7 @@ module FluxxFundingSourceAllocation
         self.update_attribute :amount, 0
       else
         self.update_attribute :amount, self.funding_source_allocation_authorities.inject(0){|acc, fsaa| acc + (fsaa.amount || 0)}
+        self.safe_delete if self.funding_source_allocation_authorities.size == 0
       end
     end
   end
