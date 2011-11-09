@@ -642,7 +642,7 @@ module FluxxRequest
         indexes FluxxGrantSphinxHelper.generate_parent_program_acronym('requests'), :sortable => true, :as => :parent_program_acronym, :sortable => true
         indexes fiscal_organization.name, :as => :fiscal_org_name, :sortable => true
         indexes fiscal_organization.acronym, :as => :fiscal_org_acronym, :sortable => true
-        indexes FluxxGrantSphinxHelper.generate_fiscal_program_acronym('requests'), :sortable => true, :as => :parent_fiscal_acronym, :sortable => true
+        indexes FluxxGrantSphinxHelper.generate_parent_fiscal_acronym('requests'), :sortable => true, :as => :parent_fiscal_acronym, :sortable => true
         indexes program.name, :as => :program_name, :sortable => true
 
         # attributes
@@ -705,7 +705,7 @@ module FluxxRequest
         indexes FluxxGrantSphinxHelper.generate_parent_program_acronym('requests'), :sortable => true, :as => :parent_program_acronym, :sortable => true
         indexes fiscal_organization.name, :as => :fiscal_org_name, :sortable => true
         indexes fiscal_organization.acronym, :as => :fiscal_org_acronym, :sortable => true
-        indexes FluxxGrantSphinxHelper.generate_fiscal_program_acronym('requests'), :sortable => true, :as => :parent_fiscal_acronym, :sortable => true
+        indexes FluxxGrantSphinxHelper.generate_parent_fiscal_acronym('requests'), :sortable => true, :as => :parent_fiscal_acronym, :sortable => true
         indexes program.name, :as => :program_name, :sortable => true
 
         # attributes
