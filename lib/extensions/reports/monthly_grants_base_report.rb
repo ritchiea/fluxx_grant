@@ -99,7 +99,7 @@ module MonthlyGrantsBaseReport
 
     # We need a plot of more than one month to make sense
     if (start_date.month == end_date.month && start_date.year == end_date.year)
-      end_date =self.end_date = self.end_date >> 1
+      end_date = start_date + 1.month
     end
     i = 0
     max_grants = 0
