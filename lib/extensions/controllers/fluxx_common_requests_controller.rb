@@ -101,10 +101,10 @@ module FluxxCommonRequestsController
       actual_local_model = instance_variable_get '@model'
       event_action = params[:event_action]
       event_action = event_action.to_s.to_sym if event_action
-      if Request.all_events_with_category('edit_on_transition').include?(event_action) && outcome == :success
+      if Request.all_events_with_category('edit_on_transition').map{|elem| elem.to_sym}.include?(event_action) && outcome == :success
         # redirect to the edit screen IF THE USER
         redirect_to send("edit_#{actual_local_model.class.calculate_form_name.to_s}_path", actual_local_model)
-      elsif Request.all_events_with_category('become_grant').include?(event_action) && outcome == :success
+      elsif Request.all_events_with_category('become_grant').map{|elem| elem.to_sym}.include?(event_action) && outcome == :success
         send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/request_became_grant', :footer_template => 'insta/simple_footer'}
       else
         if actual_local_model.granted
