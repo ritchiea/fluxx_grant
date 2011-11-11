@@ -1,4 +1,7 @@
-%h2= model.organization_name
+%h2
+  = model.organization_name
+  %br
+  = model.applicant
 %h4= [dollars_format(model.amount_requested), mdy_date_format(model.created_at), (model.program ? model.program.name : nil)].compact.join(' | ')
 
 %p= model.project_title
