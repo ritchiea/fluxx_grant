@@ -43,23 +43,23 @@ module FluxxGrantWorkflowEvent
       end
 
       WorkflowEvent.connection.execute "drop temporary table if exists swediff_visits"
-      WorkflowEvent.connection.execute WorkflowEvent.send(:sanitize_sql, ["create temporary table swediff_visits select old_state, count(*) num_visits, workflowable_id, sum(time_lag) time_lag 
+      WorkflowEvent.connection.execute WorkflowEvent.send(:sanitize_sql, ["create temporary table swediff_visits select old_state, new_state, count(*) num_visits, workflowable_id, sum(time_lag) time_lag 
           from swediff
           where old_state not in (?)
           group by old_state, workflowable_id", (funnel_not_allowed_old_states.map{|stsym| stsym.to_s})])
 
       results = WorkflowEvent.connection.execute "select avg(time_lag) avg_time_lag, avg(num_visits) avg_num_visits_per_request, count(*) total_visits, 
-          count(distinct(workflowable_id)) total_workflowable_ids, old_state 
+          count(distinct(workflowable_id)) total_workflowable_ids, old_state, new_state
           from swediff_visits group by old_state"
       workflows = (1..results.num_rows).map do
        results.fetch_row
       end
       workflow_results = workflows.inject({}) do |acc, workflow|
-        avg_time_lag, avg_num_visits_per_request, total_visits, total_workflowable_ids, old_state = workflow
+        avg_time_lag, avg_num_visits_per_request, total_visits, total_workflowable_ids, old_state, new_state = workflow
         acc[old_state] = {:avg_time_lag => (avg_time_lag ? avg_time_lag.to_i : 0), 
            :avg_num_visits_per_request => (avg_num_visits_per_request ? avg_num_visits_per_request.to_i : 0), 
            :total_visits => (total_visits ? total_visits.to_i : 0), :total_workflowable_ids => (total_workflowable_ids ? total_workflowable_ids.to_i : 0), 
-           :old_state => old_state}
+           :old_state => old_state, :new_state => new_state}
         acc
       end
 

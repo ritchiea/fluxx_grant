@@ -15,7 +15,7 @@
     - avg_days = (fun_map[:avg_time_lag].to_f/1.day).round
     %div{:class => ("state slice-%i %s" % [(((avg_days/total_days.to_f) * 100)/5).round, (fun_map==@funnel.first ? 'first' : '')])}
       .stats
-        .name= Request.old_state_complete_english_translation(fun_map[:old_state])
+        .name= "#{Request.state_to_english_translation(fun_map[:old_state])} -> #{Request.state_to_english_translation(fun_map[:new_state])}"
         .desc
           = pluralize avg_days, 'day'
           (

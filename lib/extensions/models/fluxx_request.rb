@@ -422,31 +422,6 @@ module FluxxRequest
       type_list
     end
     
-    # Translate the old state to the next state that will be completed
-    # Useful for the funnel
-    def old_state_complete_english_translation state_name
-      case state_name.to_s
-      when 'new' then
-        'Submitted -> Final Proposal'
-      when 'funding_recommended' then
-        'Final Proposal -> IERF Complete'
-      when 'pending_grant_team_approval' then
-        'Grants Approved'
-      when 'pending_po_approval' then
-        'PO Approved'
-      when 'pending_svp_approval' then
-        'SVP Approved'
-      when 'pending_president_approval' then
-        'President Approval'
-      when 'pending_grant_promotion' then
-        'Promoted to Grant'
-      when 'granted' then
-        'Closed'
-      else
-        state_name.to_s
-      end
-    end
-    
     def add_aasm
       aasm_column :state
       aasm_initial_state :new
