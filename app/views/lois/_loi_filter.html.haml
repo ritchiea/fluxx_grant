@@ -1,3 +1,6 @@
 = form.input :applicant_linked, :as => :select, :collection => [["Linked", "1"], ["Not Linked", "0"]]
 = form.input :organization_linked, :as => :select, :collection => [["Linked", "1"], ["Not Linked", "0"]]
 = form.input :program_id, :required => false, :as => :select, :collection => Program.load_all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}
+
+= form.input :sort_attribute, :label => 'Sort Field', :required => false, :as => :select, :include_blank => nil, :collection => [['Last Updated (Default)', 'updated_at'], ['Amount', 'amount_requested'], ['Org Name', 'organization_name']]
+= form.input :sort_order, :label => 'Sort Order', :required => false, :as => :select, :include_blank => nil, :collection => [['Descending', 'desc'], ['Ascending', 'asc']]

@@ -155,6 +155,7 @@ module FluxxLoi
         has created_at, updated_at, deleted_at, program_id
         
         has organization_name, :as => :loi_organization_name, :crc => true 
+        has "ROUND(lois.amount_requested)", :as => :amount_requested, :type => :integer
         has applicant, :as => :loi_applicant, :crc => true 
         has email, :as => :loi_email, :crc => true 
         has phone, :as => :loi_phone, :crc => true 
