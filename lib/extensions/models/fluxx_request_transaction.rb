@@ -287,7 +287,7 @@ module FluxxRequestTransaction
     end
     
     def has_been_paid
-      state == 'paid' || (paid_at && amount_paid)
+      RequestTransaction.all_states_with_category('paid').include?(self.state) || (paid_at && amount_paid)
     end
 
     def title
