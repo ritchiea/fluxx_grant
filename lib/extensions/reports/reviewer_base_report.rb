@@ -43,9 +43,9 @@ module ReviewerBaseReport
     users = User.where(:id => user_ids).order('last_name, first_name').all
     users_by_userid = users.inject({}) {|acc, user| acc[user.id] = user; acc}
     requests = Request.find_by_sql ["
-    select requests.*, if(type = 'GrantRequest', (select name from organizations where id = program_organization_id), fip_title) grant_name,
-    grant_begins_at begin_date,
-    if(grant_begins_at is not null and duration_in_months is not null, date_add(date_add(grant_begins_at, INTERVAL duration_in_months month), interval -1 DAY), grant_begins_at) end_date
+    select requests.*, if(type = 'GrantRequest', (select name from organizations where id = program_organization_id), fip_title) report_grant_name,
+    grant_begins_at report_begin_date,
+    if(grant_begins_at is not null and duration_in_months is not null, date_add(date_add(grant_begins_at, INTERVAL duration_in_months month), interval -1 DAY), grant_begins_at) report_end_date
     from requests 
     where id in (?)", request_ids]
     requests_by_requestid = requests.inject({}) {|acc, request| acc[request.id] = request; acc}
@@ -85,25 +85,41 @@ module ReviewerBaseReport
     row = row_start
 
     if report_type == :feedback
-      ["Grant Name", "Grant ID", "Amount Requested", "Amount Recommended", "Start Date", "End Date", "Duration"].
-        each_with_index{|label, index| worksheet.write(6, index, label, header_format)}
-
-      users.each_with_index do |user, index|
-        worksheet.write(6, index + 7, user.first_name + ' ' + user.last_name, header_format)
+      column_headers = ["Grant Name", "Grant ID", "Amount Requested", "Amount Recommended", "Start Date", "End Date"]
+      unless Fluxx.config(:dont_use_duration_in_requests) == "1"
+        column_headers << "Duration"
       end
-      worksheet.write(6, users.size + 7, 'Average', header_format)
+      
+      column_headers.each_with_index{|label, index| worksheet.write(6, index, label, header_format)}
+
+      column_offset = Fluxx.config(:dont_use_duration_in_requests) == "1" ? 6 : 7
+      users.each_with_index do |user, index|
+        worksheet.write(6, index + column_offset, user.first_name + ' ' + user.last_name, header_format)
+      end
+      worksheet.write(6, users.size + column_offset, 'Average', header_format)
 
       request_ids.each do |request_id|
         column=0
         request = requests_by_requestid[request_id]
     
-        worksheet.write(row += 1, column, request.grant_name)
+        worksheet.write(row += 1, column, request.report_grant_name)
         worksheet.write(row, column += 1, request.base_request_id)
         worksheet.write(row, column += 1, (request.amount_requested.to_i rescue 0), amount_format)
         worksheet.write(row, column += 1, (request.amount_recommended.to_i rescue 0), amount_format)
-        worksheet.write(row, column += 1, (request.begin_date ? (Time.parse(request.begin_date).mdy rescue '') : ''), date_format)
-        worksheet.write(row, column += 1, (request.end_date ? (Time.parse(request.end_date).mdy rescue '') : ''), date_format)
-        worksheet.write(row, column += 1, request.duration_in_months, number_format)
+        worksheet.write(row, column += 1, (request.report_begin_date ? request.report_begin_date.mdy : ''), date_format)
+        if Fluxx.config(:dont_use_duration_in_requests) == "1"
+          if request.is_a?(FipRequest)
+            worksheet.write(row, column += 1, (request.fip_projected_end_at ? request.fip_projected_end_at.mdy : ''), date_format)
+          else
+            worksheet.write(row, column += 1, (request.grant_closed_at ? request.grant_closed_at.mdy : ''), date_format)
+          end
+        elsif request.is_a?(FipRequest)
+          worksheet.write(row, column += 1, (request.fip_projected_end_at ? request.fip_projected_end_at.mdy : ''), date_format)
+          column += 1 # Fips still have a duration column
+        else
+          worksheet.write(row, column += 1, (request.report_end_date ? request.report_end_date.mdy : ''), date_format)
+          worksheet.write(row, column += 1, request.duration_in_months, number_format)
+        end
     
         start_user_column = column + 1
         users.each do |user|
@@ -117,9 +133,12 @@ module ReviewerBaseReport
         worksheet.write(row, column+=1, ("=AVERAGE(#{avg_formula})"), number_format)
       end
     elsif report_type == :export
+      column_headers = ["Grant Name", "Grant ID", I18n.t(:program_name), "Amount Requested", "Amount Recommended", "Start Date", "End Date", "Duration", "Reviewer Name", "Rating", "Review Type", "Comment", "Benefits", "Outcomes", "Merits", "Recommendation"]
+      if Fluxx.config(:dont_use_duration_in_requests) == "1"
+        column_headers.delete "Duration"
+      end
       
-      ["Grant Name", "Grant ID", I18n.t(:program_name), "Amount Requested", "Amount Recommended", "Start Date", "End Date", "Duration", "Reviewer Name", "Rating", "Review Type", "Comment", "Benefits", "Outcomes", "Merits", "Recommendation"].
-        each_with_index{|label, index| worksheet.write(6, index, label, header_format)}
+      column_headers.each_with_index{|label, index| worksheet.write(6, index, label, header_format)}
       
       program_hash = Program.all.inject({}) {|acc, program| acc[program.id] = program; acc}
       reviews.each do |review|
@@ -127,16 +146,28 @@ module ReviewerBaseReport
         column=0
         request = requests_by_requestid[request_id]
 
-        worksheet.write(row += 1, column, request.grant_name)
+        worksheet.write(row += 1, column, request.report_grant_name)
         worksheet.write(row, column += 1, request.base_request_id)
         program = program_hash[request.program_id]
         worksheet.write(row, column += 1, program ? program.name : nil)
-        worksheet.write(row, column += 1, (request.amount_requested.to_i rescue 0), amount_format)
-        worksheet.write(row, column += 1, (request.amount_recommended.to_i rescue 0), amount_format)
-        worksheet.write(row, column += 1, (request.begin_date ? (Time.parse(request.begin_date).mdy rescue '') : ''), date_format)
-        worksheet.write(row, column += 1, (request.end_date ? (Time.parse(request.end_date).mdy rescue '') : ''), date_format)
-        worksheet.write(row, column += 1, request.duration_in_months, number_format)
-
+        worksheet.write(row, column += 1, (request.amount_requested), amount_format)
+        worksheet.write(row, column += 1, (request.amount_recommended), amount_format)
+        worksheet.write(row, column += 1, (request.report_begin_date ? request.report_begin_date.mdy : ''), date_format)
+        
+        if Fluxx.config(:dont_use_duration_in_requests) == "1"
+          if request.is_a?(FipRequest)
+            worksheet.write(row, column += 1, (request.fip_projected_end_at ? request.fip_projected_end_at.mdy : ''), date_format)
+          else
+            worksheet.write(row, column += 1, (request.grant_closed_at ? request.grant_closed_at.mdy : ''), date_format)
+          end
+        elsif request.is_a?(FipRequest)
+          worksheet.write(row, column += 1, (request.fip_projected_end_at ? request.fip_projected_end_at.mdy : ''), date_format)
+          column += 1 # Fips still have a duration column
+        else
+          worksheet.write(row, column += 1, (request.report_end_date ? request.report_end_date.mdy : ''), date_format)
+          worksheet.write(row, column += 1, request.duration_in_months, number_format)
+        end
+        
         user = users_by_userid[review.created_by_id]
         worksheet.write(row, column += 1, user ? user.full_name : nil)
         worksheet.write(row, column += 1, review.rating, number_format)
