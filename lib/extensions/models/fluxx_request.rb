@@ -1277,7 +1277,7 @@ module FluxxRequest
       unless @funding_warnings
         @funding_warnings = []
 
-        if Organization.charity_check_enabled && tax_class_org && !tax_class_org.c3_status_approved?
+        if Organization.charity_check_enabled && tax_class_org && !tax_class_org.has_c3_status_approved?
           @funding_warnings << 'No c3 status'
         elsif duration_over_12_months?
           @funding_warnings << 'Duration is over 12 months' 

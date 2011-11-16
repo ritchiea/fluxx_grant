@@ -337,5 +337,9 @@ module FluxxGrantOrganization
         Organization.foundation_center_api self.tax_id, pagenum
       end
     end
+    
+    def has_c3_status_approved?
+      find_parent_or_self.c3_status_approved
+    end
   end
 end
