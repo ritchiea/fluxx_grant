@@ -1,0 +1,2 @@
+-if current_user.is_admin?
+  =form.input :state, :label => "Status", :as => :select, :collection => ((GrantRequest.all_states).map{|state| [GrantRequest.state_to_english_translation(state), state]}.compact)

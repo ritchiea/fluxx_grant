@@ -2,8 +2,7 @@
   = render :partial => "grant_requests/program_org", :locals => { :model => model, :form => form }
 %fieldset.inputs
   = render :partial => "grant_requests/fiscal_org",  :locals => { :model => model, :form => form }
--if current_user.is_admin?
-  =form.input :state, :label => "Status", :as => :select, :collection => ((GrantRequest.all_states).map{|state| [GrantRequest.state_to_english_translation(state), state]}.compact)
+= render :partial => "grant_requests/status_selector",  :locals => { :model => model, :form => form }
 
 %fieldset.inputs
   %ol
