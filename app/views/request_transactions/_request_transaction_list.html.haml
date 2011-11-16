@@ -3,7 +3,7 @@
   %span.caption= "(due #{model.due_at.mdy})" if model.due_at
 - if model.has_been_paid
   %h4= number_to_currency model.amount_paid, :precision => 0 if (model.amount_due != model.amount_paid)
-  %span.caption="Paid #{model.paid_at.mdy}"
+  %span.caption="Paid #{model.paid_at.mdy unless model.paid_at}"
 %h4
   = model.request.grant_id if model.request
   <br />
