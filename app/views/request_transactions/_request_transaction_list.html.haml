@@ -1,7 +1,7 @@
 %h2
   = number_to_currency model.amount_due, :precision => 0
   %span.caption= "(due #{model.due_at.mdy})" if model.due_at
-- if model.paid_at
+- if model.has_been_paid
   %h4= number_to_currency model.amount_paid, :precision => 0 if (model.amount_due != model.amount_paid)
   %span.caption="Paid #{model.paid_at.mdy}"
 %h4
