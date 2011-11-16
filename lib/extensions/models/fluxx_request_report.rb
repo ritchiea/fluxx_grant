@@ -25,7 +25,7 @@ module FluxxRequestReport
       insta.filename = 'report'
       insta.headers = [['Date Created', :date], ['Date Updated', :date], 'Request ID', 'state', 'Report Type', ['Date Due', :date], ['Date Approved', :date], 'Org Name', 
             ['Amount Recommended', :currency], 'Lead PO', 'Project Summary']
-      insta.sql_query = "request_reports.created_at, request_reports.updated_at, requests.base_request_id request_id, request_reports.state, if(request_reports.report_type = 'FinalBudget', 'FinalFinancial', request_reports.report_type), request_reports.due_at, request_reports.approved_at, organizations.name program_org_name,
+      insta.sql_query = "request_reports.created_at, request_reports.updated_at, requests.base_request_id request_id, request_reports.state, if(request_reports.report_type = 'FinalBudget', 'FinalFinancial', if(request_reports.report_type = 'InterimBudget', 'InterimFinancial', request_reports.report_type)), request_reports.due_at, request_reports.approved_at, organizations.name program_org_name,
               requests.amount_recommended, 
               (select concat(users.first_name, (concat(' ', users.last_name))) full_name from
                 users where id = program_lead_id) lead_po,
