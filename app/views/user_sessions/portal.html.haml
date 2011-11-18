@@ -16,6 +16,9 @@
       %p
         = f.password_field :password, :placeholder => 'Password'
       %p= f.submit "Sign in"
+      .forgot-password-link
+        = link_to "I forgot my username or password", forgot_password_path
+      
     
   %div.c40r
     - unless Fluxx.config(:hide_lois) == "1"

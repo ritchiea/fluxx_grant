@@ -1,0 +1,20 @@
+%p 
+- current_year = Time.now.year
+- form.object.start_date = Time.parse("1/1/#{current_year}")
+- form.object.end_date = Time.parse("1/1/#{current_year+1}")
+= form.input :start_date, :as => :date
+= form.input :end_date, :as => :date
+
+- unless Fluxx.config(:hide_program) == "1"
+  = form.input :program_id, :label => I18n.t(:program_name), :as => :select, :collection => Program.load_all_nonrollup.map{|program| [program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child' => ".program-lead-select,.sub-program-select"}
+
+- unless Fluxx.config(:hide_sub_program) == "1"
+  - sub_programs = []
+  - sub_programs = form.object.program.load_sub_programs if form.object.program
+  = form.input :sub_program_id, :label => I18n.t(:sub_program_name), :as => :select, :collection => sub_programs.map{|sub_program| [sub_program.name, sub_program.id]}, :input_html => {:class => 'sub-program-select', 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => sub_programs_path(:format => 'autocomplete', :all_results => 1)}
+
+- grant_cycle_options = ModelAttribute.find_values Request, 'grant_cycle'
+- unless grant_cycle_options.blank?
+  = form.input :grant_cycle, :label => "Grant Cycle", :as => :select, :required => false, :collection => grant_cycle_options, :input_html => {:class => 'add-another'}
+  
+
