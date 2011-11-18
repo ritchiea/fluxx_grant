@@ -23,6 +23,7 @@ module FluxxGranteePortalController
 
         all = !params[:requests] && !params[:grants] && ! params[:reports] && !params[:transactions]
         table = params[:table] ? (["requests", "grants", "reports", "transactions"].index(params[:table]) ? params[:table] : :all) : :all
+        settings["pages"]["requests"] = params[:page].to_i if params[:page] && table == :all
         page = params[:page] ? params[:page] : settings["pages"][table]
         settings["pages"][table] = page if (table != :all)
 

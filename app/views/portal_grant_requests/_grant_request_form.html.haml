@@ -19,4 +19,4 @@
             = render :partial => "model_documents/list_model_documents", :locals => { :model => model.program_organization}
             
     = form.commit_button
-    %input{:type => 'submit', :name => 'cancel', :class => 'create open-link', :value => 'Cancel', 'data-href'.to_sym => grantee_portal_index_path}
+    %input{:type => 'submit', :name => 'cancel', :class => 'create open-link', :value => 'Cancel', 'data-href'.to_sym => grantee_portal_index_path(:page => 1)}
