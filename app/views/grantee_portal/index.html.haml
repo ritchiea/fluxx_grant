@@ -1,8 +1,13 @@
-- if FileTest.exists? "#{Rails.root}/public/documents/documents.yaml"
-  - documents = YAML::load(File.open( "#{Rails.root}/public/documents/documents.yaml" ))
+- if Client.current
+  -document_path = "#{Rails.root}/public/documents/#{Client.current.name}/"
+- else
+  -document_path = "#{Rails.root}/public/documents/"
+
+- if FileTest.exists? "#{document_path}documents.yaml"
+  - documents = YAML::load(File.open( "#{document_path}documents.yaml" ))
 - else
   - documents = WillPaginate::Collection.create(params[:page] || 1, WillPaginate.per_page) do |pager|
-    - pager.replace Dir.glob("#{Rails.root}/public/documents/*.pdf").map{|filename| filename.gsub("#{Rails.root}/public/documents/", '')}.sort
+    - pager.replace Dir.glob("#document_path}*.pdf").map{|filename| filename.gsub(document_path, '')}.sort
 
 .container
   -if documents.empty?
