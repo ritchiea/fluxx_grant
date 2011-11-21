@@ -10,6 +10,7 @@ class SimpleDocketReport < ActionController::ReportBase
   def compute_document_data controller, show_object, params, report_vars, models
     active_record_params = params[:active_record_base] || {}
     
+    doc_id = active_record_params[:doc_id]
     case active_record_params[:date_range_type]
     when 'this_week'
       start_date = Time.now.ago(7.days)
@@ -46,10 +47,9 @@ class SimpleDocketReport < ActionController::ReportBase
     grant_cycle = ModelAttributeValue.find grant_cycle_id rescue nil unless grant_cycle_id.blank?
     
     query = Request.scoped
-    query = query.where(:granted => false)
     query = query.where(:deleted_at => nil)
-    promotion_states = Request.all_states_with_category 'pending_grant_promotion'
-    query = query.where(:state => promotion_states)    
+    states = active_record_params[:state]
+    query = query.where(:state => states) unless states.blank? || states.empty?
     query = query.where(['requests.grant_begins_at >= ?', start_date]) if start_date
     query = query.where(['requests.grant_begins_at <= ?', end_date]) if end_date
     query = query.where(:program_id => programs) unless programs.empty?
@@ -66,30 +66,34 @@ class SimpleDocketReport < ActionController::ReportBase
        'sub_programs' => (sub_programs && !sub_programs.empty? ? sub_programs.map{|sub_program| sub_program.name}.join(", ") : nil), 
        'grant_cycle' => (grant_cycle ? grant_cycle.to_s : nil)}
 
-    header_docket = ModelDocumentTemplate.where(:model_type => SimpleDocketReport.name, :category => 'header').first
-    #p "ESH: 111 have header_footer_params=#{header_footer_params.inspect}"
-    #p "ESH: 222 header_docket=#{header_docket.document.inspect}"
-    if header_docket
-      header = header_docket.document
-      header_output.write Liquid::Template.parse(header).render(header_footer_params)
-    end
-    
-    body_docket = ModelDocumentTemplate.where(:model_type => SimpleDocketReport.name, :category => 'body').first
+    body_docket = ModelDocumentTemplate.where(:id => doc_id).first
     if body_docket
-      body = body_docket.document
-      requests.each do |r|
-        body_output.write Liquid::Template.parse(body).render('request' => r)
-      end
-    end
+      header_docket = ModelDocumentTemplate.where(:related_model_document_id => doc_id, :category => 'header').first
+      footer_docket = ModelDocumentTemplate.where(:related_model_document_id => doc_id, :category => 'footer').first
 
-    footer_docket = ModelDocumentTemplate.where(:model_type => SimpleDocketReport.name, :category => 'footer').first
-    if footer_docket
-      footer = footer_docket.document
-      footer_output.write Liquid::Template.parse(footer).render(header_footer_params)
-    end
+      if header_docket
+        header = header_docket.document
+        header_output.write Liquid::Template.parse(header).render(header_footer_params)
+      end
+    
+      if body_docket
+        body = body_docket.document
+        requests.each_with_index do |r, i|
+          body_output.write Liquid::Template.parse(body).render('request' => r)
+          unless requests.size - 1 == i
+            body_output.write "<p class='page-break'>\n"
+          end
+        end
+      end
+
+      if footer_docket
+        footer = footer_docket.document
+        footer_output.write Liquid::Template.parse(footer).render(header_footer_params)
+      end
 
     
-    retval = header_output.string + body_output.string + footer_output.string
-    retval
+      retval = header_output.string + body_output.string + footer_output.string
+      retval
+    end
   end
 end

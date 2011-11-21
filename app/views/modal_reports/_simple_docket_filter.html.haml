@@ -1,9 +1,14 @@
 %p 
+- parent_docs = ModelDocumentTemplate.potential_parents.where(:model_type => Request.descendant_base_classes.map(&:name)).all
+= form.input :doc_id, :label => 'Document', :collection => parent_docs.map {|doc| [doc.description, doc.id]}, :include_blank => false
+
 - current_year = Time.now.year
 - form.object.start_date = Time.parse("1/1/#{current_year}")
 - form.object.end_date = Time.parse("1/1/#{current_year+1}")
 = form.input :start_date, :as => :date
 = form.input :end_date, :as => :date
+
+= form.input :state, :label => "State", :as => :select, :collection => Request.all_workflow_states.map{|state| [Request.state_to_english_translation(state), state]}, :input_html => {:multiple => "multiple"}, :wrapper_html => {:class => 'multiple-select-transfer'}
 
 - unless Fluxx.config(:hide_program) == "1"
   = form.input :program_id, :label => I18n.t(:program_name), :as => :select, :collection => Program.load_all_nonrollup.map{|program| [program.name, program.id]}, :input_html => {:class => 'program-dropdown-select', 'data-related-child' => ".program-lead-select,.sub-program-select"}
