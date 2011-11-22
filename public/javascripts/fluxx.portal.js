@@ -41,6 +41,7 @@
             modal: true,
             minWidth: 500,
             minHeight: 500,
+            height: $(window).height(),
             close: function(event, ui) {
               $('#modal-content').remove();
               $('.page').fadeTo('slow','1');
