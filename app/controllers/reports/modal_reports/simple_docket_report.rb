@@ -68,8 +68,8 @@ class SimpleDocketReport < ActionController::ReportBase
 
     body_docket = ModelDocumentTemplate.where(:id => doc_id).first
     if body_docket
-      header_docket = ModelDocumentTemplate.where(:related_model_document_id => doc_id, :category => 'header').first
-      footer_docket = ModelDocumentTemplate.where(:related_model_document_id => doc_id, :category => 'footer').first
+      header_docket = ModelDocumentTemplate.where(:related_model_document_template_id => doc_id, :category => 'header').first
+      footer_docket = ModelDocumentTemplate.where(:related_model_document_template_id => doc_id, :category => 'footer').first
 
       if header_docket
         header = header_docket.document
@@ -81,7 +81,7 @@ class SimpleDocketReport < ActionController::ReportBase
         requests.each_with_index do |r, i|
           body_output.write Liquid::Template.parse(body).render('request' => r)
           unless requests.size - 1 == i
-            body_output.write "<p class='page-break'>\n"
+            body_output.write "<p class='page-break'>\n" unless body_docket.do_not_insert_page_break
           end
         end
       end

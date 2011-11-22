@@ -59,8 +59,6 @@ before "bundle:install", "fluxx:submodule_bundle_install"
 # before "bundle:install", "fluxx:checkout_gems"
 after "deploy", "thinking_sphinx:index"
 after "deploy:migrations", "thinking_sphinx:index"
-after "deploy", "fluxx:reload_all_templates"
-after "deploy:migrations", "fluxx:reload_all_templates"
 after "deploy", "fluxx:delayed_job_restart"
 after "deploy:migrations", "fluxx:delayed_job_restart"
 
@@ -104,6 +102,8 @@ namespace :fluxx do
     randnum = rand(9999999)
     run "sed 's/remote: \\.\\.\\/fluxx_/remote: \\.\\/fluxx_/g' #{current_release}/Gemfile.lock > /tmp/Gemfile.lock.#{randnum}; cp /tmp/Gemfile.lock.#{randnum} #{current_release}/Gemfile.lock"
   end
+  
+  # Note ESH: this is still available, but we should invoke each letter individually
   desc "reload all letter templates"
   task :reload_all_templates do
     run "cd #{deploy_to}/current && bundle exec rake fluxx_crm:reload_doc_templates RAILS_ENV=#{rails_env}"
