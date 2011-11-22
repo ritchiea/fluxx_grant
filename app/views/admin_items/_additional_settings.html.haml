@@ -6,6 +6,8 @@
       %a{:href => funding_sources_path(:admin => true, :all_results => 1)} Funding Sources
     %li
       %a{:href => groups_path(:admin => true, :all_results => 1)} Groups
+    %li
+      %a{:href => model_document_types_path(:admin => true, :all_results => 1)} Document Types
     - unless Fluxx.config(:hide_program) == "1"
       %li
         %a{:href => programs_path(:admin => true, :all_results => 1)}= I18n.t(:program_name)
