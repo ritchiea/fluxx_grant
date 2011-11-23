@@ -51,9 +51,9 @@ class BudgetOverviewByYear < ActionController::ReportBase
 
       xaxis.each_index{|i| xaxis[i] = xaxis[i].to_s + "  #{(((total_granted[i].to_f + pipeline[i].to_f)/ budgeted[i].to_f) * 100).round.to_s rescue '0'}%"}
       #total_granted.each_index{|i| total_granted[i] -= pipeline[i] }
-      budgeted.each_index{|i| budgeted[i] -= (pipeline[i] + total_granted[i]) }
+      budgeted.each_index{|i| (budgeted[i] || 0) -= ((pipeline[i] || 0) + (total_granted[i] || 0)) }
 
-      paid.each_index{|i| paid[i] -= (budgeted[i] + pipeline[i] + total_granted[i]) }
+      paid.each_index{|i| paid[i] -= ((budgeted[i] || 0) + (pipeline[i] || 0) + (total_granted[i] || 0)) }
 
       hash[:data] = ReportUtility.convert_bigdecimal_to_f_in_array [pipeline, total_granted, budgeted, paid ]
 
