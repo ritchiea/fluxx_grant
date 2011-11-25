@@ -1,4 +1,4 @@
-fmodule FluxxGrantedRequestsController
+module FluxxGrantedRequestsController
   ICON_STYLE = 'style-granted-requests'
   REPORT_ICON_STYLE = 'style-modal-reports'
 
