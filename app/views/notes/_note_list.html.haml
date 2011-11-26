@@ -34,7 +34,7 @@
                   = model.related_workflowable.class.state_to_english_translation model.old_state
                   &#8594;
                   = model.related_workflowable.class.state_to_english_translation model.new_state
-                - elsif notable && notable.respond_to?(:state_to_english_translation)
+                - elsif notable && notable.class.respond_to?(:state_to_english_translation)
                   = notable.class.state_to_english_translation model.old_state
                   &#8594;
                   = notable.class.state_to_english_translation model.new_state
