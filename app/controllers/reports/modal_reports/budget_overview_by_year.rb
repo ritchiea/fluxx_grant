@@ -131,13 +131,14 @@ class BudgetOverviewByYear < ActionController::ReportBase
             fip = [query, start_date, stop_date, program_ids, 'FipRequest']
             card_filter ="utf8=%E2%9C%93&request%5Bdate_range_selector%5D=funding_agreement&request%5Brequest_from_date%5D=#{start_date_string}&request%5Brequest_to_date%5D=#{stop_date_string}&request%5B2has_been_rejected%5D=&request%5Bsort_attribute%5D=updated_at&request%5Bsort_order%5D=desc&request[program_id][]=" + program_ids.join("&request[program_id][]=")
           when "Granted Allocations"
-            query = "SELECT SUM(rfs.funding_amount) AS amount, count(r.id) AS count FROM requests r, request_funding_sources rfs, #{temp_table_name} fsa
+            query = "SELECT SUM(rfs.funding_amount) AS amount, count(distinct r.id) AS count FROM requests r, request_funding_sources rfs, #{temp_table_name} fsa
               WHERE rfs.request_id = r.id and fsa.id = rfs.funding_source_allocation_id AND
-              #{always_exclude} AND granted = 1 AND grant_agreement_at >= ? AND grant_agreement_at <= ? AND fsa.program_id IN (?) AND type = ?"
+              #{always_exclude} AND granted = 1 AND grant_agreement_at >= ? AND grant_agreement_at <= ? AND fsa.program_id IN (?) AND type = ?
+              "
               
             grant = [query, start_date, stop_date, program_ids, 'GrantRequest']
             fip = [query, start_date, stop_date, program_ids, 'FipRequest']
-            card_filter ="utf8=%E2%9C%93&request%5Bdate_range_selector%5D=funding_agreement&request%5Brequest_from_date%5D=#{start_date_string}&request%5Brequest_to_date%5D=#{stop_date_string}&request%5B2has_been_rejected%5D=&request%5Bsort_attribute%5D=updated_at&request%5Bsort_order%5D=desc&request[program_id][]=" + program_ids.join("&request[program_id][]=")
+            card_filter ="utf8=%E2%9C%93&request%5Bdate_range_selector%5D=funding_agreement&request%5Brequest_from_date%5D=#{start_date_string}&request%5Brequest_to_date%5D=#{stop_date_string}&request%5B2has_been_rejected%5D=&request%5Bsort_attribute%5D=updated_at&request%5Bsort_order%5D=desc&request[funding_source_allocation_program_id][]=" + program_ids.join("&request[funding_source_allocation_program_id][]=")
           when "Paid"
             query = "select sum(rtfs.amount) AS amount, COUNT(DISTINCT r.id) AS count from request_transactions rt, request_transaction_funding_sources rtfs, request_funding_sources rfs, #{temp_table_name} fsa, requests r
               WHERE #{always_exclude} AND rt.state = 'paid' AND rt.id = rtfs.request_transaction_id AND rfs.id = rtfs.request_funding_source_id AND fsa.id = rfs.funding_source_allocation_id AND r.id = rt.request_id

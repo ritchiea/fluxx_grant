@@ -9,21 +9,21 @@ class FluxxGrantSphinxHelper
   end
   
   def self.funding_source_allocation_program table_name
-    "if (funding_source_allocations.program_id is not null, funding_source_allocations.program_id, 
+    "replace(group_concat(distinct IFNULL(if (funding_source_allocations.program_id is not null, funding_source_allocations.program_id, 
           if(funding_source_allocations.sub_program_id is not null, (select program_id from sub_programs where id = funding_source_allocations.sub_program_id),
             if(funding_source_allocations.initiative_id is not null, (select program_id from sub_programs where id = (select sub_program_id from initiatives where initiatives.id = funding_source_allocations.initiative_id)), 
-              if(funding_source_allocations.sub_initiative_id is not null, (select program_id from sub_programs where id = (select sub_program_id from initiatives where initiatives.id = (select initiative_id from sub_initiatives where sub_initiatives.id = funding_source_allocations.sub_initiative_id))), null))))"
+              if(funding_source_allocations.sub_initiative_id is not null, (select program_id from sub_programs where id = (select sub_program_id from initiatives where initiatives.id = (select initiative_id from sub_initiatives where sub_initiatives.id = funding_source_allocations.sub_initiative_id))), null)))), 0), ','), ',,', ',')"
   end
   
   def self.funding_source_allocation_sub_program_id table_name
-    "if(funding_source_allocations.sub_program_id is not null, funding_source_allocations.sub_program_id,
+    "replace(group_concat(distinct IFNULL(if(funding_source_allocations.sub_program_id is not null, funding_source_allocations.sub_program_id,
   		    if(funding_source_allocations.initiative_id is not null, (select sub_program_id from initiatives where initiatives.id = funding_source_allocations.initiative_id),
-            if(funding_source_allocations.sub_initiative_id is not null, (select sub_program_id from initiatives where initiatives.id = (select initiative_id from sub_initiatives where sub_initiatives.id = funding_source_allocations.sub_initiative_id)), null)))"
+            if(funding_source_allocations.sub_initiative_id is not null, (select sub_program_id from initiatives where initiatives.id = (select initiative_id from sub_initiatives where sub_initiatives.id = funding_source_allocations.sub_initiative_id)), null))), 0), ','), ',,', ',')"
   end
   
   def self.funding_source_allocation_initiative_id table_name
-    "if(funding_source_allocations.initiative_id is not null, funding_source_allocations.initiative_id, 
-          if(funding_source_allocations.sub_initiative_id is not null, (select initiative_id from sub_initiatives where sub_initiatives.id = funding_source_allocations.sub_initiative_id), null))"
+    "replace(group_concat(distinct IFNULL(if(funding_source_allocations.initiative_id is not null, funding_source_allocations.initiative_id, 
+          if(funding_source_allocations.sub_initiative_id is not null, (select initiative_id from sub_initiatives where sub_initiatives.id = funding_source_allocations.sub_initiative_id), null)), 0), ','), ',,', ',')"
   end
   
   def self.request_hierarchy
