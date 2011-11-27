@@ -38,6 +38,7 @@ module ReviewerBaseReport
         programs.empty?, programs,
         lead_users.empty?, lead_users
         ])
+    reviews = reviews.where(:review_type => 'HRAC Review') if report_type == :feedback
     user_ids = reviews.map(&:created_by_id).uniq
     request_ids = reviews.map(&:request_id).uniq
     users = User.where(:id => user_ids).order('last_name, first_name').all
@@ -125,7 +126,11 @@ module ReviewerBaseReport
         users.each do |user|
           review = reviews_by_request_id[request_id]
           user_review = review[user.id] if review
-          worksheet.write(row, column += 1, (user_review ? (user_review.rating.to_i rescue '') : ''), number_format)
+          if !user_review.rating.blank?
+            worksheet.write(row, column += 1, (user_review ? (user_review.rating.to_i rescue '') : ''), number_format)
+          else
+            column += 1
+          end
         end
         end_user_column = column
     
@@ -133,7 +138,7 @@ module ReviewerBaseReport
         worksheet.write(row, column+=1, ("=AVERAGE(#{avg_formula})"), number_format)
       end
     elsif report_type == :export
-      column_headers = ["Grant Name", "Grant ID", I18n.t(:program_name), "Amount Requested", "Amount Recommended", "Start Date", "End Date", "Duration", "Reviewer Name", "Rating", "Review Type", "Comment", "Benefits", "Outcomes", "Merits", "Recommendation"]
+      column_headers = ["Grant Name", "Grant ID", I18n.t(:program_name), I18n.t(:sub_program_name), "Amount Requested", "Amount Recommended", "Start Date", "End Date", "Duration", "Reviewer Name", "Rating", "Review Type", "Comment", "Benefits", "Outcomes", "Merits", "Recommendation"]
       if Fluxx.config(:dont_use_duration_in_requests) == "1"
         column_headers.delete "Duration"
       end
@@ -150,6 +155,8 @@ module ReviewerBaseReport
         worksheet.write(row, column += 1, request.base_request_id)
         program = program_hash[request.program_id]
         worksheet.write(row, column += 1, program ? program.name : nil)
+        sub_program = SubProgram.find request.sub_program_id if request.sub_program_id rescue nil
+        worksheet.write(row, column += 1, sub_program ? sub_program.name : nil)
         worksheet.write(row, column += 1, (request.amount_requested), amount_format)
         worksheet.write(row, column += 1, (request.amount_recommended), amount_format)
         worksheet.write(row, column += 1, (request.report_begin_date ? request.report_begin_date.mdy : ''), date_format)
