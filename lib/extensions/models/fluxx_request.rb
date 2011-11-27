@@ -1256,7 +1256,7 @@ module FluxxRequest
     end
 
     def funding_sources_expired_before_close_date
-      if (end_date = grant_closed_at || grant_ends_at)
+      if (end_date = fip_projected_end_at || grant_closed_at || grant_ends_at)
         expiring_fund_sources = request_funding_sources.map do |rfs|
           rfs.funding_source_allocation.funding_source.name if rfs.funding_source_allocation && rfs.funding_source_allocation.funding_source.end_at && rfs.funding_source_allocation.funding_source.end_at < end_date
         end.compact
