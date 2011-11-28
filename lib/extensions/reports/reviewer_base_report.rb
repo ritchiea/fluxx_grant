@@ -86,7 +86,7 @@ module ReviewerBaseReport
     row = row_start
 
     if report_type == :feedback
-      column_headers = ["Grant Name", "Grant ID", "Amount Requested", "Amount Recommended", "Start Date", "End Date"]
+      column_headers = ["Grant Name", "Grant ID", I18n.t(:program_name), I18n.t(:sub_program_name), "Amount Requested", "Amount Recommended", "Start Date", "End Date"]
       unless Fluxx.config(:dont_use_duration_in_requests) == "1"
         column_headers << "Duration"
       end
@@ -105,6 +105,10 @@ module ReviewerBaseReport
     
         worksheet.write(row += 1, column, request.report_grant_name)
         worksheet.write(row, column += 1, request.base_request_id)
+        program = program_hash[request.program_id]
+        worksheet.write(row, column += 1, program ? program.name : nil)
+        sub_program = SubProgram.find request.sub_program_id if request.sub_program_id rescue nil
+        worksheet.write(row, column += 1, sub_program ? sub_program.name : nil)
         worksheet.write(row, column += 1, (request.amount_requested.to_i rescue 0), amount_format)
         worksheet.write(row, column += 1, (request.amount_recommended.to_i rescue 0), amount_format)
         worksheet.write(row, column += 1, (request.report_begin_date ? request.report_begin_date.mdy : ''), date_format)
