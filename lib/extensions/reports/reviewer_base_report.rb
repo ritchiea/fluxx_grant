@@ -85,6 +85,9 @@ module ReviewerBaseReport
     row_start = 6
     row = row_start
 
+    program_hash = Program.all.inject({}) {|acc, program| acc[program.id] = program; acc}
+    sub_program_hash = SubProgram.all.inject({}) {|acc, program| acc[program.id] = program; acc}
+
     if report_type == :feedback
       column_headers = ["Grant Name", "Grant ID", I18n.t(:program_name), I18n.t(:sub_program_name), "Amount Requested", "Amount Recommended", "Start Date", "End Date"]
       unless Fluxx.config(:dont_use_duration_in_requests) == "1"
@@ -107,7 +110,7 @@ module ReviewerBaseReport
         worksheet.write(row, column += 1, request.base_request_id)
         program = program_hash[request.program_id]
         worksheet.write(row, column += 1, program ? program.name : nil)
-        sub_program = SubProgram.find request.sub_program_id if request.sub_program_id rescue nil
+        sub_program = sub_program_hash[request.sub_program_id]
         worksheet.write(row, column += 1, sub_program ? sub_program.name : nil)
         worksheet.write(row, column += 1, (request.amount_requested.to_i rescue 0), amount_format)
         worksheet.write(row, column += 1, (request.amount_recommended.to_i rescue 0), amount_format)
@@ -149,7 +152,6 @@ module ReviewerBaseReport
       
       column_headers.each_with_index{|label, index| worksheet.write(6, index, label, header_format)}
       
-      program_hash = Program.all.inject({}) {|acc, program| acc[program.id] = program; acc}
       reviews.each do |review|
         request_id = review.request_id
         column=0
@@ -159,7 +161,7 @@ module ReviewerBaseReport
         worksheet.write(row, column += 1, request.base_request_id)
         program = program_hash[request.program_id]
         worksheet.write(row, column += 1, program ? program.name : nil)
-        sub_program = SubProgram.find request.sub_program_id if request.sub_program_id rescue nil
+        sub_program = sub_program_hash[request.sub_program_id]
         worksheet.write(row, column += 1, sub_program ? sub_program.name : nil)
         worksheet.write(row, column += 1, (request.amount_requested), amount_format)
         worksheet.write(row, column += 1, (request.amount_recommended), amount_format)
