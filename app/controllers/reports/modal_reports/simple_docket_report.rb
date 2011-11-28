@@ -68,8 +68,8 @@ class SimpleDocketReport < ActionController::ReportBase
 
     body_docket = ModelDocumentTemplate.where(:id => doc_id).first
     if body_docket
-      header_docket = ModelDocumentTemplate.where(:related_model_document_template_id => doc_id, :category => 'header').first
-      footer_docket = ModelDocumentTemplate.where(:related_model_document_template_id => doc_id, :category => 'footer').first
+      header_docket = ModelDocumentTemplate.where(:related_model_document_template_id => doc_id, :disposition => 'header').first
+      footer_docket = ModelDocumentTemplate.where(:related_model_document_template_id => doc_id, :disposition => 'footer').first
 
       if header_docket
         header = header_docket.document
