@@ -96,7 +96,7 @@ module ReviewerBaseReport
       
       column_headers.each_with_index{|label, index| worksheet.write(6, index, label, header_format)}
 
-      column_offset = Fluxx.config(:dont_use_duration_in_requests) == "1" ? 6 : 7
+      column_offset = column_headers.size
       users.each_with_index do |user, index|
         worksheet.write(6, index + column_offset, user.first_name + ' ' + user.last_name, header_format)
       end
