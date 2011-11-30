@@ -18,7 +18,10 @@
   - sub_programs = form.object.program.load_sub_programs if form.object.program
   = form.input :sub_program_id, :label => I18n.t(:sub_program_name), :as => :select, :collection => sub_programs.map{|sub_program| [sub_program.name, sub_program.id]}, :input_html => {:class => 'sub-program-select', 'data-param'.to_sym => 'program_id', 'data-src'.to_sym => sub_programs_path(:format => 'autocomplete', :all_results => 1)}
 
-- grant_cycle_options = ModelAttribute.find_values Request, 'grant_cycle'
+- grant_cycle_options = if defined? ModelAttribute
+  - ModelAttribute.find_values Request, 'grant_cycle'
+- else
+  - MultiElementGroup.find_values Request, 'grant_cycle'
 - unless grant_cycle_options.blank?
   = form.input :grant_cycle, :label => "Grant Cycle", :as => :select, :required => false, :collection => grant_cycle_options, :input_html => {:class => 'add-another'}
   
