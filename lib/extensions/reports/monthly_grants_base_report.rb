@@ -24,7 +24,7 @@ module MonthlyGrantsBaseReport
     legend_table = ["Program", "Grants", "Grant #{CurrencyHelper.current_long_name.pluralize}"]
     unless Fluxx.config(:hide_fips) == "1"
       legend_table << I18n.t(:fip_name).pluralize
-      legend_table << "#{I18n.t(:fip_name)} #{CurrencyHelper.current_long_name.pluralize} By Organizaton"
+      legend_table << "#{I18n.t(:fip_name)} #{CurrencyHelper.current_long_name.pluralize} By Organization"
     end
     
     legend = [{ :table => legend_table, :filter => "", :listing_url => "", :card_title => ""}]
