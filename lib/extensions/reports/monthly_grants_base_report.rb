@@ -59,7 +59,6 @@ module MonthlyGrantsBaseReport
     plot[:data] = []
 
     xaxis = []
-    data = []
     legend = []
     programs = []
     data = {}
@@ -78,7 +77,7 @@ module MonthlyGrantsBaseReport
       year = row[:year]
       month = row[:month]
       program_id = row[:program_id]
-      store_hash data, year, month, program_id, row[:num]
+      store_hash data, year, month, program_id, row[:num].to_f
       if !programs.find_index program_id
         programs << program_id
         plot[:series] << { :label => row[:program]}
