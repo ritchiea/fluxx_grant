@@ -22,7 +22,10 @@ module MonthlyGrantsBaseReport
     req = Request.connection.execute(Request.send(:sanitize_sql, [query, "GrantRequest", request_ids, "FipRequest", request_ids, request_ids]))
     
     legend_table = ["Program", "Grants", "Grant #{CurrencyHelper.current_long_name.pluralize}"]
-    legend_table << [I18n.t(:fip_name).pluralize, "#{I18n.t(:fip_name)} #{CurrencyHelper.current_long_name.pluralize} By Organizaton"] unless Fluxx.config(:hide_fips) == "1"
+    unless Fluxx.config(:hide_fips) == "1"
+      legend_table << I18n.t(:fip_name).pluralize
+      legend_table << "#{I18n.t(:fip_name)} #{CurrencyHelper.current_long_name.pluralize} By Organizaton"
+    end
     
     legend = [{ :table => legend_table, :filter => "", :listing_url => "", :card_title => ""}]
     filter = []
@@ -36,7 +39,10 @@ module MonthlyGrantsBaseReport
     end if params["request"]
     req.each(:cache_rows => false, :symbolize_keys => true, :as => :hash) do |result|
       legend_table = [result[:program], result[:grants], number_to_currency(result[:grant_dollars])]
-      legend_table << [result[:fips], number_to_currency(result[:fip_dollars])] unless Fluxx.config(:hide_fips) == "1"
+      unless Fluxx.config(:hide_fips) == "1"
+        legend_table << result[:fips]
+        legend_table << number_to_currency(result[:fip_dollars])
+      end
       legend << { :table => legend_table,
         :filter =>  filter.join("&") + "&request[program_id][]=#{result[:program_id]}",
         :listing_url => controller.granted_requests_path, :card_title => "#{result[:program]} Grants"}
