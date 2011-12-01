@@ -77,10 +77,10 @@ module MonthlyGrantsBaseReport
       year = row[:year]
       month = row[:month]
       program_id = row[:program_id]
-      store_hash data, year, month, program_id, row[:num].to_f
+      store_hash data, year, month, program_id, row[:num].to_i
       if !programs.find_index program_id
         programs << program_id
-        plot[:series] << { :label => row[:program]}
+        plot[:series] << {:label => row[:program]}
       end
       date = row[:date]
       if (date)
