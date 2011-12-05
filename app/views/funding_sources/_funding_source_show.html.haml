@@ -7,8 +7,23 @@
   .key= 'End Date:'
   .value= model.end_at.mdy if model.end_at
 .pairs
-  .key= 'Amount Allocated:'
+  .key= 'Amount Received:'
   .value= as_currency(model.amount) if model.amount
+.pairs
+  .key= 'Amount Requested:'
+  .value= as_currency(model.amount_requested) if model.amount_requested
+.pairs
+  .key= 'Amount Budgeted:'
+  .value= as_currency(model.amount_budgeted) if model.amount_budgeted
+.pairs
+  .key= 'Overhead Amount:'
+  .value= as_currency(model.overhead_amount) if model.overhead_amount
+.pairs
+  .key= 'Net Available to Spend:'
+  .value= as_currency(model.net_available_to_spend_amount) if model.net_available_to_spend_amount
+.pairs
+  .key= 'Narrative Lead:'
+  .value= model.narrative_lead_user.full_name if model.narrative_lead_user
 .pairs
   .key= 'State:'
   .value= model.state_to_english

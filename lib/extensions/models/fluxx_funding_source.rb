@@ -7,6 +7,7 @@ SEARCH_ATTRIBUTES = [:state]
     base.has_many :funding_source_allocations, :conditions => {:deleted_at => nil}
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
     base.belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
+    base.belongs_to :narrative_lead_user, :class_name => 'User', :foreign_key => 'narrative_lead_user_id'
     base.has_many :notes, :as => :notable, :conditions => {:deleted_at => nil}
     base.before_destroy :clear_out_allocation_references
     base.acts_as_audited
@@ -17,7 +18,7 @@ SEARCH_ATTRIBUTES = [:state]
     base.insta_export
     base.insta_realtime
     base.insta_filter_amount do |insta|
-      insta.amount_attributes = [:amount, :overhead_amount, :net_available_to_spend_amount]
+      insta.amount_attributes = [:amount, :amount_requested, :amount_budgeted, :overhead_amount, :net_available_to_spend_amount]
     end
     base.liquid_methods *( LIQUID_METHODS )    
     
