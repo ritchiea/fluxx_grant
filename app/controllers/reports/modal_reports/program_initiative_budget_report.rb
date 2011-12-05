@@ -110,7 +110,7 @@ class ProgramInitiativeBudgetReport < ActionController::ReportBase
         sub_program = lookup_table_sub_programs[sub_program_id]
         sub_program_name = (sub_program ? sub_program.name : '')
         sub_program_budget = sub_program.total_allocation(:spending_year => spending_year)
-        sub_program_pipeline = sub_program.total_pipeline(query_types)
+        sub_program_pipeline = sub_program.total_pipeline(query_types, spending_year)
         
         request_hashes = sub_program_hash[sub_program.id]
         worksheet.write(row += 1, 1, sub_program_name)

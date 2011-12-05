@@ -112,14 +112,16 @@ module FluxxSubInitiative
       FundingSourceAllocation.find_by_sql(FundingSourceAllocation.send(:sanitize_sql, clause)).select{|fsa| (fsa.num_allocation_authorities.to_i rescue 0) > 0}
     end
 
-    def total_pipeline request_types=nil
+    def total_pipeline request_types=nil, spending_year=nil
+      pipeline_spending_year_clause = FundingSourceAllocation.send(:sanitize_sql, [" and fsa.spending_year = ? ", spending_year]) if spending_year
       total_amount = FundingSourceAllocation.connection.execute(
           FundingSourceAllocation.send(:sanitize_sql, ["select sum(rfs.funding_amount) from funding_source_allocations fsa, request_funding_sources rfs, requests where 
           requests.granted = 0 and
           requests.deleted_at IS NULL AND requests.state <> 'rejected' and
-      	rfs.request_id = requests.id 
-      	#{Request.prepare_request_types_for_where_clause(request_types)}
-      	and rfs.funding_source_allocation_id = fsa.id and
+        rfs.request_id = requests.id 
+        #{Request.prepare_request_types_for_where_clause(request_types)}
+        #{pipeline_spending_year_clause}
+        and rfs.funding_source_allocation_id = fsa.id and
                 #{sub_initiative_fsa_join_where_clause}",self.id, FundingSource.approved_states]))
       total_amount.fetch_row.first.to_i
     end
