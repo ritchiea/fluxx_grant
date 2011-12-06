@@ -221,7 +221,7 @@
           ],
           '[data-related-child]': [
             'change', function (e) {
-              var $area = $(this).fluxxCardArea();
+              var $area = $(this).hasOwnProperty('fluxxCardArea') ? $(this).fluxxCardArea() : null;
               var updateChild = function ($child, parentId, relatedChildParam) {
                 // Prevent stacking updates
                 $child.data('updating', true);
