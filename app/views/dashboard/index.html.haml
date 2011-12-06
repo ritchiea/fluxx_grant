@@ -29,7 +29,7 @@
             date_format: '#{escape_javascript(Fluxx.config(:date_picker_format) && !Fluxx.config(:date_picker_format).empty? ? Fluxx.config(:date_picker_format) : 'm/d/yy')}',
             datepicker_unique_id: 1,
             icon_path: '/fluxx_engine/theme/default/images/icons',
-            can_add_dashboard_templates: true,
+            can_add_dashboard_templates: #{(current_user.is_admin? ? true: false)},
             realtime_updates: {
               enabled: true,
               options: {
