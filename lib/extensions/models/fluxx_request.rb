@@ -849,12 +849,14 @@ module FluxxRequest
     end
 
     def amount_funded
-      amount_paids = request_transactions.map(&:amount_paid).compact
+      paid_states = RequestTransaction.all_states_with_category('paid').map{|st| st.to_s}
+      amount_paids = request_transactions.select{|rt| paid_states.include?(rt.state)}.map(&:amount_paid).compact
       amount_paids.sum if !amount_paids.empty?
     end
 
     def amount_pending
-      amount_due = request_transactions.reject(&:paid_at).map(&:amount_due).compact
+      paid_states = RequestTransaction.all_states_with_category('paid').map{|st| st.to_s}
+      amount_due = request_transactions.reject{|rt| paid_states.include?(rt.state)}.map(&:amount_due).compact
       amount_due.sum if !amount_due.empty?
     end
 
