@@ -26,9 +26,6 @@ module FluxxLoi
     base.belongs_to :organization
     base.belongs_to :geo_country
     base.belongs_to :geo_state
-    base.validates_presence_of   :applicant
-    base.validates_presence_of   :organization_name
-    base.validates_presence_of   :email
 
     base.acts_as_audited({:full_model_enabled => false, :except => [:created_by_id, :updated_by_id, :delta, :updated_by, :created_by, :audits]})
 
