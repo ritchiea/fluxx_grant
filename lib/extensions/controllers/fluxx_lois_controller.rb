@@ -68,7 +68,7 @@ module FluxxLoisController
           request = GrantRequest.new(:program_organization_id => model.organization_id, :program_id => model.program_id,
                                 :amount_requested => model.amount_requested, :duration_in_months => model.duration_in_months,
                                 :grant_begins_at => model.grant_begins_at, :project_summary => model.project_summary, :grantee_org_owner_id => model.user_id)
-
+          request.grant_type = model.grant_type if request.respond_to?(:grant_type) && model.respond_to?(:grant_type)
           draft_state = Request.all_states_with_category("draft").first
           request.state = draft_state if draft_state
 
