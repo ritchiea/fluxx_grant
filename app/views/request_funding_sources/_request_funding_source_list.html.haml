@@ -30,7 +30,7 @@
         %dt= "Initiatives:" 
         %dd= render :partial => "request_funding_sources/request_funding_source_initiatives", :locals => { :funding_source => funding_source }
         %dt= "Spending Year:" 
-        %dd= funding_source.funding_source_allocation.spending_year
+        %dd= funding_source.funding_source_allocation.spending_year if funding_source.funding_source_allocation
       <hr/>
   %strong
     = number_to_currency total
