@@ -1,4 +1,7 @@
 module FluxxLoi
+  attr_accessor :request_note
+  attr_accessor :request_attributes
+
   SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :loi_applicant, :loi_organization_name, :loi_email, :loi_phone, :loi_project_title, :program_id]
   def self.prepare_program_ids search_with_attributes, name, val
     program_id_strings = val
@@ -220,7 +223,7 @@ module FluxxLoi
         user.update_attribute "primary_user_organization_id", user_org.id
       end
     end
-    
+
     def loi_applicant
       applicant
     end

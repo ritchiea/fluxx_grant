@@ -21,7 +21,7 @@ module FluxxLoisController
     base.insta_edit Loi do |insta|
       insta.icon_style = ICON_STYLE
       insta.template = 'loi_form'
-      insta.template_map = {:connect_organization =>  "connect_organization", :connect_user => "connect_user"}
+      insta.template_map = {:connect_organization =>  "connect_organization", :connect_user => "connect_user", :promote_to_request => "promote_to_request"}
     end
     base.insta_post Loi do |insta|
       insta.template = 'loi_form'
@@ -65,17 +65,27 @@ module FluxxLoisController
           model.update_attribute "organization_id", nil
         end
         if params[:promote_to_request] && model.user && model.organization && !model.request
-          request = GrantRequest.new(:program_organization_id => model.organization_id, :program_id => model.program_id,
-                                :amount_requested => model.amount_requested, :duration_in_months => model.duration_in_months,
-                                :grant_begins_at => model.grant_begins_at, :project_summary => model.project_summary, :grantee_org_owner_id => model.user_id)
-          request.grant_type = model.grant_type if request.respond_to?(:grant_type) && model.respond_to?(:grant_type)
+          attributes = { :program_organization_id => model.organization_id, :program_id => model.program_id,
+              :amount_requested => model.amount_requested, :duration_in_months => model.duration_in_months,
+              :grant_begins_at => model.grant_begins_at, :project_summary => model.project_summary, :grantee_org_owner_id => model.user_id }
+
+          if model.request_attributes
+            workflow_attributes = model.request_attributes.de_json
+            attributes.merge!(workflow_attributes["grant_request"]) if workflow_attributes.is_a?(Hash) && workflow_attributes["grant_request"]
+          end
+          request = GrantRequest.new(attributes)
+
           draft_state = Request.all_states_with_category("draft").first
           request.state = draft_state if draft_state
 
           if request.save(:validate => false)
+            if model.request_note
+              note = Note.new(:notable_id => request.id, :notable_type => request.class.name, :note => model.request_note)
+              note.save
+            end
             request_attributes = request.all_dynamic_attributes
             model.all_dynamic_attributes.each do |k,v|
-              request.send(k, model.send(k)) if request_attributes[k]
+              request.send("#{k}=", model.send(k)) if request_attributes[k]
             end
             request.project_title = model.project_title if model.respond_to? :project_title
             request.save(:validate => false)

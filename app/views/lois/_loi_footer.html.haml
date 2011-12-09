@@ -1,6 +1,6 @@
 %ul.workflow
   -if @model.user && @model.organization && !@model.request
-    %li= link_to 'Promote To Request', current_put_path(@model.id, :promote_to_request => true), :class => 'as-put', :link_class => 'btn'
+    %li= link_to 'Promote To Request', current_edit_path(@model.id, :promote_to_request => true, :as_modal => 1), :class => 'to-prompt', :link_class => 'btn', 'data-on-success' => 'refreshCaller,close' if current_user.has_create_for_model?(model.class)
 %ul.buttons
   - if @model
     - if !current_user.respond_to?(:has_update_for_model) || current_user.has_update_for_model?(@model)

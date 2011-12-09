@@ -1,0 +1,4 @@
+%fieldset.inputs
+  %ol
+    %input{:name => "promote_to_request", :value => "1", :type => "hidden"}
+    = form.input :request_note, :label => "Notes", :as => :text, :input_html => {:rows=>3}
