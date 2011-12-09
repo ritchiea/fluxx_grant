@@ -33,7 +33,7 @@ module FluxxLoi
     base.acts_as_audited({:full_model_enabled => false, :except => [:created_by_id, :updated_by_id, :delta, :updated_by, :created_by, :audits]})
 
     base.insta_search do |insta|
-      insta.filter_fields = SEARCH_ATTRIBUTES + [:organization_linked, :applicant_linked]
+      insta.filter_fields = SEARCH_ATTRIBUTES + [:organization_linked, :applicant_linked, :display_promoted_lois]
       insta.derived_filters = {:program_id => (lambda do |search_with_attributes, request_params, name, val|
         prepare_program_ids search_with_attributes, name, val
       end),
@@ -166,6 +166,7 @@ module FluxxLoi
         set_property :delta => :delayed
         has "IF(lois.organization_id is not null, 1, 0)", :as => :organization_linked, :type => :boolean
         has "IF(lois.user_id is not null, 1, 0)", :as => :applicant_linked, :type => :boolean
+        has "IF(lois.request_id is null, 0, 1)", :as => :display_promoted_lois, :type => :boolean
       end
     end
   end
