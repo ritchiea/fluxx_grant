@@ -18,6 +18,7 @@ module FluxxFundingSourceAllocationAuthority
     base.send :attr_accessor, :funding_source
     base.send :attr_accessor, :funding_source_id
     base.insta_multi
+    base.insta_formbuilder
 
     base.insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES
