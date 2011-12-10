@@ -3,7 +3,8 @@
     initGranteePortal: function() {
       $('.multiple-select-transfer select[multiple="true"], .multiple-select-transfer select[multiple="multiple"]').selectTransfer();
       $('.datetime input').fluxxDatePicker({ changeMonth: true, changeYear: true });
-      $.fluxx.util.autoGrowTextArea($('textarea'));
+      if ($.fluxx && $.fluxx.util)
+        $.fluxx.util.autoGrowTextArea($('textarea'));
 
       $.fn.installFluxxDecorators();
       $('.notice').delay(10000).fadeOut('slow');
