@@ -3,7 +3,8 @@
     initGranteePortal: function() {
       $('.multiple-select-transfer select[multiple="true"], .multiple-select-transfer select[multiple="multiple"]').selectTransfer();
       $('.datetime input').fluxxDatePicker({ changeMonth: true, changeYear: true });
-      $.fluxx.util.autoGrowTextArea($('textarea'));
+      if ($.fluxx && $.fluxx.util)
+        $.fluxx.util.autoGrowTextArea($('textarea'));
 
       $.fn.installFluxxDecorators();
       $('.notice').delay(10000).fadeOut('slow');
@@ -122,7 +123,7 @@
                   $('.page').fadeTo('slow','1');
                   var $area = $elem.parents('.reports');
                   if (!$area.attr('data-src'))
-                    $area = $elem.parents('.partial');
+                    $area = $elem.parents('.partial:first');
                   $.fn.loadTable($area, 0);
                 }
               });
