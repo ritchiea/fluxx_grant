@@ -11,7 +11,9 @@ module FluxxGrantModelDocument
       doc_label = options[:doc_label]
       Fluxx.config("documents_allowed_#{doc_label}_#{user && user.user_profile && user.user_profile.name}")
     end
-    
+  end
+  
+  instance_methods do
     def relates_to_user? user
       if (self.documentable.class.name == 'RequestReport')
         (user.primary_organization.id == self.documentable.request.program_organization_id) || (user.primary_organization.id == self.documentable.request.fiscal_organization_id)
@@ -23,8 +25,5 @@ module FluxxGrantModelDocument
         end
       end
     end
-  end
-  
-  instance_methods do
   end
 end
