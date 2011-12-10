@@ -122,7 +122,7 @@
                   $('.page').fadeTo('slow','1');
                   var $area = $elem.parents('.reports');
                   if (!$area.attr('data-src'))
-                    $area = $elem.parents('.partial');
+                    $area = $elem.parents('.partial:first');
                   $.fn.loadTable($area, 0);
                 }
               });
