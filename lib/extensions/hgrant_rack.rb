@@ -67,14 +67,16 @@ end
 class RenderHgrantsRssResponse
   
   def initialize rss_response, hostname, render_as_html=false
-    @resp = rss_response
+    @resp = rss_response.to_a(:as => :hash)
+    @offset = 0
     @host = hostname
     @as_html = render_as_html
   end
   
   def each &block
     if @as_html
-      block.call(DisplayRssFeedGrantHTML.generate_grant_html(@resp.fetch_hash)) if @resp
+      block.call(DisplayRssFeedGrantHTML.generate_grant_html(@resp[@offset])) if @resp && @offset < @resp.size
+      @offset += 1
     else
       render_requests_to_xml @resp, block
     end
@@ -89,7 +91,7 @@ class RenderHgrantsRssResponse
     # block.call "    <link>#{hgrants_path}</link>\n"
     block.call "    <pubDate>#{Time.now.rfc2822}</pubDate>\n"
     block.call "    <language>en</language>\n"
-    while hash = grants.fetch_hash
+    grants.each do |hash|
       hash['host'] = @host
       render_request_to_xml hash, block
     end
