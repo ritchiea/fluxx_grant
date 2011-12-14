@@ -62,6 +62,7 @@ class GrantsByFundingSourceReport < ActionController::ReportBase
                   (select name from sub_programs where id = temp_table.sub_program_id) report_sub_program_name,
                   (select name from initiatives where id = temp_table.initiative_id) report_initiative_name,
                   (select name from sub_initiatives where id = temp_table.sub_initiative_id) report_sub_initiative_name,
+                  temp_table.report_spending_year,
                   if(type = 'GrantRequest', (select name from organizations where id = program_organization_id), fip_title) report_grant_name,
                   base_request_id,
                   amount_recommended,
@@ -113,7 +114,7 @@ class GrantsByFundingSourceReport < ActionController::ReportBase
      worksheet.set_column(7, 7, 20)
      worksheet.set_column(9, 9, 15)
 
-     [I18n.t(:program_name), I18n.t(:sub_program_name), I18n.t(:initiative_name), I18n.t(:sub_initiative_name), "Grant Name", "Grant ID", "Amount Funded (total grant)", "Start Date", "End Date", "Funder Name", "Funded Amounts"].
+     [I18n.t(:program_name), I18n.t(:sub_program_name), I18n.t(:initiative_name), I18n.t(:sub_initiative_name), "Spending Year", "Grant Name", "Grant ID", "Amount Funded (total grant)", "Start Date", "End Date", "Funder Name", "Funded Amounts"].
        each_with_index{|label, index| worksheet.write(6, index, label, header_format)}
 
      row_start = 6
@@ -125,13 +126,14 @@ class GrantsByFundingSourceReport < ActionController::ReportBase
       worksheet.write(row, 1, request.report_sub_program_name)
       worksheet.write(row, 2, request.report_initiative_name)
       worksheet.write(row, 3, request.report_sub_initiative_name)
-      worksheet.write(row, 4, request.report_grant_name)
-      worksheet.write(row, 5, request.base_request_id)
-      worksheet.write(row, 6, (request.amount_recommended), amount_format)
-      worksheet.write(row, 7, (request.report_begin_date ? request.report_begin_date.mdy : nil), date_format)
-      worksheet.write(row, 8, (request.report_end_date ? request.report_end_date.mdy : nil), date_format)
-      worksheet.write(row, 9, request.report_funder_name)
-      worksheet.write(row, 10, (request.report_funding_amount), amount_format)
+      worksheet.write(row, 4, request.report_spending_year)
+      worksheet.write(row, 5, request.report_grant_name)
+      worksheet.write(row, 6, request.base_request_id)
+      worksheet.write(row, 7, (request.amount_recommended), amount_format)
+      worksheet.write(row, 8, (request.report_begin_date ? request.report_begin_date.mdy : nil), date_format)
+      worksheet.write(row, 9, (request.report_end_date ? request.report_end_date.mdy : nil), date_format)
+      worksheet.write(row, 10, request.report_funder_name)
+      worksheet.write(row, 11, (request.report_funding_amount), amount_format)
     end
 
     workbook.close
