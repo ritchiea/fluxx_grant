@@ -62,7 +62,7 @@ class GrantsByFundingSourceReport < ActionController::ReportBase
                   (select name from sub_programs where id = temp_table.sub_program_id) report_sub_program_name,
                   (select name from initiatives where id = temp_table.initiative_id) report_initiative_name,
                   (select name from sub_initiatives where id = temp_table.sub_initiative_id) report_sub_initiative_name,
-                  temp_table.report_spending_year,
+                  temp_table.spending_year report_spending_year,
                   if(type = 'GrantRequest', (select name from organizations where id = program_organization_id), fip_title) report_grant_name,
                   base_request_id,
                   amount_recommended,
