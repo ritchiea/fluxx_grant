@@ -232,7 +232,7 @@ module FluxxRequest
               end || {}
             end),
           :has_been_rejected => (lambda do |search_with_attributes, request_params, name, val|
-            if val == '1'
+            if val == '1' || (val.is_a?(Array) && val.first == '1')
               search_with_attributes.delete :has_been_rejected
             else
               search_with_attributes[:has_been_rejected] = 0
