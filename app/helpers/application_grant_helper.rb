@@ -55,8 +55,8 @@ module ApplicationGrantHelper
 
   def render_request_amount request, request_text
     return '' unless request
-    if request.amount_requested && request.amount_requested != 0
-      "#{request_text} <span class='minimize-detail-pull'>#{as_currency(request.amount_requested)}</span> <br />"
+    if request.display_amount
+      "#{request_text} <span class='minimize-detail-pull'>#{as_currency(request.display_amount)}</span> <br />"
     end
   end
 

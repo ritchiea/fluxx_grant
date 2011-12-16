@@ -1351,6 +1351,11 @@ module FluxxRequest
       end
       expended
     end
+    
+    # If this has been granted already, only show amount recommended.  Otherwise show either amount recommended or amount requested
+    def display_amount
+      granted ? amount_recommended : (amount_recommended || amount_requested)
+    end
 
     def created_by_with_create_date
       "#{created_by.full_name if created_by} (#{created_at.mdy if created_at})"

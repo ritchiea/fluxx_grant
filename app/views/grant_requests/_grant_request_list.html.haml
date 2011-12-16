@@ -14,7 +14,7 @@
     .value= model.grant_or_request_id
   .pairs
     .key= 'Amount'
-    .value= dollars_format(model.amount_recommended || model.amount_requested)
+    .value= dollars_format(model.display_amount)
   .pairs
     .key= 'Start Date'
     .value= mdy_date_format(model.request_received_at)
@@ -45,6 +45,6 @@
     No Changes
       
 - else
-  %h4= [dollars_format(model.granted ? model.amount_recommended : model.amount_recommended || model.amount_requested), mdy_date_format(model.request_received_at), (model.program ? model.program.name : '')].compact.join(' | ')
+  %h4= [dollars_format(model.display_amount), mdy_date_format(model.request_received_at), (model.program ? model.program.name : '')].compact.join(' | ')
   %h4= model.grant_or_request_id
   %p= model.project_summary
