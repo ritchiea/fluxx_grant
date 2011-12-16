@@ -87,7 +87,7 @@ module FluxxGrantOrganization
 
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id
-        has 'null', :type => :multi, :as => :grant_program_ids
+        has grants.program(:id), :as => :grant_program_ids
         has 'null', :type => :multi, :as => :grant_sub_program_ids
         has grants(:id), :as => :grant_ids
         has 'null', :type => :multi, :as => :request_ids
@@ -131,7 +131,7 @@ module FluxxGrantOrganization
 
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id
-        has 'null', :type => :multi, :as => :grant_program_ids
+        has grants.program(:id), :as => :grant_program_ids
         has 'null', :type => :multi, :as => :grant_sub_program_ids
         has 'null', :type => :multi, :as => :grant_ids
         has grant_requests(:id), :as => :request_ids
@@ -153,7 +153,7 @@ module FluxxGrantOrganization
 
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id
-        has 'null', :type => :multi, :as => :grant_program_ids
+        has grants.program(:id), :as => :grant_program_ids
         has 'null', :type => :multi, :as => :grant_sub_program_ids
         has 'null', :type => :multi, :as => :grant_ids
         has 'null', :type => :multi, :as => :request_ids
