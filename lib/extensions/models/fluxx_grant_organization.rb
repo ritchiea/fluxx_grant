@@ -4,7 +4,7 @@ module FluxxGrantOrganization
   require 'net/https'
   include REXML
 
-  SEARCH_ATTRIBUTES = [:parent_org_id, :grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_ids, :grant_ids, :favorite_user_ids, :related_org_ids]
+  SEARCH_ATTRIBUTES = [:parent_org_id, :grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_ids, :grant_ids, :favorite_user_ids, :related_org_ids, :city, :geo_country_id, :geo_state_id, :postal_code]
 
   def self.included(base)
     base.send :include, ::FluxxOrganization
@@ -86,7 +86,9 @@ module FluxxGrantOrganization
         indexes :vendor_number
 
         # attributes
-        has created_at, updated_at, deleted_at, state, parent_org_id
+        has created_at, updated_at, deleted_at, state, parent_org_id, geo_state_id, geo_country_id
+        has :city, :type => :string, :crc => true, :as => :city
+        has :postal_code, :type => :string, :crc => true, :as => :postal_code
         has grants.program(:id), :as => :grant_program_ids
         has grants.sub_program(:id), :as => :grant_sub_program_ids
         has grants(:id), :as => :grant_ids
@@ -108,7 +110,9 @@ module FluxxGrantOrganization
         indexes "lower(organizations.acronym)", :as => :acronym, :sortable => true
 
         # attributes
-        has created_at, updated_at, deleted_at, state, parent_org_id
+        has created_at, updated_at, deleted_at, state, parent_org_id, geo_state_id, geo_country_id
+        has :city, :type => :string, :crc => true, :as => :city
+        has :postal_code, :type => :string, :crc => true, :as => :postal_code
         has grants.program(:id), :as => :grant_program_ids
         has grants.sub_program(:id), :as => :grant_sub_program_ids
         has 'null', :type => :multi, :as => :grant_ids
@@ -130,7 +134,9 @@ module FluxxGrantOrganization
         indexes "lower(organizations.acronym)", :as => :acronym, :sortable => true
 
         # attributes
-        has created_at, updated_at, deleted_at, state, parent_org_id
+        has created_at, updated_at, deleted_at, state, parent_org_id, geo_state_id, geo_country_id
+        has :city, :type => :string, :crc => true, :as => :city
+        has :postal_code, :type => :string, :crc => true, :as => :postal_code
         has grants.program(:id), :as => :grant_program_ids
         has grants.sub_program(:id), :as => :grant_sub_program_ids
         has 'null', :type => :multi, :as => :grant_ids
@@ -152,7 +158,9 @@ module FluxxGrantOrganization
         indexes "lower(organizations.acronym)", :as => :acronym, :sortable => true
 
         # attributes
-        has created_at, updated_at, deleted_at, state, parent_org_id
+        has created_at, updated_at, deleted_at, state, parent_org_id, geo_state_id, geo_country_id
+        has :city, :type => :string, :crc => true, :as => :city
+        has :postal_code, :type => :string, :crc => true, :as => :postal_code
         has grants.program(:id), :as => :grant_program_ids
         has grants.sub_program(:id), :as => :grant_sub_program_ids
         has 'null', :type => :multi, :as => :grant_ids
