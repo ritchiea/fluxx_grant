@@ -25,7 +25,6 @@ module FluxxRequestTransaction
 
   SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_type, :amount_paid, :favorite_user_ids, :has_been_paid, :filter_state, :request_hierarchy, :allocation_hierarchy]
   FAR_IN_THE_FUTURE = Time.now + 1000.year
-  LIQUID_METHODS = [:amount_due, :due_at, :condition, :paid_at, :amount_paid, :request]
   
   def self.included(base)
     base.belongs_to :request
@@ -191,10 +190,9 @@ module FluxxRequestTransaction
     
     base.insta_template do |insta|
       insta.entity_name = 'request_transaction'
-      insta.add_methods []
+      insta.add_methods [:amount_due, :due_at, :condition, :paid_at, :amount_paid, :request]
       insta.remove_methods [:id]
     end
-    base.liquid_methods *( LIQUID_METHODS )
 
     base.extend(ModelClassMethods)
     base.class_eval do

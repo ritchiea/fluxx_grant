@@ -1,6 +1,5 @@
 module FluxxBudgetRequest
   SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :request_id]
-  LIQUID_METHODS = [:name, :amount_requested, :amount_recommended ]  
   
   def self.included(base)
     base.belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
@@ -32,10 +31,9 @@ module FluxxBudgetRequest
 
     base.insta_template do |insta|
       insta.entity_name = 'budget_request'
-      insta.add_methods []
+      insta.add_methods [:name, :amount_requested, :amount_recommended]
       insta.remove_methods [:id]
     end
-    base.liquid_methods *( LIQUID_METHODS )    
 
     base.insta_favorite
     base.insta_utc do |insta|

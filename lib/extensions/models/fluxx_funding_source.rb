@@ -1,5 +1,4 @@
 module FluxxFundingSource
-  LIQUID_METHODS = [ :name ]  
 SEARCH_ATTRIBUTES = [:state]
   
   def self.included(base)
@@ -20,11 +19,15 @@ SEARCH_ATTRIBUTES = [:state]
     base.insta_filter_amount do |insta|
       insta.amount_attributes = [:amount, :amount_requested, :amount_budgeted, :overhead_amount, :net_available_to_spend_amount]
     end
-    base.liquid_methods *( LIQUID_METHODS )    
     
     base.extend(ModelClassMethods)
     base.class_eval do
       include ModelInstanceMethods
+    end
+    base.insta_template do |insta|
+      insta.entity_name = 'fluxx_funding_source'
+      insta.add_methods [:name]
+      insta.remove_methods [:id]
     end
     
     base.insta_workflow do |insta|

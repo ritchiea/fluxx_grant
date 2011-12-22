@@ -1,6 +1,5 @@
 module FluxxInitiative
   SEARCH_ATTRIBUTES = [[:program_id, 'sub_programs'], :sub_program_id, :retired]
-  LIQUID_METHODS = [:name]
   INITIATIVE_FSA_JOIN_WHERE_CLAUSE = "(fsa.initiative_id = ?
     or fsa.sub_initiative_id in (select sub_initiatives.id from sub_initiatives where initiative_id = ?)) and fsa.deleted_at is null"
   INITIATIVE_FSA_JOIN_FUNDING_SOURCE_CLAUSE = "funding_source_id in (select id from funding_sources where state in (?))"
@@ -34,10 +33,9 @@ module FluxxInitiative
     base.insta_realtime
     base.insta_template do |insta|
       insta.entity_name = 'initiative'
-      insta.add_methods []
+      insta.add_methods [:name]
       insta.remove_methods [:id]
     end
-    base.liquid_methods *( LIQUID_METHODS )
     
     base.extend(ModelClassMethods)
     base.class_eval do

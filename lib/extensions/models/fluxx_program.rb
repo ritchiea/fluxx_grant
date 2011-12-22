@@ -1,6 +1,5 @@
 module FluxxProgram
   SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :retired]
-  LIQUID_METHODS = [:name, :description]
   PROGRAM_FSA_JOIN_WHERE_CLAUSE = "(fsa.program_id = ?
   or fsa.sub_program_id in (select id from sub_programs where program_id = ?)
   or fsa.initiative_id in (select initiatives.id from initiatives, sub_programs where sub_program_id = sub_programs.id and sub_programs.program_id = ?)
@@ -43,10 +42,9 @@ module FluxxProgram
     base.insta_multi
     base.insta_template do |insta|
       insta.entity_name = 'program'
-      insta.add_methods []
+      insta.add_methods [:name, :description]
       insta.remove_methods [:id]
     end
-    base.liquid_methods *( LIQUID_METHODS )
 
     base.extend(ModelClassMethods)
     base.class_eval do

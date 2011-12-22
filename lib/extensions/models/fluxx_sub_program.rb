@@ -1,6 +1,5 @@
 module FluxxSubProgram
   SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :program_id, :retired]
-  LIQUID_METHODS = [:name]
   SUB_PROGRAM_FSA_JOIN_WHERE_CLAUSE = "(fsa.sub_program_id = ?
     or fsa.initiative_id in (select initiatives.id from initiatives where sub_program_id = ?)
     or fsa.sub_initiative_id in (select sub_initiatives.id from sub_initiatives, initiatives where initiative_id = initiatives.id and sub_program_id = ?)) and fsa.deleted_at is null"
@@ -20,7 +19,14 @@ module FluxxSubProgram
       insta.filter_fields = SEARCH_ATTRIBUTES
       insta.derived_filters = {}
     end
-    base.liquid_methods *( LIQUID_METHODS )
+    
+    
+    base.insta_template do |insta|
+      insta.entity_name = 'sub_program'
+      insta.add_methods [:name]
+      insta.remove_methods [:id]
+    end
+    
     
     base.insta_export do |insta|
       insta.filename = 'sub_program'

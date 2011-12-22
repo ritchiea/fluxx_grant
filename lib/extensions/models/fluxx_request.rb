@@ -46,9 +46,6 @@ module FluxxRequest
   FAR_IN_THE_FUTURE = Time.now + 1000.year
   begin FAR_IN_THE_FUTURE.to_i rescue FAR_IN_THE_FUTURE = Time.now + 10.year end
 
-  # for liquid_methods info see: https://github.com/tobi/liquid/blob/master/lib/liquid/module_ex.rb
-  LIQUID_METHODS = [:request_id, :grant_id, :grant_or_request_id, :project_summary, :grant_agreement_at, :grant_begins_at, :grant_ends_at, :grant_closed_at, :request_received_at, :fip_projected_end_at, :amount_requested, :amount_recommended, :duration_in_months, :program_lead, :signatory_contact, :signatory_user_org, :signatory_user_org_title, :address_org, :program, :initiative, :sub_program, :request_transactions, :request_reports, :letter_request_reports, :request_evaluation_metrics, :letter_project_summary_without_leading_to, :first_transaction, :ierf_proposed_end_at, :ierf_budget_end_at, :program_organization, :fiscal_organization, :grantee_org_owner_with_specific, :letter_project_summary, :signatory_contact_title, :request_funding_sources, :budget_requests, :state_to_english, :first_transaction, :board_authority_year, :request_received_at_year, :fiscal_sponsor_org, :initial_payment, :interim_payment, :final_payment, :initial_report, :final_report ]  
-
   def self.included(base)
     base.send :include, AASM
     base.belongs_to :program_organization, :class_name => 'Organization', :foreign_key => :program_organization_id
@@ -210,12 +207,12 @@ module FluxxRequest
     
     base.insta_template do |insta|
       insta.entity_name = 'request'
-      insta.add_methods [:program_organization, :signatory_contact, :address_org, :title, :grant_id, :request_id, :grant_ends_at, :amount_funded, :funds_expended, :created_by_with_create_date]
+      insta.add_methods [:request_id, :grant_id, :grant_or_request_id, :project_summary, :grant_agreement_at, :grant_begins_at, :grant_ends_at, :grant_closed_at, :request_received_at, :fip_projected_end_at, :amount_requested, :amount_recommended, :duration_in_months, :program_lead, :signatory_contact, :signatory_user_org, :signatory_user_org_title, :address_org, :program, :initiative, :sub_program, :request_transactions, :request_reports, :letter_request_reports, :request_evaluation_metrics, :letter_project_summary_without_leading_to, :first_transaction, :ierf_proposed_end_at, :ierf_budget_end_at, :program_organization, :fiscal_organization, :grantee_org_owner_with_specific, :letter_project_summary, :signatory_contact_title, :request_funding_sources, :budget_requests, :state_to_english, :first_transaction, :board_authority_year, :request_received_at_year, :fiscal_sponsor_org, :initial_payment, :interim_payment, :final_payment, :initial_report, :final_report, :program_organization, :signatory_contact, :address_org, :title, :grant_id, :request_id, :grant_ends_at, :amount_funded, :funds_expended, :created_by_with_create_date ]  
+      
       insta.add_list_method :request_transactions, RequestTransaction
       insta.add_list_method :request_reports, RequestReport
       insta.remove_methods [:id]
     end
-    base.liquid_methods *( LIQUID_METHODS )
     
     
     base.insta_search do |insta|

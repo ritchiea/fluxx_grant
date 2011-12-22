@@ -1,6 +1,5 @@
 module FluxxRequestReport
   SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :due_at, :approved_at, :report_type, :state, :updated_at, :grant_state, :favorite_user_ids, :request_hierarchy, :allocation_hierarchy] 
-  LIQUID_METHODS = [:type_to_english, :report_type, :due_at, :approved_at, :grant, :request, :created_by, :updated_by]
   FAR_IN_THE_FUTURE = Time.now + 1000.year
 
   def self.included(base)
@@ -104,10 +103,9 @@ module FluxxRequestReport
     
     base.insta_template do |insta|
       insta.entity_name = 'request_report'
-      insta.add_methods [:type_to_english]
+      insta.add_methods [:type_to_english, :report_type, :due_at, :approved_at, :grant, :request, :created_by, :updated_by]
       insta.remove_methods [:id]
     end
-    base.liquid_methods *( LIQUID_METHODS )
 
     base.send :include, AASM
     base.aasm_column :state
