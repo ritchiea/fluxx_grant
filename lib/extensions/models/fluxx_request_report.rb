@@ -185,6 +185,7 @@ module FluxxRequestReport
       end
     end
 
+    base.insta_formbuilder
     base.insta_workflow do |insta|
       insta.add_state_to_english RequestReport.new_state, 'New', 'new'
       insta.add_state_to_english RequestReport.report_received_state, 'Report Received', 'approval'

@@ -347,6 +347,7 @@ module FluxxRequest
       insta.amount_attributes = [:amount_requested, :amount_recommended, :funds_expended_amount]
     end
     
+    base.insta_formbuilder
     base.insta_workflow do |insta|
       insta.add_state_to_english :new, 'New Request', 'new'
       insta.add_state_to_english :drafted, 'Draft', 'draft'

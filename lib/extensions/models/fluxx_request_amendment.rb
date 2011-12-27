@@ -23,6 +23,7 @@ module FluxxRequestAmendment
     insta_filter_amount do |insta|
       insta.amount_attributes = [:amount_recommended]
     end
+    insta_formbuilder
     insta_workflow do |insta|
       insta.add_state_to_english :new, 'Pending Approval', 'new'
       insta.add_state_to_english :approved, 'Approved', 'approved'

@@ -43,6 +43,7 @@ module FluxxRequestProgram
       insta.time_attributes = [:due_at, :approved_at, :bjo_received_at]
     end
     
+    base.insta_formbuilder
     base.insta_workflow do |insta|
       insta.add_state_to_english :new, 'New Secondary Program'
       insta.add_state_to_english :approved, 'Approved', 'approved'

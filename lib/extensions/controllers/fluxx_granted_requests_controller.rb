@@ -67,7 +67,7 @@ module FluxxGrantedRequestsController
         # Load the model; we may have either a FIP or a Grant, handle both cases
         model = conf.load_existing_model params
         redirect_params = params.delete_if{|k,v| %w[controller action].include?(k) }
-        fluxx_redirect send("edit_#{model.class.name.tableize.singularize}_path", model.id, redirect_params)
+        fluxx_redirect send("edit_#{model.class.calculate_form_name.to_s}_path", model.id, redirect_params)
       end
     end
     base.insta_put Request do |insta|

@@ -176,6 +176,7 @@ module FluxxRequestTransaction
       end
     end
 
+    base.insta_formbuilder
     base.insta_workflow do |insta|
       insta.add_state_to_english :new, 'New', 'new'
       insta.add_state_to_english :tentatively_due, 'Tentatively Due', 'tentatively_due'

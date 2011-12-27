@@ -30,6 +30,7 @@ SEARCH_ATTRIBUTES = [:state]
       insta.remove_methods [:id]
     end
     
+    base.insta_formbuilder
     base.insta_workflow do |insta|
       insta.add_state_to_english :new, 'Pending Approval', 'new'
       insta.add_state_to_english :approved, 'Ready to Spend', 'approved'
