@@ -208,5 +208,19 @@ module FluxxGrantRequest
     def relates_to_user? user
        (user.id == self.created_by_id) || (user.primary_organization.id == self.program_organization_id) || (user.primary_organization.id == self.fiscal_organization_id)
     end
+    
+    
+    def duration_in_months
+      if Fluxx.config(:dont_use_duration_in_requests) == "1"
+        if grant_closed_at && grant_begins_at
+          (grant_closed_at.to_i - grant_begins_at.to_i) / 1.month
+        else
+          0
+        end
+      else
+        self.attributes['duration_in_months']
+      end
+    end
+    
   end
 end
