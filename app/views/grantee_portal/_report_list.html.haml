@@ -18,7 +18,7 @@
       -@data.each do |model|
         - documentable_id = model.id
         - state = model.state.nil? ? "" : model.state
-        -if model.in_state_with_category?(:new) || state == "new"
+        -if model.in_new_state? || state == "new"
           -state = "Due"
         - else
           - state = 'Submitted'

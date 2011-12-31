@@ -162,4 +162,31 @@ module ApplicationGrantHelper
     EVAL_RATING_MAP[rating]
   end
   
+  # Derive an english word for the state that is appropriate for the grantee and reviewer portal
+  def portal_user_state_for_request model, alternate_view_names={}
+    if model.is_grant?
+      if model.in_state_with_category?("grant_closed")
+        alternate_view_names[:closed] || "Closed" 
+      else
+        alternate_view_names[:active] || "Active"
+      end
+    else
+      actions_available = model.actions(current_user)
+      if !actions_available.empty?
+        if model.in_sentback_state? 
+          alternate_view_names[:more_info_requested] || "More info Requested" 
+        else
+          alternate_view_names[:draft] || "Draft" 
+        end
+      else
+        if model.in_reject_state?
+          alternate_view_names[:declined] || "Declined" 
+        elsif model.is_marked_complete?
+          alternate_view_names[:decision_pending] || "Decision Pending" 
+        else
+          alternate_view_names[:submitted] || "Submitted" 
+        end
+      end
+    end
+  end
 end

@@ -27,15 +27,7 @@
       %tbody
         -@data.each do |model|
           - actions = model.actions(current_user)
-          - if model.is_grant?
-            - state = "Closed"
-            - state = "Active" if model.in_state_with_category?("become_grant")
-          - else
-            - state = "Submitted"
-            - state = "Draft" if model.in_state_with_category?("draft")
-            - state = "More info Requested" if model.in_state_with_category?("sent_back")
-            - state = "Decision Pending" if model.in_state_with_category?("approval")
-            - state = "Declined" if model.in_state_with_category?("rejected")
+          - state = portal_user_state_for_request(model)
           %tr{"data-url".to_sym => edit_portal_grant_request_path(:id => model.id)}
             %td
               = model.grant_or_request_id.nil? ? '' : link_to(model.grant_or_request_id, portal_grant_request_path(:id => model.id))

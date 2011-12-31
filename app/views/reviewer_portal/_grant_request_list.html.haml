@@ -22,15 +22,7 @@
           %th
             Reviewed On
       -@data.each do |model|
-        - if model.is_grant?
-          - state = "Closed"
-          - state = "Active" if model.in_state_with_category?("become_grant")
-        - else
-          - state = "Submitted"
-          - state = "Draft" if model.in_state_with_category?("draft")
-          - state = "More info Requested" if model.in_state_with_category?("sent_back")
-          - state = "Decision Pending" if model.in_state_with_category?("approval")
-          - state = "Declined" if model.in_state_with_category?("rejected")
+        - state = portal_user_state_for_request(model)
         %tbody
           %tr
             %td
