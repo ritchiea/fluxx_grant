@@ -123,10 +123,10 @@ module FluxxLoisController
       insta.skip_permission_check = true
     end
 
-    base.insta_post GrantRequest do |insta|
+    base.insta_post Loi do |insta|
       insta.view = 'lois/new'
       insta.icon_style = ICON_STYLE
-      insta.pre_create_model = true
+      insta.pre_create_model = false
       insta.skip_permission_check = true
       insta.format do |format|
         format.html do |triple|
