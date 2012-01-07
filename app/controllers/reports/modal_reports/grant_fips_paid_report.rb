@@ -127,7 +127,7 @@ class GrantAndFipDetailsReport < ActionController::ReportBase
            worksheet.write(row, 3, request_transaction.payment_confirmation_number)
            worksheet.write(row, 4, request_transaction.first_name)
            worksheet.write(row, 5, request_transaction.last_name)
-           worksheet.write(row, 6, (request_transaction.paid_at ? (Time.parse(request_transaction.paid_at).mdy rescue '') : ''), date_format)
+           worksheet.write(row, 6, (request_transaction.paid_at ? (request_transaction.paid_at.mdy rescue '') : ''), date_format)
            worksheet.write(row, 7, request_transaction.program_org_name)
            worksheet.write(row, 8, request_transaction.base_request_id)
            worksheet.write(row, 9, (request_transaction.amount_paid.to_i rescue 0), amount_format)

@@ -10,6 +10,9 @@
     .key Status:
     .value= model.state_to_english
   .pairs
+    .key Amount Paid:
+    .value= number_to_currency model.amount_paid, :precision => 0 if model.amount_paid
+  .pairs
     .key Due Date:
     .value= model.due_at.mdy if model.due_at
   - if model.payment_recorded_by
