@@ -173,11 +173,11 @@ module FluxxLoi
 
   module ModelInstanceMethods
     def first_name
-      applicant.gsub(/\s+/, ' ').split(' ').first
+      applicant.gsub(/\s+/, ' ').split(' ').first if applicant
     end
 
     def last_name
-      applicant.gsub(/\s+/, ' ').split(' ').last
+      applicant.gsub(/\s+/, ' ').split(' ').last if applicant
     end
 
     def user_matches params = {}
