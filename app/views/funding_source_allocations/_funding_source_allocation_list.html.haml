@@ -1,9 +1,12 @@
+- display_program_budget = Fluxx.config(:show_program_budget) == "1" || Fluxx.config(:show_sub_program_budget) == "1" || Fluxx.config(:show_initiative_budget) == "1" || Fluxx.config(:show_sub_initiative_budget) == "1"
+
 - parent_model ||= grab_param(:funding_source_allocation, :parent_model)
 - do_suppress_add ||= grab_param(:funding_source_allocation, :do_suppress_add)
 - program_id ||= grab_param(:funding_source_allocation, :program_id)
 - sub_program_id ||= grab_param(:funding_source_allocation, :sub_program_id)
 - initiative_id ||= grab_param(:funding_source_allocation, :initiative_id)
 - sub_initiative_id ||= grab_param(:funding_source_allocation, :sub_initiative_id)
+- spending_year ||= grab_param(:funding_source_allocation, :spending_year)
 - programs = Program.where(:id => (models.map(&:program_id).compact))
 - sub_programs = SubProgram.where(:id => (models.map(&:sub_program_id).compact))
 - initiatives = Initiative.where(:id => (models.map(&:initiative_id).compact))
@@ -16,12 +19,15 @@
       - total_funding += (model.amount || 0)
 %h3
   - if current_user.is_admin? && !do_suppress_add
-    %span.actions= link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_funding_source_allocation_authority_path(:program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Add Funding Source"
+    %span.actions
+      - if display_program_budget
+        = link_to 'Add Budget Allocation', new_funding_source_allocation_path(:program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id, :budget_allocation => true), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Add Budget Allocation"
+      = link_to 'Add Spending Allocation', new_funding_source_allocation_authority_path(:program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Add Spending Allocation"
 
 - if !models || models.empty?
   %p.caption= "There are no funding source allocations."
 - else
-  - global_totals = [0,0,0,0,0]
+  - global_totals = [0,0,0,0,0,0]
   - hierarchy.each do |level|
     - level[:models].each do |item|
       -models.each do |funding_source_allocation_model|
@@ -31,11 +37,14 @@
           -global_totals[2] += (funding_source_allocation_model.amount_granted || 0)
           -global_totals[3] += (funding_source_allocation_model.amount_paid || 0)
           -global_totals[4] += (funding_source_allocation_model.amount_remaining || 0) - (funding_source_allocation_model.amount_granted_in_queue || 0)
+          -global_totals[5] += (funding_source_allocation_model.budget_amount || 0)
   %table{:cellspacing => 0, :class => 'totals-table', :style => "postion: relative;top: 0px;"}
     %thead
       %tr
         %th Spending Year Funding
-        %th Budgeted
+        - if display_program_budget
+          %th Budgeted
+        %th Allocated
         %th Pipeline
         %th Granted
         %th Paid
@@ -43,6 +52,8 @@
     %tbody
       %tr
         %td Total
+        - if display_program_budget
+          %td= global_totals[5].to_currency(:precision => 0)
         %td= global_totals[0].to_currency(:precision => 0)
         %td= global_totals[1].to_currency(:precision => 0)
         %td= global_totals[2].to_currency(:precision => 0)
@@ -52,18 +63,25 @@
   - hierarchy.each do |level|
     - level[:models].each do |item|
       %p
-      %h4= item.name unless level[:level] == parent_model
+      - unless level[:level] == parent_model
+        %h4
+          = item.name 
+          = render :partial => 'program_budgets/list_program_budget', :locals => {"#{item.class.name.tableize.singularize}_id".to_sym => item.id, :spending_year => spending_year, :div_class_name => 'program-show-partial-sub-span'}
+          
+      
       %table{:cellspacing => 0, :class => 'totals-table'}
         %thead
           %tr
             %th Funding Source
-            %th Budgeted
+            - if display_program_budget
+              %th Budgeted
+            %th Allocated
             %th Pipeline
             %th Granted
             %th Paid
             %th Available
         %tbody
-          -totals = [0,0,0,0,0]
+          -totals = [0,0,0,0,0,0]
           -total_allocated_pending = 0
           -models.each do |funding_source_allocation_model|
             -next unless funding_source_allocation_model["#{level[:level]}_id"] == item.id
@@ -77,6 +95,10 @@
                       - if current_user.is_admin? && current_user.has_delete_for_model?(model)
                         %span.actions= link_to image_tag("/images/fluxx_engine/theme/default/icons/delete.png"), funding_source_allocation_authority_path(model), {:class => "as-delete #{model.can_delete? ? '' : 'disabled'}", 'data-on-success' => 'refreshCaller'}
                         = raw "#{model.authority} - #{link_to((model.amount || 0).to_currency(:precision => 0), edit_funding_source_allocation_authority_path(model), :class => 'to-modal', :title => 'Update Funding Source', 'data-on-success' => 'refreshCaller,close')}"
+
+              - totals[5] += (funding_source_allocation_model.budget_amount || 0)
+              - if display_program_budget
+                %td= (funding_source_allocation_model.budget_amount || 0).to_currency(:precision => 0)
               - allocated = (funding_source_allocation_model.amount || 0)
               - if allocation_is_approved
                 - totals[0] += allocated 
@@ -97,6 +119,8 @@
               %td= available.to_currency(:precision => 0)
           %tr
             %td Total
+            - if display_program_budget
+              %td= (totals[5] || 0).to_currency(:precision => 0)
             %td
               = totals[0].to_currency(:precision => 0)
               - if total_allocated_pending && total_allocated_pending > 0

@@ -4,7 +4,7 @@
   - if model.new_record?
     - all_funding_sources = FundingSource.load_all.sort_by {|fs| fs.name ? fs.name.downcase : ''}
     = form.input :funding_source_id, :label => "Funding Source:", :as => :select, :collection => all_funding_sources
-    = render :partial => "funding_source_allocation_authorities/programs", :locals => { :form => form, :model => model }
+    = render :partial => "funding_source_allocation_authorities/programs", :locals => { :form => form, :allocation => model.funding_source_allocation }
   - else
     Funding Source:
     = allocation.funding_source.name if allocation && allocation.funding_source
@@ -29,4 +29,4 @@
     - if model.funding_source
       = "#{number_to_currency(model.funding_source.amount_available || 0)} available"
   
-  = form.commit_button 'Update Funding Source'
+  = form.commit_button 'Update Spending Allocation'

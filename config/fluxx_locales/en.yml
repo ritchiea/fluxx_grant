@@ -57,6 +57,12 @@ en:
   duration_in_months_field_required: "Duration is required."
   grant_begins_at_field_required: "Grant begin date is required."
   grant_ends_at_field_required: "Grant end date is required."
+  
+  program_approved_budget: "Approved Board Authority"
+  sub_program_approved_budget: "Approved Board Authority"
+  initiative_approved_budget: "Approved Board Authority"
+  sub_initiative_approved_budget: "Approved Board Authority"
+  total_approved_budget: "Total Approved Board Authority"
 
   date:
     input:

@@ -107,7 +107,7 @@ module FluxxSubProgram
         self.id, self.id, self.id, FundingSource.approved_states]
       end
       
-      FundingSourceAllocation.find_by_sql(FundingSourceAllocation.send(:sanitize_sql, clause)).select{|fsa| (fsa.num_allocation_authorities.to_i rescue 0) > 0}
+      FundingSourceAllocation.find_by_sql(FundingSourceAllocation.send(:sanitize_sql, clause))
     end
     
     def total_pipeline request_types=nil, spending_year=nil

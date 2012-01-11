@@ -1,0 +1,12 @@
+- spending_year ||= nil
+- program_id ||= nil
+- sub_program_id ||= nil
+- initiative_id ||= nil
+- sub_initiative_id ||= nil
+- default_div_class_name = 'program-show-partial-span'
+- div_class_name ||= default_div_class_name
+- if Fluxx.config(:show_program_budget) == "1" || Fluxx.config(:show_sub_program_budget) == "1" || Fluxx.config(:show_initiative_budget) == "1" || Fluxx.config(:show_sub_initiative_budget) == "1"
+  - partial_data_src_url = url_for(program_budgets_path({:skip_wrapper => true, :spending_year => spending_year, :program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id}))
+  %div.partial{:class => div_class_name, 'data-src' => partial_data_src_url}
+    -# If a div_class_name was passed in, that means that we are not at the top of the page and therfore should not display the totals
+    = render :partial => 'program_budgets/program_budget_list', :locals => {:spending_year => :spending_year, :program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :spending_year => spending_year, :display_total => (div_class_name == default_div_class_name)}

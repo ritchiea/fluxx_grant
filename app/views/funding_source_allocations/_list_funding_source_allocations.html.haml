@@ -12,6 +12,7 @@
 - program_attributes[:sub_initiative_id] = sub_initiative_id unless sub_initiative_id.blank?
 - program_attributes[:funding_source_id] = funding_source_id unless funding_source_id.blank?
 - program_attributes[:do_suppress_add] = do_suppress_add unless do_suppress_add.blank?
+- spending_year = program_attributes[:spending_year]
 - partial_data_src_url = url_for(funding_source_allocations_path({:skip_wrapper => true, :parent_model => parent_model, :show_unapproved => true}.merge(program_attributes)))
 %div.partial{:class => 'funding-source-allocations-partial-span', 'data-src' => partial_data_src_url}
-  = render :partial => 'funding_source_allocations/funding_source_allocation_list', :locals => {:models => models, :program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id, :funding_source_id => funding_source_id, :do_suppress_add => do_suppress_add, :parent_model => parent_model}
+  = render :partial => 'funding_source_allocations/funding_source_allocation_list', :locals => {:models => models, :program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id, :funding_source_id => funding_source_id, :do_suppress_add => do_suppress_add, :parent_model => parent_model, :spending_year => spending_year}

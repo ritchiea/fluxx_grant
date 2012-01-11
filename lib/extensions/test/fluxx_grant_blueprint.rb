@@ -138,6 +138,14 @@ module FluxxGrantBlueprint
       email random_email
       applicant random_words
     end
+    
+    RequestAmendment.blueprint do
+    end
+
+    ProgramBudget.blueprint do
+      amount 45000.23
+    end
+    
 
     base.extend(ModelClassMethods)
     base.class_eval do

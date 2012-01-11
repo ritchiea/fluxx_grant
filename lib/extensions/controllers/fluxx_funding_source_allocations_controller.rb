@@ -68,6 +68,16 @@ module FluxxFundingSourceAllocationsController
     base.insta_post FundingSourceAllocation do |insta|
       insta.template = 'funding_source_allocation_form'
       insta.icon_style = ICON_STYLE
+      
+      insta.pre do |config|
+        cur_params = params[:funding_source_allocation] || {}
+        existing_allocation = FundingSourceAllocation.where(:program_id => cur_params[:program_id], :sub_program_id => cur_params[:sub_program_id], :initiative_id => cur_params[:initiative_id], :sub_initiative_id => cur_params[:sub_initiative_id], :spending_year => cur_params[:spending_year]).first
+        if existing_allocation
+          self.pre_model = existing_allocation
+          self.pre_model.attributes = cur_params
+          
+        end
+      end
     end
     base.insta_put FundingSourceAllocation do |insta|
       insta.template = 'funding_source_allocation_form'

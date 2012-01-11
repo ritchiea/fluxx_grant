@@ -1,4 +1,3 @@
-- allocation = model.funding_source_allocation
 - program_id ||= grab_param(:funding_source_allocation_authority, :program_id)
 - program_id = allocation.program_id if allocation && allocation.program_id
 - sub_program_id ||= grab_param(:funding_source_allocation_authority, :sub_program_id)

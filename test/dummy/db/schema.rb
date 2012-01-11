@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111205204752) do
+ActiveRecord::Schema.define(:version => 20120110235831) do
 
   create_table "alert_emails", :force => true do |t|
     t.string   "mailer_method"
@@ -133,6 +133,18 @@ ActiveRecord::Schema.define(:version => 20111205204752) do
   add_index "client_stores", ["user_id", "client_store_type"], :name => "index_client_stores_on_user_id_and_client_store_type"
   add_index "client_stores", ["user_id"], :name => "index_client_stores_on_user_id"
 
+  create_table "dashboard_templates", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "created_by_id"
+    t.integer  "updated_by_id"
+    t.string   "name"
+    t.text     "data"
+  end
+
+  add_index "dashboard_templates", ["created_by_id"], :name => "dashboard_templates_created_by_id"
+  add_index "dashboard_templates", ["updated_by_id"], :name => "dashboard_templates_updated_by_id"
+
   create_table "documents", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -190,6 +202,7 @@ ActiveRecord::Schema.define(:version => 20111205204752) do
     t.datetime "locked_until"
     t.datetime "deleted_at"
     t.integer  "spending_year"
+    t.decimal  "budget_amount",     :precision => 15, :scale => 2
   end
 
   add_index "funding_source_allocations", ["created_by_id"], :name => "funding_source_allocations_created_by_id"
@@ -515,6 +528,33 @@ ActiveRecord::Schema.define(:version => 20111205204752) do
   add_index "organizations", ["name"], :name => "index_organizations_on_name", :length => {"name"=>255}
   add_index "organizations", ["parent_org_id"], :name => "index_organizations_on_parent_org_id"
   add_index "organizations", ["updated_by_id"], :name => "organizations_updated_by_id"
+
+  create_table "program_budgets", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "created_by_id"
+    t.integer  "updated_by_id"
+    t.integer  "program_id"
+    t.integer  "sub_program_id"
+    t.integer  "initiative_id"
+    t.integer  "sub_initiative_id"
+    t.integer  "spending_year"
+    t.decimal  "amount",            :precision => 10, :scale => 0
+    t.integer  "locked_by_id"
+    t.datetime "locked_until"
+    t.datetime "deleted_at"
+  end
+
+  add_index "program_budgets", ["created_by_id"], :name => "program_budgets_created_by_id"
+  add_index "program_budgets", ["initiative_id"], :name => "program_budgets_initiative_id"
+  add_index "program_budgets", ["program_id"], :name => "program_budgets_program_id"
+  add_index "program_budgets", ["spending_year", "initiative_id"], :name => "index_program_budgets_on_spending_year_and_initiative_id"
+  add_index "program_budgets", ["spending_year", "program_id"], :name => "index_program_budgets_on_spending_year_and_program_id"
+  add_index "program_budgets", ["spending_year", "sub_initiative_id"], :name => "index_program_budgets_on_spending_year_and_sub_initiative_id"
+  add_index "program_budgets", ["spending_year", "sub_program_id"], :name => "index_program_budgets_on_spending_year_and_sub_program_id"
+  add_index "program_budgets", ["sub_initiative_id"], :name => "program_budgets_subinitiative_id"
+  add_index "program_budgets", ["sub_program_id"], :name => "program_budgets_sub_program_id"
+  add_index "program_budgets", ["updated_by_id"], :name => "program_budgets_updated_by_id"
 
   create_table "programs", :force => true do |t|
     t.datetime "created_at"
