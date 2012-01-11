@@ -148,7 +148,6 @@ module FluxxGrantRequest
         request_reports << RequestReport.new(:request => self, :due_at => (grant_ends_at + 1.month).next_business_day, :report_type => RequestReport.final_budget_type_name, :state => new_state) if Fluxx.config("generate_#{RequestReport.final_budget_type_name}".to_sym) == '1'
         request_reports << RequestReport.new(:request => self, :due_at => (grant_ends_at + 1.month).next_business_day, :report_type => RequestReport.final_narrative_type_name, :state => new_state) if Fluxx.config("generate_#{RequestReport.final_narrative_type_name}".to_sym) == '1'
         request_reports << RequestReport.new(:request => self, :due_at => (grant_ends_at + 2.month).next_business_day, :report_type => RequestReport.final_eval_type_name, :state => new_state) if Fluxx.config("generate_#{RequestReport.final_eval_type_name}".to_sym) == '1'
-        request_reports << RequestReport.new(:request => self, :due_at => (grant_begins_at + 3.month).next_business_day, :report_type => RequestReport.final_monitor_type_name, :state => new_state) if Fluxx.config("generate_#{RequestReport.final_monitor_type_name}".to_sym) == '1'
 
       else
         new_grantee = program_organization.grants.select {|grant| grant.id != self.id}.empty?
