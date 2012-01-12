@@ -108,7 +108,7 @@ class RenderHgrantsRssResponse
     block.call(DisplayRssFeedGrantHTML.generate_grant_html(hash))
     block.call "]]>"
     block.call "</description>\n"
-    begins_at = Time.parse( hash['grant_begins_at']) rescue nil if hash['grant_begins_at']
+    begins_at = hash['grant_begins_at'] if hash['grant_begins_at']
 
     block.call "  <pubDate>#{begins_at ? begins_at.rfc2822 : ''}</pubDate>\n"
     block.call "  <link>/hgrantrss/#{hash['id']}</link>\n"
@@ -207,8 +207,8 @@ class DisplayRssFeedGrantHTML
     output.write "      </p>\n"
     output.write "      <p class='period'>\n"
     output.write "        Grant Period:\n"
-    begins_at = Time.parse( hash['grant_begins_at']) rescue nil if hash['grant_begins_at']
-    ends_at = Time.parse( hash['grant_ends_at']) rescue nil if hash['grant_ends_at']
+    begins_at = hash['grant_begins_at']
+    ends_at = hash['grant_ends_at']
     output.write "        <abbr class='dtstart' title='#{(begins_at ? begins_at.hgrant : '')}'>#{begins_at ? begins_at.abbrev_month_year : ''}</abbr>\n"
     output.write "        <abbr class='dtend' title='#{ends_at ? ends_at.hgrant : ''}'>#{ends_at ? ends_at.abbrev_month_year : ''}</abbr>\n"
     output.write "      </p>\n"
