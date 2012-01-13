@@ -1,3 +1,5 @@
+- display_program_budget = Fluxx.config(:show_program_budget) == "1" || Fluxx.config(:show_sub_program_budget) == "1" || Fluxx.config(:show_initiative_budget) == "1" || Fluxx.config(:show_sub_initiative_budget) == "1"
+
 %fieldset.inputs
   %ol
   - if model.new_record?
@@ -9,7 +11,9 @@
     = model.funding_source.name if model && model.funding_source
     <p>
   
-  = form.input :budget_amount, :label => "Amount Budgeted:"
+  - if display_program_budget
+    = form.input :budget_amount, :label => "Amount Budgeted:"
+    = form.input :actual_budget_amount, :label => "Actual Amount:"
   - if model.new_record?
     - current_year = Time.now.year
     - year_range = ((current_year-25)..(current_year + 2))

@@ -22,12 +22,13 @@
     %span.actions
       - if display_program_budget
         = link_to 'Add Budget Allocation', new_funding_source_allocation_path(:program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id, :budget_allocation => true), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Add Budget Allocation"
+        = link_to 'Add Actual', new_funding_source_allocation_path(:program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id, :budget_allocation => true), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Add Budget Allocation"
       = link_to 'Add Spending Allocation', new_funding_source_allocation_authority_path(:program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Add Spending Allocation"
 
 - if !models || models.empty?
   %p.caption= "There are no funding source allocations."
 - else
-  - global_totals = [0,0,0,0,0,0]
+  - global_totals = [0,0,0,0,0,0,0]
   - hierarchy.each do |level|
     - level[:models].each do |item|
       -models.each do |funding_source_allocation_model|
@@ -39,12 +40,14 @@
             -global_totals[3] += (funding_source_allocation_model.amount_paid || 0)
             -global_totals[4] += (funding_source_allocation_model.amount_remaining || 0) - (funding_source_allocation_model.amount_granted_in_queue || 0)
           -global_totals[5] += (funding_source_allocation_model.budget_amount || 0) # Budgeting should be summed regardless of whether it's approved
+          -global_totals[6] += (funding_source_allocation_model.actual_budget_amount || 0) # Actual should be summed regardless of whether it's approved
   %table{:cellspacing => 0, :class => 'totals-table', :style => "postion: relative;top: 0px;"}
     %thead
       %tr
         %th Spending Year Funding
         - if display_program_budget
           %th Budgeted
+          %th Actual
         %th Allocated
         %th Pipeline
         %th Granted
@@ -55,6 +58,7 @@
         %td Total
         - if display_program_budget
           %td= global_totals[5].to_currency(:precision => 0)
+          %td= global_totals[6].to_currency(:precision => 0)
         %td= global_totals[0].to_currency(:precision => 0)
         %td= global_totals[1].to_currency(:precision => 0)
         %td= global_totals[2].to_currency(:precision => 0)
@@ -76,13 +80,14 @@
             %th Funding Source
             - if display_program_budget
               %th Budgeted
+              %th Actual
             %th Allocated
             %th Pipeline
             %th Granted
             %th Paid
             %th Available
         %tbody
-          -totals = [0,0,0,0,0,0]
+          -totals = [0,0,0,0,0,0,0]
           -total_allocated_pending = 0
           -models.each do |funding_source_allocation_model|
             -next unless funding_source_allocation_model["#{level[:level]}_id"] == item.id
@@ -98,8 +103,10 @@
                         = raw "#{model.authority} - #{link_to((model.amount || 0).to_currency(:precision => 0), edit_funding_source_allocation_authority_path(model), :class => 'to-modal', :title => 'Update Funding Source', 'data-on-success' => 'refreshCaller,close')}"
 
               - totals[5] += (funding_source_allocation_model.budget_amount || 0)
+              - totals[6] += (funding_source_allocation_model.actual_budget_amount || 0)
               - if display_program_budget
                 %td= link_to (funding_source_allocation_model.budget_amount || 0).to_currency(:precision => 0), edit_funding_source_allocation_path(funding_source_allocation_model), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Edit Budget Allocation"
+                %td= link_to (funding_source_allocation_model.actual_budget_amount || 0).to_currency(:precision => 0), edit_funding_source_allocation_path(funding_source_allocation_model), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Edit Actual Allocation"
               - allocated = (funding_source_allocation_model.amount || 0)
               - if allocation_is_approved
                 - totals[0] += allocated 

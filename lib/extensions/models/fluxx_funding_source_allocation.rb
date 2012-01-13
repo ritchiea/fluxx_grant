@@ -35,7 +35,7 @@ module FluxxFundingSourceAllocation
       insta.time_attributes = [] 
     end
     base.insta_filter_amount do |insta|
-      insta.amount_attributes = [:amount, :budget_amount]
+      insta.amount_attributes = [:amount, :budget_amount, :actual_budget_amount]
     end
     base.insta_template do |insta|
       insta.entity_name = 'funding_source_allocation'
