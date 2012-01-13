@@ -63,14 +63,10 @@
         %td= global_totals[2].to_currency(:precision => 0)
         %td= global_totals[3].to_currency(:precision => 0)
         %td= global_totals[4].to_currency(:precision => 0)
-
   - hierarchy.each do |level|
     - level[:models].each do |item|
-      %p
-      - unless level[:level] == parent_model
-        %h4
-          = item.name 
-          = render :partial => 'program_budgets/list_program_budget', :locals => {"#{item.class.name.tableize.singularize}_id".to_sym => item.id, :spending_year => spending_year, :div_class_name => 'program-show-partial-sub-span'}
+      -title = item.name unless level[:level] == parent_model
+      = render :partial => 'program_budgets/list_program_budget', :locals => {"#{item.class.name.tableize.singularize}_id".to_sym => item.id, :spending_year => spending_year, :div_class_name => 'program-show-partial-sub-span', :title => title }
           
       
       %table{:cellspacing => 0, :class => 'totals-table'}
@@ -138,3 +134,4 @@
             %td= totals[3].to_currency(:precision => 0)
             %td= totals[4].to_currency(:precision => 0)
       %p
+      &nbsp;

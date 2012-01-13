@@ -1,4 +1,3 @@
-
 - display_total ||= false
 - program_id ||= grab_param(:program_budget, :program_id)
 - sub_program_id ||= grab_param(:program_budget, :sub_program_id)
@@ -7,24 +6,24 @@
 - spending_year ||= grab_param(:program_budget, :spending_year)
 
 - model = ProgramBudget.where(:spending_year => spending_year, :program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id, :deleted_at => nil).first
-
 %div
   - if (program_id && Fluxx.config(:show_program_budget) == "1") || (sub_program_id && Fluxx.config(:show_sub_program_budget) == "1") || (initiative_id && Fluxx.config(:show_initiative_budget) == "1") || (sub_initiative_id && Fluxx.config(:show_sub_initiative_budget) == "1")
     - budget_level = program_id ? 'program' : (sub_program_id ? 'sub_program' : (initiative_id ? 'initiative' : 'sub_initiative'))
-    = I18n.t("#{budget_level}_approved_budget")
-    - amount_string = (model && model.amount) ? model.amount.to_currency : 'None'
-    - if model
-      = link_to amount_string, edit_program_budget_path(:id => model.id, :program_budget => {:program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id, :spending_year => spending_year}), 'data-on-success' => 'refreshCaller,close', :title => "Edit", :class => 'to-modal'
-    - else
-      = link_to amount_string, new_program_budget_path(:program_budget => {:program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id, :spending_year => spending_year}), 'data-on-success' => 'refreshCaller,close', :title => "Edit", :class => 'to-modal'
-  
+    %h5
+      = I18n.t("#{budget_level}_approved_budget")
+      - amount_string = (model && model.amount) ? model.amount.to_currency : 'None'
+      - if model
+        = link_to amount_string, edit_program_budget_path(:id => model.id, :program_budget => {:program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id, :spending_year => spending_year}), 'data-on-success' => 'refreshCaller,close', :title => "Edit", :class => 'to-modal'
+      - else
+        = link_to amount_string, new_program_budget_path(:program_budget => {:program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id, :spending_year => spending_year}), 'data-on-success' => 'refreshCaller,close', :title => "Edit", :class => 'to-modal'
+
   - p "ESH: 1111 have display_total=#{display_total}, have #{{:spending_year => spending_year, :program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id}.inspect}"
   - if display_total
     - sub_budget_amount = ProgramBudget.total_sub_budget_amount({:spending_year => spending_year, :program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id})
     - p "ESH: 2222 I have sub_budget_amount=#{sub_budget_amount}"
     - if sub_budget_amount && sub_budget_amount > 0
-      %br
-      = I18n.t("total_approved_budget")
-      = ':'
-      = sub_budget_amount.to_currency
+      %h5
+        = I18n.t("total_approved_budget")
+        = ':'
+        = sub_budget_amount.to_currency
     
