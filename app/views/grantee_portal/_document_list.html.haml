@@ -18,6 +18,8 @@
               - path = file["path"]
               - path ||= file["filename"] ? file["filename"] : file
               - name = file["name"] ? file["name"] : path.humanize.gsub('.pdf', '')
+              - if Client.current && Client.current.name
+                - path = "#{Client.current.name}/#{path}"
 
               = link_to name, path =~ /^http\:/ ? path : "/documents/#{path}", :target => "_blank", :class => "file-type file-type-pdf"
   = render :partial => "grantee_portal/paging_actions"
