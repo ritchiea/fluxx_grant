@@ -45,6 +45,26 @@ module Rack
       # TODO ESH: make a way to take client_id into account
       @requests = GrantRequest.connection.execute(GrantRequest.send(:sanitize_sql, ["select requests.*, 
           #{ends_at_sql} grant_ends_at,
+          (select replace(group_concat(mev.value, ', '), ', ', '')
+            from multi_element_groups meg, multi_element_values mev
+            WHERE meg.name = 'geo_zone' and meg.target_class_name = 'Request'
+            and multi_element_group_id = meg.id
+            and mev.id = requests.geo_zone_id
+            group by requests.id) zone,
+          (select replace(group_concat(mev.value, ', '), ', ', '')
+            from multi_element_values mev, multi_element_groups meg, multi_element_choices mec
+            WHERE   meg.name = 'geo_regions' and meg.target_class_name = 'Request'
+            and multi_element_group_id = meg.id
+            and multi_element_value_id = mev.id
+            and target_id = requests.id
+            group by requests.id) regions,
+          (select replace(group_concat(concat(mev.value, '||', (select value from multi_element_values where id = mev.dependent_multi_element_value_id)), ', '), ', ', '')
+            from multi_element_values mev, multi_element_groups meg, multi_element_choices mec
+            WHERE   meg.name = 'geo_states' and meg.target_class_name = 'Request'
+            and multi_element_group_id = meg.id
+            and multi_element_value_id = mev.id
+            and target_id = requests.id
+            group by requests.id) states,
           program.name program_name,
           program_organization.name program_org_name, 
           program_organization.street_address program_org_street_address, program_organization.street_address2 program_org_street_address2, program_organization.city program_org_city,
@@ -182,9 +202,48 @@ class DisplayRssFeedGrantHTML
 
     output.write "        </p>\n"
     output.write "      </div>\n"
-    output.write "      <div class='geo-focus vcard'>\n"
-    output.write "        <a class='url' href='#{hash['host']}/hgrantrss/#{hash['id']}'>permalink</a>\n"
-    output.write "      </div>\n"
+    
+    zone = hash['zone']
+    zone = zone.strip if zone
+    regions = hash['regions']
+    regions = if regions
+      regions.strip.split(',') 
+    end || []
+      
+    mev_states = hash['states']
+    mev_region_states = mev_states.strip.split(',') if mev_states
+    region_state_hash = if mev_region_states
+      mev_region_states.inject({}) do |acc, region_state|
+        mev_state, reg = region_state.split '||'
+        acc[reg] ||= []
+        acc[reg] << mev_state
+        acc
+      end
+    end || {}
+    stateless_regions = regions - region_state_hash.keys
+    all_regions = regions + region_state_hash.keys
+    if zone
+      stateless_regions.each do |region|
+        # If we have no mev_states, just go to the regions level of detail
+        output.write "      <div class='geo-focus vcard'>\n"
+        output.write "        <span class='inter_country_region'>#{region}</span>\n"
+        output.write "        <span class='country'>#{zone}</span>\n"
+        output.write "      </div>\n"
+      end
+      
+      region_state_hash.keys.each do |region|
+        mev_states = region_state_hash[region]
+        # Otherwise we can list out states as well
+        mev_states.each do |mev_state|
+          output.write "      <div class='geo-focus vcard'>\n"
+          output.write "        <span class='state'>#{mev_state}</span>\n"
+          output.write "        <span class='inter_country_region'>#{region}</span>\n"
+          output.write "        <span class='country'>#{zone}</span>\n"
+          output.write "      </div>\n"
+        end
+      end
+    end
+    
     output.write "      <div class='grantee vcard'>\n"
     output.write "        <h3>\n"
     output.write "          Grantee\n"
