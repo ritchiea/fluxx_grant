@@ -124,7 +124,7 @@ namespace :db do
   task :default do
     db_config = ERB.new <<-EOF
     base: &base
-      adapter: mysql
+      adapter: mysql2
       encoding: utf8
       reconnect: false
       host: localhost

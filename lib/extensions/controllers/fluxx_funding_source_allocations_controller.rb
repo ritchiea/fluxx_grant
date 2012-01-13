@@ -71,7 +71,13 @@ module FluxxFundingSourceAllocationsController
       
       insta.pre do |config|
         cur_params = params[:funding_source_allocation] || {}
-        existing_allocation = FundingSourceAllocation.where(:program_id => cur_params[:program_id], :sub_program_id => cur_params[:sub_program_id], :initiative_id => cur_params[:initiative_id], :sub_initiative_id => cur_params[:sub_initiative_id], :spending_year => cur_params[:spending_year]).first
+        
+        fsa_query = FundingSourceAllocation.where(:spending_year => cur_params[:spending_year])
+        fsa_query = fsa_query.where(:program_id => cur_params[:program_id]) unless cur_params[:program_id].blank?
+        fsa_query = fsa_query.where(:sub_program_id => cur_params[:sub_program_id]) unless cur_params[:sub_program_id].blank?
+        fsa_query = fsa_query.where(:initiative_id => cur_params[:initiative_id]) unless cur_params[:initiative_id].blank?
+        fsa_query = fsa_query.where(:sub_initiative_id => cur_params[:sub_initiative_id]) unless cur_params[:sub_initiative_id].blank?
+        existing_allocation = fsa_query.first
         if existing_allocation
           self.pre_model = existing_allocation
           self.pre_model.attributes = cur_params

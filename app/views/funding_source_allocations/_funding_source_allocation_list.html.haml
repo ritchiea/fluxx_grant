@@ -22,7 +22,6 @@
     %span.actions
       - if display_program_budget
         = link_to 'Add Budget Allocation', new_funding_source_allocation_path(:program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id, :budget_allocation => true), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Add Budget Allocation"
-        = link_to 'Add Actual', new_funding_source_allocation_path(:program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id, :budget_allocation => true), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Add Budget Allocation"
       = link_to 'Add Spending Allocation', new_funding_source_allocation_authority_path(:program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Add Spending Allocation"
 
 - if !models || models.empty?
@@ -129,6 +128,7 @@
             %td Total
             - if display_program_budget
               %td= (totals[5] || 0).to_currency(:precision => 0)
+              %td= (totals[6] || 0).to_currency(:precision => 0)
             %td
               = totals[0].to_currency(:precision => 0)
               - if total_allocated_pending && total_allocated_pending > 0
