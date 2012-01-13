@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120110235831) do
+ActiveRecord::Schema.define(:version => 20120113010034) do
 
   create_table "alert_emails", :force => true do |t|
     t.string   "mailer_method"
@@ -196,13 +196,14 @@ ActiveRecord::Schema.define(:version => 20120110235831) do
     t.integer  "sub_program_id"
     t.integer  "initiative_id"
     t.integer  "sub_initiative_id"
-    t.decimal  "amount",            :precision => 15, :scale => 2
+    t.decimal  "amount",               :precision => 15, :scale => 2
     t.boolean  "retired"
     t.integer  "locked_by_id"
     t.datetime "locked_until"
     t.datetime "deleted_at"
     t.integer  "spending_year"
-    t.decimal  "budget_amount",     :precision => 15, :scale => 2
+    t.decimal  "budget_amount",        :precision => 15, :scale => 2
+    t.decimal  "actual_budget_amount", :precision => 15, :scale => 2
   end
 
   add_index "funding_source_allocations", ["created_by_id"], :name => "funding_source_allocations_created_by_id"

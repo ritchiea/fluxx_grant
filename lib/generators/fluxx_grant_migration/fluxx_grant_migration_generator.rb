@@ -109,6 +109,7 @@ class FluxxGrantMigrationGenerator < Rails::Generators::Base
     handle_migration 'add_two_new_funding_source_amount_fields.rb', 'db/migrate/fluxx_grant_add_two_new_funding_source_amount_fields.rb'
     handle_migration 'create_program_budget.rb', 'db/migrate/fluxx_grant_create_program_budget.rb'
     handle_migration 'add_budget_allocation_amount_to_fsa.rb', 'db/migrate/fluxx_grant_add_budget_allocation_amount_to_fsa.rb'
+    handle_migration 'add_actual_budget_amount_to_fsa.rb', 'db/migrate/fluxx_grant_add_actual_budget_amount_to_fsa.rb'
   end
   
   private
