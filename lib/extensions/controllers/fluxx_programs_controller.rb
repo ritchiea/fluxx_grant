@@ -1,5 +1,6 @@
 module FluxxProgramsController
   ICON_STYLE = 'style-admin-cards'
+  DETAIL_WIDTH = 740
   def self.included(base)
     base.insta_index Program do |insta|
       insta.template = 'program_list'
@@ -12,6 +13,7 @@ module FluxxProgramsController
         end
       end)
       insta.icon_style = ICON_STYLE
+      insta.detail_width = DETAIL_WIDTH
       insta.template_map = {:admin => 'program_list_admin'}
       insta.format do |format|
         format.html do |triple|
@@ -29,14 +31,17 @@ module FluxxProgramsController
       insta.template = 'program_show'
       insta.footer_template = 'admin_cards/admin_footer'
       insta.icon_style = ICON_STYLE
+      insta.detail_width = DETAIL_WIDTH
     end
     base.insta_new Program do |insta|
       insta.template = 'program_form'
       insta.icon_style = ICON_STYLE
+      insta.detail_width = DETAIL_WIDTH
     end
     base.insta_edit Program do |insta|
       insta.template = 'program_form'
       insta.icon_style = ICON_STYLE
+      insta.detail_width = DETAIL_WIDTH
     end
     base.insta_post Program do |insta|
       insta.template = 'program_form'

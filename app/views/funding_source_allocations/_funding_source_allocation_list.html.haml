@@ -46,8 +46,8 @@
         %th Spending Year Funding
         - if display_program_budget
           %th Budgeted
-          %th Actual
-        %th Allocated
+          %th{:class => :ar} Actual
+        %th{:class => :ar} Allocated
         %th Pipeline
         %th Granted
         %th Paid
@@ -57,8 +57,8 @@
         %td Total
         - if display_program_budget
           %td= global_totals[5].to_currency(:precision => 0)
-          %td= global_totals[6].to_currency(:precision => 0)
-        %td= global_totals[0].to_currency(:precision => 0)
+          %td{:class => :ar}= global_totals[6].to_currency(:precision => 0)
+        %td{:class => :ar}= global_totals[0].to_currency(:precision => 0)
         %td= global_totals[1].to_currency(:precision => 0)
         %td= global_totals[2].to_currency(:precision => 0)
         %td= global_totals[3].to_currency(:precision => 0)
@@ -79,8 +79,8 @@
             %th Funding Source
             - if display_program_budget
               %th Budgeted
-              %th Actual
-            %th Allocated
+              %th{:class => :ar} Actual
+            %th{:class => :ar} Allocated
             %th Pipeline
             %th Granted
             %th Paid
@@ -105,13 +105,13 @@
               - totals[6] += (funding_source_allocation_model.actual_budget_amount || 0)
               - if display_program_budget
                 %td= link_to (funding_source_allocation_model.budget_amount || 0).to_currency(:precision => 0), edit_funding_source_allocation_path(funding_source_allocation_model), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Edit Budget Allocation"
-                %td= link_to (funding_source_allocation_model.actual_budget_amount || 0).to_currency(:precision => 0), edit_funding_source_allocation_path(funding_source_allocation_model), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Edit Actual Allocation"
+                %td{:class => :ar}= link_to (funding_source_allocation_model.actual_budget_amount || 0).to_currency(:precision => 0), edit_funding_source_allocation_path(funding_source_allocation_model), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Edit Actual Allocation"
               - allocated = (funding_source_allocation_model.amount || 0)
               - if allocation_is_approved
                 - totals[0] += allocated 
               - else
                 - total_allocated_pending += allocated 
-              %td= allocated.to_currency(:precision => 0)
+              %td{:class => :ar}= allocated.to_currency(:precision => 0)
               - pipeline = (funding_source_allocation_model.amount_granted_in_queue || 0)
               - totals[1] += pipeline if allocation_is_approved
               %td= link_to (pipeline.to_currency(:precision => 0)), grant_requests_path, 'data-filter' => "&request[funding_source_allocation_id][]=#{funding_source_allocation_model.id}", :class => 'new-listing', 'data-insert' => 'after', :title => 'Requests'
@@ -128,8 +128,8 @@
             %td Total
             - if display_program_budget
               %td= (totals[5] || 0).to_currency(:precision => 0)
-              %td= (totals[6] || 0).to_currency(:precision => 0)
-            %td
+              %td{:class => :ar}= (totals[6] || 0).to_currency(:precision => 0)
+            %td{:class => :ar}
               = totals[0].to_currency(:precision => 0)
               - if total_allocated_pending && total_allocated_pending > 0
                 = "(#{total_allocated_pending.to_currency(:precision => 0)} pending)"
