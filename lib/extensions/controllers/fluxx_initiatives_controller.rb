@@ -1,5 +1,6 @@
 module FluxxInitiativesController
   ICON_STYLE = 'style-admin-cards'
+  DETAIL_WIDTH = 740
   def self.included(base)
     base.insta_index Initiative do |insta|
       insta.template = 'initiative_list'
@@ -13,6 +14,7 @@ module FluxxInitiativesController
         end
       end)
       insta.icon_style = ICON_STYLE
+      insta.detail_width = DETAIL_WIDTH
       insta.template_map = {:admin => 'initiative_list_admin'}
       insta.format do |format|
         format.html do |triple|
@@ -30,14 +32,17 @@ module FluxxInitiativesController
       insta.template = 'initiative_show'
       insta.footer_template = 'admin_cards/admin_footer'
       insta.icon_style = ICON_STYLE
+      insta.detail_width = DETAIL_WIDTH
     end
     base.insta_new Initiative do |insta|
       insta.template = 'initiative_form'
       insta.icon_style = ICON_STYLE
+      insta.detail_width = DETAIL_WIDTH
     end
     base.insta_edit Initiative do |insta|
       insta.template = 'initiative_form'
       insta.icon_style = ICON_STYLE
+      insta.detail_width = DETAIL_WIDTH
     end
     base.insta_post Initiative do |insta|
       insta.template = 'initiative_form'

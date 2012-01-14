@@ -1,5 +1,6 @@
 module FluxxSubProgramsController
   ICON_STYLE = 'style-admin-cards'
+  DETAIL_WIDTH = 740
   def self.included(base)
     base.insta_index SubProgram do |insta|
       insta.template = 'sub_program_list'
@@ -11,6 +12,7 @@ module FluxxSubProgramsController
           '(sub_programs.retired is null or sub_programs.retired = 0)'
         end
       end)
+      insta.detail_width = DETAIL_WIDTH
       insta.icon_style = ICON_STYLE
       insta.template_map = {:admin => 'sub_program_list_admin'}
       insta.format do |format|
@@ -29,15 +31,18 @@ module FluxxSubProgramsController
       insta.template = 'sub_program_show'
       insta.footer_template = 'admin_cards/admin_footer'
       insta.icon_style = ICON_STYLE
+      insta.detail_width = DETAIL_WIDTH
       insta.add_workflow
     end
     base.insta_new SubProgram do |insta|
       insta.template = 'sub_program_form'
       insta.icon_style = ICON_STYLE
+      insta.detail_width = DETAIL_WIDTH
     end
     base.insta_edit SubProgram do |insta|
       insta.template = 'sub_program_form'
       insta.icon_style = ICON_STYLE
+      insta.detail_width = DETAIL_WIDTH
     end
     base.insta_post SubProgram do |insta|
       insta.template = 'sub_program_form'
