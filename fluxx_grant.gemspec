@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'hoptoad_notifier'
 
   s.add_development_dependency 'capybara', '0.3.7'
-  s.add_development_dependency 'machinist', '>= 1.0.6'
+  s.add_development_dependency 'machinist', '~> 1.0.6'
   s.add_development_dependency 'faker', '>= 0.3.1'
   s.add_development_dependency 'mocha', '>= 0.9'
   s.add_development_dependency 'rcov'
