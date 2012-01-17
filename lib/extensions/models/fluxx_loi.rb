@@ -29,11 +29,12 @@ module FluxxLoi
     base.belongs_to :organization
     base.belongs_to :geo_country
     base.belongs_to :geo_state
+    base.has_many :workflow_events, :as => :workflowable
 
     base.acts_as_audited({:full_model_enabled => false, :except => [:created_by_id, :updated_by_id, :delta, :updated_by, :created_by, :audits]})
 
     base.insta_search do |insta|
-      insta.filter_fields = SEARCH_ATTRIBUTES + [:organization_linked, :applicant_linked, :display_promoted_lois]
+      insta.filter_fields = SEARCH_ATTRIBUTES + [:organization_linked, :applicant_linked, :filter_state]
       insta.derived_filters = {:program_id => (lambda do |search_with_attributes, request_params, name, val|
         prepare_program_ids search_with_attributes, name, val
       end),
@@ -100,16 +101,18 @@ module FluxxLoi
     end
 
     base.insta_formbuilder
+    base.insta_workflow do |insta|
+      insta.add_state_to_english :new, 'Pending Approval', 'new'
+      insta.add_state_to_english :approved, 'Approved', 'approved'
+      insta.add_event_to_english :approve, 'Approve'
+      insta.add_state_to_english :rejected, 'Rejected', 'rejected'
+      insta.add_event_to_english :reject, 'Rejected'
+    end
 
     base.insta_favorite
     base.insta_utc do |insta|
       insta.time_attributes = [] 
     end
-    
-#    base.insta_workflow do |insta|
-      # insta.add_state_to_english :new, 'New Request'
-      # insta.add_event_to_english :recommend_funding, 'Recommend Funding'
-#    end
     base.insta_utc do |insta|
       insta.time_attributes = [:grant_begins_at]
     end
@@ -153,7 +156,7 @@ module FluxxLoi
 
         # attributes
         has created_at, updated_at, deleted_at, program_id
-        
+        has "lois.#{state_name}", :type => :string, :crc => true, :as => :filter_state
         has organization_name, :as => :loi_organization_name, :crc => true 
         has "ROUND(lois.amount_requested)", :as => :amount_requested, :type => :integer
         has applicant, :as => :loi_applicant, :crc => true 
@@ -166,7 +169,6 @@ module FluxxLoi
         set_property :delta => :delayed
         has "IF(lois.organization_id is not null, 1, 0)", :as => :organization_linked, :type => :boolean
         has "IF(lois.user_id is not null, 1, 0)", :as => :applicant_linked, :type => :boolean
-        has "IF(lois.request_id is null, 0, 1)", :as => :display_promoted_lois, :type => :boolean
       end
     end
   end
@@ -243,6 +245,37 @@ module FluxxLoi
     
     def loi_project_title
       project_title
+    end
+
+    def promote_to_request
+      unless request_id
+        attributes = { :program_organization_id => organization_id, :program_id => program_id, :amount_requested => amount_requested,
+         :duration_in_months => duration_in_months,:grant_begins_at => grant_begins_at, :project_summary => project_summary, :grantee_org_owner_id => user_id }
+        if request_attributes
+          workflow_attributes = request_attributes.de_json
+          attributes.merge!(workflow_attributes["grant_request"]) if workflow_attributes.is_a?(Hash) && workflow_attributes["grant_request"]
+        end
+        request = GrantRequest.new(attributes)
+
+        draft_state = Request.all_states_with_category("draft").first
+        request.state = draft_state if draft_state
+
+        if request.save(:validate => false)
+          if request_note
+            note = Note.new(:notable_id => request.id, :notable_type => request.class.name, :note => request_note)
+            note.save
+          end
+
+          request_attributes = request.all_dynamic_attributes
+          all_dynamic_attributes.each do |k,v|
+            request.send("#{k}=", self.send(k)) if request_attributes[k]
+          end
+          request.project_title = project_title if self.respond_to? :project_title
+          request.save(:validate => false)
+          self.update_attribute :request_id, request.id
+        end
+        request
+      end
     end
   end
 end

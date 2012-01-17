@@ -16,7 +16,6 @@ module FluxxLoisController
       insta.icon_style = ICON_STYLE
       insta.add_workflow
       insta.template_map = {:matching_users => "matching_users_list", :matching_organizations => "matching_organizations_list"}
-      insta.footer_template =  'loi_footer'
     end
     base.insta_edit Loi do |insta|
       insta.icon_style = ICON_STYLE
@@ -65,34 +64,8 @@ module FluxxLoisController
           model.update_attribute "organization_id", nil
         end
         if params[:promote_to_request] && model.user && model.organization && !model.request
-          attributes = { :program_organization_id => model.organization_id, :program_id => model.program_id,
-              :amount_requested => model.amount_requested, :duration_in_months => model.duration_in_months,
-              :grant_begins_at => model.grant_begins_at, :project_summary => model.project_summary, :grantee_org_owner_id => model.user_id }
-
-          if model.request_attributes
-            workflow_attributes = model.request_attributes.de_json
-            attributes.merge!(workflow_attributes["grant_request"]) if workflow_attributes.is_a?(Hash) && workflow_attributes["grant_request"]
-          end
-          request = GrantRequest.new(attributes)
-
-          draft_state = Request.all_states_with_category("draft").first
-          request.state = draft_state if draft_state
-
-          if request.save(:validate => false)
-            if model.request_note
-              note = Note.new(:notable_id => request.id, :notable_type => request.class.name, :note => model.request_note)
-              note.save
-            end
-            request_attributes = request.all_dynamic_attributes
-            model.all_dynamic_attributes.each do |k,v|
-              request.send("#{k}=", model.send(k)) if request_attributes[k]
-            end
-            request.project_title = model.project_title if model.respond_to? :project_title
-            request.save(:validate => false)
-            model.update_attribute :request_id, request.id
-          else
-            flash[:error] = I18n.t(:unable_to_promote) + request.errors.full_messages.to_sentence + '.'
-          end
+          request = model.promote_to_request
+          flash[:error] = I18n.t(:unable_to_promote) + request.errors.full_messages.to_sentence + '.' if request.errors
         end
       end
       insta.format do |format|

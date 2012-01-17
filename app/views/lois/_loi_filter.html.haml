@@ -1,5 +1,4 @@
--form.object.display_promoted_lois=0 if !form.object.display_promoted_lois
-= form.input :display_promoted_lois, :label => "Display Promoted LOIs", :as => :select, :collection => [["Yes", "1"], ["No", "0"]]
+= form.input :filter_state, :label => 'Status:', :required => false, :as => :select, :collection => Loi.all_states.map{|state|[Loi.state_to_english_translation(state), state]}, :input_html => {:class => 'add-another'}
 = form.input :applicant_linked, :as => :select, :collection => [["Linked", "1"], ["Not Linked", "0"]]
 = form.input :organization_linked, :as => :select, :collection => [["Linked", "1"], ["Not Linked", "0"]]
 = form.input :program_id, :required => false, :as => :select, :collection => Program.load_all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}

@@ -72,7 +72,7 @@ module ApplicationGrantHelper
       "Grants / #{I18n.t(:fip_name).pluralize}"
     end
     links << "  '<h3>Grants Management</h3>'";
-    links << "  '#{link_to 'LOIs', lois_path(:display_promoted_lois => 0), :class => 'new-listing indent'}'" unless Fluxx.config(:hide_lois) == "1" || !current_user.has_listview_for_model?(Loi)
+    links << "  '#{link_to 'LOIs', lois_path(:filter_state => 'new'), :class => 'new-listing indent'}'" unless Fluxx.config(:hide_lois) == "1" || !current_user.has_listview_for_model?(Loi)
     links << "  '#{link_to 'Requests', grant_requests_path, :class => 'new-listing indent'}'" unless Fluxx.config(:hide_requests) == "1" || !current_user.has_listview_for_model?(Request) || current_user.is_board_member?
     links << "  '#{link_to grant_fip_name, granted_requests_path, :class => 'new-listing indent'}'" unless Fluxx.config(:hide_grants) == "1" || !current_user.has_listview_for_model?(Request)
     links << "  '#{link_to 'Grantee Reports', request_reports_path, :class => 'new-listing indent'}'" unless Fluxx.config(:hide_grantee_reports) == "1" || !current_user.has_listview_for_model?(RequestReport)
