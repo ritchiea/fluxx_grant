@@ -147,6 +147,13 @@ module FluxxLoi
     end
 
     def add_sphinx
+      # Allow the overriding of the state name and rewriting of the rejected clause
+      state_name = if self.respond_to? :sphinx_state_name
+        self.sphinx_state_name
+      else
+        'state'
+      end
+      
       define_index :loi_first do
         # fields
         indexes "lower(lois.applicant)", :as => :applicant, :sortable => true
