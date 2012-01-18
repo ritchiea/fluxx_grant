@@ -1270,7 +1270,7 @@ module FluxxRequest
     end
     
     def is_marked_complete?
-      Request.all_states_with_category('approval').include?(state ? state.to_sym : nil) || granted
+      Request.all_states_with_category('approval').include?(state && !state.empty? ? state.to_sym: nil) || granted
     end
 
     def funding_warnings
