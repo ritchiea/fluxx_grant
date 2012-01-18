@@ -87,7 +87,7 @@ module FluxxGrantOrganization
 
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id, geo_state_id, geo_country_id
-        has 'lower(city)', :type => :string, :crc => true, :as => :city
+        has 'lower(organizations.city)', :type => :string, :crc => true, :as => :city
         has :postal_code, :type => :string, :crc => true, :as => :postal_code
         has grants.program(:id), :as => :grant_program_ids
         has grants.sub_program(:id), :as => :grant_sub_program_ids
@@ -111,7 +111,7 @@ module FluxxGrantOrganization
 
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id, geo_state_id, geo_country_id
-        has "lower(city)", :type => :string, :crc => true, :as => :city
+        has "lower(organizations.city)", :type => :string, :crc => true, :as => :city
         has :postal_code, :type => :string, :crc => true, :as => :postal_code
         has grants.program(:id), :as => :grant_program_ids
         has grants.sub_program(:id), :as => :grant_sub_program_ids
@@ -135,7 +135,7 @@ module FluxxGrantOrganization
 
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id, geo_state_id, geo_country_id
-        has 'lower(city)', :type => :string, :crc => true, :as => :city
+        has 'lower(organizations.city)', :type => :string, :crc => true, :as => :city
         has :postal_code, :type => :string, :crc => true, :as => :postal_code
         has grants.program(:id), :as => :grant_program_ids
         has grants.sub_program(:id), :as => :grant_sub_program_ids
@@ -159,7 +159,7 @@ module FluxxGrantOrganization
 
         # attributes
         has created_at, updated_at, deleted_at, state, parent_org_id, geo_state_id, geo_country_id
-        has 'lower(city)', :type => :string, :crc => true, :as => :city
+        has 'lower(organizations.city)', :type => :string, :crc => true, :as => :city
         has :postal_code, :type => :string, :crc => true, :as => :postal_code
         has grants.program(:id), :as => :grant_program_ids
         has grants.sub_program(:id), :as => :grant_sub_program_ids
