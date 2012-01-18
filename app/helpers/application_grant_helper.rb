@@ -80,7 +80,7 @@ module ApplicationGrantHelper
     links << "  '#{link_to 'Amendments', request_amendments_path, :class => 'new-listing indent'}'" if Fluxx.config(:show_request_amendments_card) == "1" && current_user.has_listview_for_model?(RequestAmendment)
     links << "  '#{link_to 'Budgeting', admin_card_path(:id => 1), :class => 'new-detail indent'}'" unless Fluxx.config(:hide_admin_cards) == "1" || !current_user.has_listview_for_model?(Program)
 
-    links << "  '<h3>CRM</h3>'";
+    links << "  '<h3>Contact Management</h3>'";
     links << "  '#{link_to 'People', users_path, :class => 'new-listing indent'}'" unless Fluxx.config(:hide_people) == "1" || !current_user.has_listview_for_model?(User)
     links << "  '#{link_to I18n.t(:Organization).pluralize, organizations_path, :class => 'new-listing indent'}'" unless Fluxx.config(:hide_organizations) == "1" || !current_user.has_listview_for_model?(Organization)
 
