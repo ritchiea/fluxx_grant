@@ -15,10 +15,9 @@
     %p
       = render :partial => "grantee_portal/information"
   -else
+    = render :partial => "lois/client_logo"
     %div.c60l
-      = render :partial => "lois/client_logo"
-      %p
-        = render :partial => "grantee_portal/information"
+      = render :partial => "grantee_portal/information"
     %div.c40r
       = render :partial => "document_list", :locals => {:@data => documents}
 .container{"data-src".to_sym => url_for({:table => "requests", :page => @requests.current_page})}
