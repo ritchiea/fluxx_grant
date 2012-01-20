@@ -22,7 +22,7 @@
     %span.actions
       - if display_program_budget
         = link_to 'Add Budget Allocation', new_funding_source_allocation_path(:program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id, :budget_allocation => true, :funding_source_allocation => {:spending_year => spending_year}), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Add Budget Allocation"
-      = link_to 'Add Spending Allocation', new_funding_source_allocation_authority_path(:program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id, :funding_source_allocation => {:spending_year => spending_year}), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Add Spending Allocation"
+        = link_to 'Add Spending Allocation', new_funding_source_allocation_authority_path(:program_id => program_id, :sub_program_id => sub_program_id, :initiative_id => initiative_id, :sub_initiative_id => sub_initiative_id, :funding_source_allocation => {:spending_year => spending_year}), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Add Spending Allocation"
 
 - if !models || models.empty?
   %p.caption= "There are no funding source allocations."
