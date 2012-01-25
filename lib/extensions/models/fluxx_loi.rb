@@ -280,6 +280,8 @@ module FluxxLoi
           request.project_title = project_title if self.respond_to? :project_title
           request.save(:validate => false)
           self.update_attribute :request_id, request.id
+          #expire workflow cache for request
+          MachineWorkflow.expire_model_cache request
         end
         request
       end
