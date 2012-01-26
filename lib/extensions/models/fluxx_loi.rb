@@ -260,6 +260,7 @@ module FluxxLoi
 
     def promote_to_request
       unless request_id
+        #TODO AML: Grant type will become theme, selected by a specific LOI component once the form builder refactor
         attributes = { :program_organization_id => organization_id, :program_id => program_id, :amount_requested => amount_requested,
          :duration_in_months => duration_in_months,:grant_begins_at => grant_begins_at, :project_summary => project_summary, :grantee_org_owner_id => user_id }
         if request_attributes
@@ -284,6 +285,8 @@ module FluxxLoi
           request.project_title = project_title if self.respond_to? :project_title
           request.save(:validate => false)
           self.update_attribute :request_id, request.id
+          #expire workflow cache for request
+          MachineWorkflow.expire_model_cache request
         end
         request
       end
