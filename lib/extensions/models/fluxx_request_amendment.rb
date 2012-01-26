@@ -1,5 +1,5 @@
 module FluxxRequestAmendment
-  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :duration, :start_date, :end_date, :original, :request_id, :filter_state, :request_type, :amount_recommended, :request_hierarchy, :lead_user_ids]
+  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :duration, :start_date, :end_date, :original, :request_id, :filter_state, :request_type, :amount_recommended, :request_hierarchy, :lead_user_ids, :model_theme_id]
 
   extend FluxxModuleHelper
 
@@ -70,6 +70,7 @@ module FluxxRequestAmendment
       else
         'state'
       end
+      include_model_theme_id = self.respond_to? :model_theme_id
       
       define_index :request_amendment_first do
         # fields
@@ -84,7 +85,8 @@ module FluxxRequestAmendment
         has "ROUND(request_amendments.amount_recommended)", :as => :amount_recommended, :type => :integer
         has request.program_lead(:id), :as => :lead_user_ids
         has FluxxGrantSphinxHelper.request_hierarchy, :type => :multi, :as => :request_hierarchy
-
+        
+        has model_theme_id if include_model_theme_id
         set_property :delta => :delayed
       end
     end

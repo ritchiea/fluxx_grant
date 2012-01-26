@@ -42,7 +42,7 @@ module FluxxRequest
 
 
   
-  SEARCH_ATTRIBUTES = [:program_id, :sub_program_id, :created_by_id, :filter_state, :program_organization_id, :fiscal_organization_id, :favorite_user_ids, :lead_user_ids, :org_owner_user_ids, :granted, :filter_type, :request_hierarchy, :allocation_hierarchy]
+  SEARCH_ATTRIBUTES = [:program_id, :sub_program_id, :created_by_id, :filter_state, :program_organization_id, :fiscal_organization_id, :favorite_user_ids, :lead_user_ids, :org_owner_user_ids, :granted, :filter_type, :request_hierarchy, :allocation_hierarchy, :model_theme_id]
   FAR_IN_THE_FUTURE = Time.now + 1000.year
   begin FAR_IN_THE_FUTURE.to_i rescue FAR_IN_THE_FUTURE = Time.now + 10.year end
 
@@ -347,7 +347,10 @@ module FluxxRequest
       insta.amount_attributes = [:amount_requested, :amount_recommended, :funds_expended_amount]
     end
     
-    base.insta_formbuilder
+    base.insta_formbuilder do |insta|
+      insta.add_form_template :show, 'grantee_portal/create_new_portal_request', 'Grantee Portal Link to Create New Request'
+    end
+    
     base.insta_workflow do |insta|
       insta.add_state_to_english :new, 'New Request', 'new'
       insta.add_state_to_english :drafted, 'Draft', 'draft'
@@ -536,7 +539,7 @@ module FluxxRequest
       else
         'state'
       end
-      
+      include_model_theme_id = self.column_names.include?('model_theme_id')
       
       # Note!!!: across multiple indices, the structure must be the same or the index can get corrupted and attributes, search filter will not work properly
       define_index :request_first do
@@ -600,6 +603,7 @@ module FluxxRequest
         has FluxxGrantSphinxHelper.request_hierarchy, :type => :multi, :as => :request_hierarchy
         has FluxxGrantSphinxHelper.allocation_hierarchy('requests'), :type => :multi, :as => :allocation_hierarchy
             
+        has model_theme_id if include_model_theme_id
         set_property :delta => :delayed
       end
 
@@ -663,6 +667,7 @@ module FluxxRequest
         has FluxxGrantSphinxHelper.allocation_hierarchy('requests'), :type => :multi, :as => :allocation_hierarchy
         
 
+        has model_theme_id if include_model_theme_id
         set_property :delta => :delayed
       end
 
@@ -721,6 +726,7 @@ module FluxxRequest
         has FluxxGrantSphinxHelper.request_hierarchy, :type => :multi, :as => :request_hierarchy
         has FluxxGrantSphinxHelper.allocation_hierarchy('requests'), :type => :multi, :as => :allocation_hierarchy
        
+        has model_theme_id if include_model_theme_id
         set_property :delta => :delayed
       end
     end

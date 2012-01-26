@@ -23,7 +23,7 @@ module FluxxRequestTransaction
     end || {}
   end
 
-  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_type, :amount_paid, :favorite_user_ids, :has_been_paid, :filter_state, :request_hierarchy, :allocation_hierarchy]
+  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_type, :amount_paid, :favorite_user_ids, :has_been_paid, :filter_state, :request_hierarchy, :allocation_hierarchy, :model_theme_id]
   FAR_IN_THE_FUTURE = Time.now + 1000.year
   
   def self.included(base)
@@ -219,6 +219,7 @@ module FluxxRequestTransaction
       else
         'state'
       end
+      include_model_theme_id = self.column_names.include?('model_theme_id')
       
       define_index :request_transaction_first do
         # fields
@@ -246,6 +247,7 @@ module FluxxRequestTransaction
         has request_transaction_funding_sources.request_funding_source.funding_source_allocation(:id), :as => :funding_source_allocation_id
         has FluxxGrantSphinxHelper.allocation_hierarchy('request_transactions'), :type => :multi, :as => :allocation_hierarchy
         has FluxxGrantSphinxHelper.request_hierarchy, :type => :multi, :as => :request_hierarchy
+        has model_theme_id if include_model_theme_id
       end
     end
 

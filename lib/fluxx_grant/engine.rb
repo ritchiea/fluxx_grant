@@ -32,6 +32,7 @@ module FluxxGrant
         defaults.methods = [['New Request Model Method', Request.name], ['New Report Model Method', RequestReport.name], ['New Transaction Model Method', RequestTransaction.name]]
         defaults.validations = [['New Request Model Validation', Request.name], ['New Report Model Validation', RequestReport.name], ['New Transaction Model Validation', RequestTransaction.name]]
         defaults.pre_create = ['GrantRequest']
+        defaults.forms = [['filter', 'internal', false], ['form', 'internal', true], ['form', 'external', true], ['show', 'internal', true], ['show', 'external', true], ['list', 'internal', true], ['list', 'external', true]]
       rescue Exception => e
         p "ESH: have an error while setting up AdminDefaults: #{e.inspect}, #{e.backtrace.inspect}"
       end

@@ -5,7 +5,7 @@
     - if @title == 'Requests'
       - program_org = current_user.primary_organization if current_user.primary_organization
       - if program_org
-        %input{:type => 'button', :name => 'new-request', :class => 'open-link float_right', :value => 'Create a Request', 'data-href'.to_sym => new_portal_grant_request_path(:grant_request => {:state => draft_state, :program_organization_id => program_org.id})}
+        = render :partial => "create_new_portal_request", :locals => {:draft_state => draft_state, :program_organization_id => program_org.id}
 .content
   - if @data.length == 0
     %p.caption

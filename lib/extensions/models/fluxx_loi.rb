@@ -2,7 +2,7 @@ module FluxxLoi
   attr_accessor :request_note
   attr_accessor :request_attributes
 
-  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :loi_applicant, :loi_organization_name, :loi_email, :loi_phone, :loi_project_title, :program_id]
+  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id, :loi_applicant, :loi_organization_name, :loi_email, :loi_phone, :loi_project_title, :program_id, :model_theme_id]
   def self.prepare_program_ids search_with_attributes, name, val
     program_id_strings = val
     programs = Program.where(:id => program_id_strings).all.compact
@@ -154,6 +154,8 @@ module FluxxLoi
         'state'
       end
       
+      include_model_theme_id = self.column_names.include?('model_theme_id')
+      
       define_index :loi_first do
         # fields
         indexes "lower(lois.applicant)", :as => :applicant, :sortable => true
@@ -176,6 +178,8 @@ module FluxxLoi
         set_property :delta => :delayed
         has "IF(lois.organization_id is not null, 1, 0)", :as => :organization_linked, :type => :boolean
         has "IF(lois.user_id is not null, 1, 0)", :as => :applicant_linked, :type => :boolean
+        
+        has model_theme_id if include_model_theme_id
       end
     end
   end

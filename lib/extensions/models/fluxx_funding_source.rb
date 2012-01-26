@@ -1,5 +1,5 @@
 module FluxxFundingSource
-SEARCH_ATTRIBUTES = [:state]
+SEARCH_ATTRIBUTES = [:state, :model_theme_id]
   
   def self.included(base)
     base.has_many :request_funding_sources

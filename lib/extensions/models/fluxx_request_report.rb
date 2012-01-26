@@ -1,5 +1,5 @@
 module FluxxRequestReport
-  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :due_at, :approved_at, :report_type, :state, :updated_at, :grant_state, :favorite_user_ids, :request_hierarchy, :allocation_hierarchy] 
+  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :due_at, :approved_at, :report_type, :state, :updated_at, :grant_state, :favorite_user_ids, :request_hierarchy, :allocation_hierarchy, :model_theme_id] 
   FAR_IN_THE_FUTURE = Time.now + 1000.year
 
   def self.included(base)
@@ -225,6 +225,9 @@ module FluxxRequestReport
         'state'
       end
       
+      include_model_theme_id = self.column_names.include?('model_theme_id')
+      
+      
       define_index :req_report_first do
         # fields
         indexes grant.program_organization.name, :as => :request_org_name, :sortable => true
@@ -250,6 +253,7 @@ module FluxxRequestReport
         has FluxxGrantSphinxHelper.request_hierarchy, :type => :multi, :as => :request_hierarchy
         has 'null', :type => :multi, :as => :funding_source_ids
         has 'null', :type => :multi, :as => :allocation_hierarchy
+        has model_theme_id if include_model_theme_id
       end
 
       define_index :req_report_second do
@@ -276,6 +280,7 @@ module FluxxRequestReport
         has FluxxGrantSphinxHelper.request_hierarchy, :type => :multi, :as => :request_hierarchy
         has grant.request_funding_sources.funding_source_allocation.funding_source(:id), :as => :funding_source_ids
         has FluxxGrantSphinxHelper.allocation_hierarchy('request_reports'), :type => :multi, :as => :allocation_hierarchy
+        has model_theme_id if include_model_theme_id
       end
     end
 
