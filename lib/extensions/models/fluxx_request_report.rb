@@ -322,11 +322,17 @@ module FluxxRequestReport
 
     def new_report_doc_types
       doc_types = report_doc_types - [final_monitor_type_name, interim_monitor_type_name]
-      monitoring_years = [1, 5, 10, 20]
+      monitoring_years = (Fluxx.config(:monitor_year_intervals) || '').split(',').map{|interval| interval.to_i} if Fluxx.config(:monitor_year_intervals)
+      monitoring_years ||= []
       
       # Include a time range of monitoring reports
-      monitoring_years.each{|i| doc_types << "#{final_monitor_type_name}_#{i}"}
-      monitoring_years.each{|i| doc_types << "#{interim_monitor_type_name}_#{i}"}
+      if !monitoring_years || monitoring_years.empty?
+        doc_types << final_monitor_type_name
+        doc_types << interim_monitor_type_name
+      else
+        monitoring_years.each{|i| doc_types << "#{final_monitor_type_name}_#{i}"}
+        monitoring_years.each{|i| doc_types << "#{interim_monitor_type_name}_#{i}"}
+      end
       doc_types
     end
 
