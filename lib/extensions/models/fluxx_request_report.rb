@@ -326,8 +326,13 @@ module FluxxRequestReport
       monitoring_years ||= []
       
       # Include a time range of monitoring reports
-      monitoring_years.each{|i| doc_types << "#{final_monitor_type_name}_#{i}"}
-      monitoring_years.each{|i| doc_types << "#{interim_monitor_type_name}_#{i}"}
+      if !monitoring_years || monitoring_years.empty?
+        doc_types << final_monitor_type_name
+        doc_types << interim_monitor_type_name
+      else
+        monitoring_years.each{|i| doc_types << "#{final_monitor_type_name}_#{i}"}
+        monitoring_years.each{|i| doc_types << "#{interim_monitor_type_name}_#{i}"}
+      end
       doc_types
     end
 
