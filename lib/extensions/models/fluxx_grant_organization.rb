@@ -4,7 +4,7 @@ module FluxxGrantOrganization
   require 'net/https'
   include REXML
 
-  SEARCH_ATTRIBUTES = [:parent_org_id, :grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_ids, :grant_ids, :favorite_user_ids, :related_org_ids, :city, :geo_country_id, :geo_state_id, :postal_code]
+  SEARCH_ATTRIBUTES = [:parent_org_id, :grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_ids, :grant_ids, :favorite_user_ids, :related_org_ids, :city, :geo_country_id, :geo_state_id, :postal_code, :request_report_eval_avg_rating]
 
   def self.included(base)
     base.send :include, ::FluxxOrganization
@@ -13,6 +13,7 @@ module FluxxGrantOrganization
     base.has_many :grant_requests, :class_name => 'Request', :foreign_key => :program_organization_id
     base.has_many :fiscal_requests, :class_name => 'Request', :foreign_key => :fiscal_organization_id
     base.has_many :program_grantees, :class_name => 'Program', :finder_sql => 'select * from programs where id in (select program_id from requests where program_organization_id = #{id} group by program_id)'
+    base.has_many :request_reports, :through => :grant_requests
 
     base.insta_search
     base.insta_export
@@ -100,6 +101,8 @@ module FluxxGrantOrganization
         has satellite_orgs(:id), :as => :satellite_org_ids
         has "CONCAT(organizations.id, ',', IFNULL(organizations.parent_org_id, '0'))", :as => :related_org_ids, :type => :multi
         has multi_element_choices.multi_element_value(:id), :type => :multi, :as => :multi_element_value_ids
+        has 'null', :type => :multi, :as => :request_report_ids
+        has 'null', :type => :integer, :as => :request_report_eval_avg_rating
 
         set_property :delta => :delayed
       end
@@ -124,6 +127,8 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :satellite_org_ids
         has 'null', :type => :multi, :as => :related_org_ids
         has 'null', :type => :multi, :as => :multi_element_value_ids
+        has 'null', :type => :multi, :as => :request_report_ids
+        has 'null', :type => :integer, :as => :request_report_eval_avg_rating
 
         set_property :delta => :delayed
       end
@@ -148,6 +153,8 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :satellite_org_ids
         has 'null', :type => :multi, :as => :related_org_ids
         has 'null', :type => :multi, :as => :multi_element_value_ids
+        has 'null', :type => :multi, :as => :request_report_ids
+        has 'null', :type => :integer, :as => :request_report_eval_avg_rating
 
         set_property :delta => :delayed
       end
@@ -172,6 +179,8 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :satellite_org_ids
         has 'null', :type => :multi, :as => :related_org_ids
         has 'null', :type => :multi, :as => :multi_element_value_ids
+        has request_reports(:id), :type => :multi, :as => :request_report_ids
+        has 'ROUND(avg(request_reports.evaluation_rating))', :type => :integer, :as => :request_report_eval_avg_rating
 
         set_property :delta => :delayed
       end
@@ -348,6 +357,11 @@ module FluxxGrantOrganization
     
     def has_c3_status_approved?
       find_parent_or_self.c3_status_approved
+    end
+    
+    def average_grant_rating
+      avg_rating = request_reports.where('evaluation_rating is not null').select('avg(evaluation_rating) avg_eval_rating').first
+      avg_rating.avg_eval_rating if avg_rating
     end
   end
 end

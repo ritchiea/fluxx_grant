@@ -1,5 +1,5 @@
 module FluxxRequestReport
-  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :due_at, :approved_at, :report_type, :state, :updated_at, :grant_state, :favorite_user_ids, :request_hierarchy, :allocation_hierarchy, :model_theme_id, :grant_ids] 
+  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :due_at, :approved_at, :report_type, :state, :updated_at, :grant_state, :favorite_user_ids, :request_hierarchy, :allocation_hierarchy, :model_theme_id, :grant_ids, :request_report_eval_avg_rating] 
   FAR_IN_THE_FUTURE = Time.now + 1000.year
 
   def self.included(base)
@@ -254,6 +254,7 @@ module FluxxRequestReport
         has 'null', :type => :multi, :as => :funding_source_ids
         has 'null', :type => :multi, :as => :allocation_hierarchy
         has model_theme_id if include_model_theme_id
+        has 'ROUND(avg(request_reports.evaluation_rating))', :type => :integer, :as => :request_report_eval_avg_rating
       end
 
       define_index :req_report_second do
@@ -281,6 +282,7 @@ module FluxxRequestReport
         has grant.request_funding_sources.funding_source_allocation.funding_source(:id), :as => :funding_source_ids
         has FluxxGrantSphinxHelper.allocation_hierarchy('request_reports'), :type => :multi, :as => :allocation_hierarchy
         has model_theme_id if include_model_theme_id
+        has 'ROUND(avg(request_reports.evaluation_rating))', :type => :integer, :as => :request_report_eval_avg_rating
       end
     end
 
