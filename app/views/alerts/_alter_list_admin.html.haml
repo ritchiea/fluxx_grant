@@ -7,7 +7,10 @@
     = link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_alert_path(:alert => {:model_controller_type => controller_type}), :title => 'Add An Alert', :class => 'to-modal wide', 'data-on-success' => 'refreshCaller,close'
 
 - if !models || models.empty?
-  %p= "No Alerts available"
+  .warning
+    No Alerts available.
+    %br
+    = link_to "Add one now", new_alert_path(:alert => {:model_controller_type => controller_type}), :title => 'Add An Alert', :class => 'to-modal wide', 'data-on-success' => 'refreshCaller,close'
 - else
   - models.each do |model|
     %div
