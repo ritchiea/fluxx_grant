@@ -16,6 +16,10 @@ module FluxxGrantedRequestsController
       insta.report_icon_style = REPORT_ICON_STYLE
       insta.delta_type = GrantedRequestsController.translate_delta_type true # Vary the request type based on whether a request has been granted yet or not
       insta.include_relation = [:program_lead, :grantee_org_owner, :grantee_signatory, :fiscal_org_owner, :fiscal_signatory, :program_organization, :fiscal_organization, :program]
+      insta.pre do |config|
+        # Even if we come from a spreadsheet or summary view, make sure the funnel is unobstructed
+        self.pre_view_type = :view_type_normal if params[:view_funnel]
+      end
       insta.format do |format|
         format.html do |triple|
           controller_dsl, outcome, default_block = triple
