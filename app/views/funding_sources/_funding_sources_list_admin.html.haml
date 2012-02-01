@@ -5,7 +5,10 @@
     = link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_funding_source_path, :title => 'Add A Funding Source', :class => 'to-modal', 'data-on-success' => 'refreshCaller,close'
 
 - if !models || models.empty?
-  %p= "No Funding Sources available"
+  .warning
+    No Funding Sources available.
+    %br
+    = link_to "Add one now", new_funding_source_path, :title => 'Add A Funding Source', :class => 'to-modal', 'data-on-success' => 'refreshCaller,close'
 - else
   - models.each do |model|
     %div

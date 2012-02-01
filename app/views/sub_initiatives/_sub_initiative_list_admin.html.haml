@@ -9,7 +9,10 @@
     = link_to image_tag('/images/fluxx_engine/theme/default/icons/add.png', :class=> 'add-button'), new_path, :title => "Add A #{name}", :class => 'to-modal', 'data-on-success' => 'refreshCaller,close'
 
 - if !models || models.empty?
-  %p= "No #{plural_name} available"
+    .warning
+      = "No #{plural_name} available."
+      %br
+      = link_to "Add one now", new_path, :title => "Add A #{name}", :class => 'to-modal', 'data-on-success' => 'refreshCaller,close'
 - else
   - models.each do |model|
     -edit_path = edit_sub_initiative_path(:id => model, :as_modal => '1')
