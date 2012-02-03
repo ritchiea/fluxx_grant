@@ -107,6 +107,12 @@ module FluxxLoi
       insta.add_event_to_english :approve, 'Approve'
       insta.add_state_to_english :rejected, 'Rejected', 'rejected'
       insta.add_event_to_english :reject, 'Rejected'
+
+      #Promote the LOI to q Request
+      #insta.on_enter_state_category('become_request') do |loi|
+      #  loi.promote_to_request
+      #end
+
     end
 
     base.insta_favorite
