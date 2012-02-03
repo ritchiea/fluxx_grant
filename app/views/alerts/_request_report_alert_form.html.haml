@@ -1,4 +1,3 @@
-%h1 Fuck
 = form.input :program_id, :required => false, :as => :select, :collection => Program.load_all.sort_by{|prog| prog.name || ''}.map {|prog|[prog.name, prog.id]}
 = form.input :report_type, :required => false, :label => 'Report Type', :as => :select, :collection => RequestReport.report_doc_types.map{|doc_type| [RequestReport.type_to_english_translation(doc_type), doc_type]}
 = form.input :state, :required => false, :label => 'Status', :as => :select, :collection => RequestReport.all_states.map{|doc_state| [RequestReport.state_to_english_translation(doc_state), doc_state]}
