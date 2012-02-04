@@ -108,10 +108,14 @@ module FluxxLoi
       insta.add_state_to_english :rejected, 'Rejected', 'rejected'
       insta.add_event_to_english :reject, 'Rejected'
 
-      #Promote the LOI to q Request
-      #insta.on_enter_state_category('become_request') do |loi|
-      #  loi.promote_to_request
-      #end
+      insta.on_enter_state_category('become_request') do |loi|
+        loi.promote_to_request
+      end
+
+      insta.validate_before_enter_state_category('become_request') do |loi|
+        errors[:connect_user] << "You must connect a user before promoting to a request." unless loi.user_id
+        errors[:connect_orgranization] << "You must connect an organization before promoting to a request." unless loi.organization_id
+      end
 
     end
 
@@ -266,35 +270,41 @@ module FluxxLoi
 
     def promote_to_request
       unless request_id
-        #TODO AML: Grant type will become theme, selected by a specific LOI component once the form builder refactor
-        attributes = { :program_organization_id => organization_id, :program_id => program_id, :amount_requested => amount_requested,
-         :duration_in_months => duration_in_months,:grant_begins_at => grant_begins_at, :project_summary => project_summary, :grantee_org_owner_id => user_id }
-        if request_attributes
-          workflow_attributes = request_attributes.de_json
-          attributes.merge!(workflow_attributes["grant_request"]) if workflow_attributes.is_a?(Hash) && workflow_attributes["grant_request"]
+        to_theme_id = request_theme_id
+        unless to_theme_id
+          first_request_theme = ModelTheme.where(:model_type => "Request", :deleted_at => nil).first
+          to_theme_id = first_request_theme.id if first_request_theme
         end
-        request = GrantRequest.new(attributes)
-
-        draft_state = Request.all_states_with_category("draft").first
-        request.state = draft_state if draft_state
-
-        if request.save(:validate => false)
-          if request_note
-            note = Note.new(:notable_id => request.id, :notable_type => request.class.name, :note => request_note)
-            note.save
+        if to_theme_id
+          attributes = { :program_organization_id => organization_id, :program_id => program_id, :amount_requested => amount_requested, :model_theme_id => to_theme_id,
+           :duration_in_months => duration_in_months,:grant_begins_at => grant_begins_at, :project_summary => project_summary, :grantee_org_owner_id => user_id }
+          if request_attributes
+            workflow_attributes = request_attributes.de_json
+            attributes.merge!(workflow_attributes["grant_request"]) if workflow_attributes.is_a?(Hash) && workflow_attributes["grant_request"]
           end
+          request = GrantRequest.new(attributes)
 
-          request_attributes = request.all_dynamic_attributes
-          all_dynamic_attributes.each do |k,v|
-            request.send("#{k}=", self.send(k)) if request_attributes[k]
+          draft_state = Request.all_states_with_category("draft").first
+          request.state = draft_state if draft_state
+
+          if request.save(:validate => false)
+            if request_note
+              note = Note.new(:notable_id => request.id, :notable_type => request.class.name, :note => request_note)
+              note.save
+            end
+
+            request_attributes = request.all_dynamic_attributes
+            all_dynamic_attributes.each do |k,v|
+              request.send("#{k}=", self.send(k)) if request_attributes[k]
+            end
+            request.project_title = project_title if self.respond_to? :project_title
+            request.save(:validate => false)
+            self.update_attribute :request_id, request.id
+            #expire workflow cache for request
+            MachineWorkflow.expire_model_cache request
           end
-          request.project_title = project_title if self.respond_to? :project_title
-          request.save(:validate => false)
-          self.update_attribute :request_id, request.id
-          #expire workflow cache for request
-          MachineWorkflow.expire_model_cache request
+          request
         end
-        request
       end
     end
   end
