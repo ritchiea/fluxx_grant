@@ -1,0 +1,18 @@
+-eval_report = model.request_reports.where(:report_type => "Eval", :deleted_at => nil).first
+.information
+  %table
+    %tr
+      %td.eval-complete
+        .float_left
+          - approved = eval_report && eval_report.in_state_with_category?('approved') ? "approved" : "not-yet-approved"
+          %h1{:class => approved} Final Eval Complete
+      %td
+        -if eval_report && eval_report.evaluation_rating
+          .float_right.rating
+            %h1= eval_report.evaluation_rating
+            Evaluation Rating
+    -if eval_report && eval_report.grantee_performance
+      %tr
+        %td{:colspan => 2}
+          %p
+          =eval_report.grantee_performance
