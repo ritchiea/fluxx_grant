@@ -113,8 +113,8 @@ module FluxxLoi
       end
 
       insta.validate_before_enter_state_category('become_request') do |loi|
-        errors[:connect_user] << "You must connect a user before promoting to a request." unless loi.user_id
-        errors[:connect_orgranization] << "You must connect an organization before promoting to a request." unless loi.organization_id
+        loi.errors[:connect_user] = "You must connect a user before promoting to a request" unless loi.user_id || loi.errors[:connect_user].count > 0
+        loi.errors[:connect_organization] = "You must connect an organization before promoting to a request" unless loi.organization_id || loi.errors[:connect_organization].count > 0
       end
 
     end
