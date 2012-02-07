@@ -11,8 +11,12 @@
           .float_right.rating
             %h1= eval_report.evaluation_rating
             Evaluation Rating
-    -if eval_report && eval_report.grantee_performance
+    -if eval_report && (eval_report.grantee_performance || eval_report.what_grantee_did || eval_report.what_grantee_won)
       %tr
         %td{:colspan => 2}
           %p
-          =eval_report.grantee_performance
+          - unless eval_report.what_grantee_did.blank? && eval_report.what_grantee_won.blank?
+            = simple_format(eval_report.what_grantee_did)
+            = simple_format(eval_report.what_grantee_won)
+          -else
+            = simple_format(eval_report.grantee_performance)
