@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'memcache-client', '>= 1.8.5'
   s.add_dependency 'ruby-ldapserver'
   s.add_dependency 'capistrano'
-  s.add_dependency 'aws-s3'
+  s.add_dependency 'aws-sdk'
   s.add_dependency 'capistrano-ext'
   s.add_dependency 'hoptoad_notifier'
 
