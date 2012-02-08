@@ -1052,7 +1052,11 @@ module FluxxRequest
     end
     
     def related_request_reviews
-      request_reviews.where('rating is not null').where(:conflict_reported => nil)
+      query = request_reviews.where('rating is not null').where(:conflict_reported => nil)
+      average_rating = query.select('avg(rating) average_rating').first
+      average_rating = average_rating.average_rating if average_rating
+      all_ratings = query.all
+      [average_rating, all_ratings].flatten
     end
     
     def related_projects limit_amount=50

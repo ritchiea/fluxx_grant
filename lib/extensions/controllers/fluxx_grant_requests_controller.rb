@@ -168,6 +168,13 @@ module FluxxGrantRequestsController
         related.for_search do |model|
           model.related_request_reviews
         end
+        related.add_model_url_block do |model|
+          if model.is_a? RequestReview
+            send :request_review_path, :id => model.id
+          else
+            '#'
+          end
+        end
         related.display_template = '/request_reviews/related_request_reviews'
       end
     end

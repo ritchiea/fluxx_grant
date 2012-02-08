@@ -1,1 +1,4 @@
-%span.fluxx-card-content-metadata-section-title= "#{model.created_by.full_name} - #{model.rating}" if model.created_by
+- if model.is_a? RequestReview
+  %span.fluxx-card-content-metadata-section-title= "#{model.created_by.full_name} - #{model.rating}" if model.created_by
+- elsif model.is_a? BigDecimal
+  %span.fluxx-card-content-metadata-section-title= "#{number_with_precision(model, :precision => 1)} - Average Score"
