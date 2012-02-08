@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120113010034) do
+ActiveRecord::Schema.define(:version => 20120208012805) do
 
   create_table "alert_emails", :force => true do |t|
     t.string   "mailer_method"
@@ -366,6 +366,7 @@ ActiveRecord::Schema.define(:version => 20120113010034) do
     t.string   "postal_code",                        :limit => 100
     t.integer  "migrate_id"
     t.string   "organization_name_foreign_language", :limit => 1500
+    t.string   "state"
   end
 
   add_index "lois", ["created_by_id"], :name => "lois_created_by_id"
@@ -829,6 +830,7 @@ ActiveRecord::Schema.define(:version => 20120113010034) do
     t.integer  "locked_by_id"
     t.datetime "locked_until"
     t.datetime "deleted_at"
+    t.boolean  "conflict_reported"
   end
 
   add_index "request_reviews", ["created_by_id"], :name => "request_reviews_created_by_id"

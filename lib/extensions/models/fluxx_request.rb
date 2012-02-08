@@ -1051,6 +1051,10 @@ module FluxxRequest
       (request_organizations.joins(:organization).where(:organizations => {:deleted_at => nil}).order(:name).map{|ro| ro.organization} + [program_organization, fiscal_organization]).compact.reject{|o| o.deleted_at}
     end
     
+    def related_request_reviews
+      request_reviews.where('rating is not null').where(:conflict_reported => nil)
+    end
+    
     def related_projects limit_amount=50
       projects.order('projects.created_at desc').limit(limit_amount)
     end

@@ -40,6 +40,12 @@ module FluxxRequestReviewsController
     base.insta_post RequestReview do |insta|
       insta.template = 'request_review_form'
       insta.icon_style = ICON_STYLE
+      insta.pre do |conf|
+        self.pre_model = conf.load_existing_model params
+        if params[:report_conflict]
+          self.pre_model.conflict_reported = true
+        end
+      end
       insta.format do |format|
         format.html do |triple|
           controller_dsl, outcome, default_block = triple
@@ -52,6 +58,12 @@ module FluxxRequestReviewsController
     base.insta_put RequestReview do |insta|
       insta.template = 'request_review_form'
       insta.icon_style = ICON_STYLE
+      insta.pre do |conf|
+        self.pre_model = conf.load_existing_model params
+        if params[:report_conflict]
+          self.pre_model.conflict_reported = true
+        end
+      end
 #      insta.add_workflow
       insta.format do |format|
         format.html do |triple|

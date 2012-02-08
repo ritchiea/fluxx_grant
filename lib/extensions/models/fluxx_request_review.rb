@@ -44,6 +44,8 @@ module FluxxRequestReview
 #      # insta.add_state_to_english :new, 'New Request'
 #      # insta.add_event_to_english :recommend_funding, 'Recommend Funding'
 #    end
+    base.insta_formbuilder do |insta|
+    end
     
     base.extend(ModelClassMethods)
     base.class_eval do

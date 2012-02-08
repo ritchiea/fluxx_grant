@@ -160,6 +160,16 @@ module FluxxGrantRequestsController
         end
         related.display_template = '/projects/related_project'
       end
+      insta.add_related do |related|
+        related.display_name = 'Reviews'
+        # related.add_title_block do |model|
+        #   model.title if model
+        # end
+        related.for_search do |model|
+          model.related_request_reviews
+        end
+        related.display_template = '/request_reviews/related_request_reviews'
+      end
     end
     
     base.extend(ModelClassMethods)
