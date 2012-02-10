@@ -16,7 +16,7 @@ module FluxxRequestReviewsController
     base.insta_new RequestReview do |insta|
       insta.template = 'request_review_form'
       insta.icon_style = ICON_STYLE
-      insta.layout = 'reviewer_portal'
+      insta.layout = lambda {|user| user.is_external_user? ? 'reviewer_portal' : 'application'}
       insta.skip_card_footer = true
       insta.format do |format|
         format.html do |triple|
@@ -34,7 +34,7 @@ module FluxxRequestReviewsController
     base.insta_edit RequestReview do |insta|
       insta.template = 'request_review_form'
       insta.icon_style = ICON_STYLE
-      insta.layout = 'reviewer_portal'
+      insta.layout = lambda {|user| user.is_external_user? ? 'reviewer_portal' : 'application'}
       insta.skip_card_footer = true
     end
     base.insta_post RequestReview do |insta|
@@ -49,8 +49,10 @@ module FluxxRequestReviewsController
       insta.format do |format|
         format.html do |triple|
           controller_dsl, outcome, default_block = triple
-          if (outcome != :error)
+          if (outcome != :error) && current_user.is_external_user?
             redirect_to reviewer_portal_index_path
+          else
+            default_block.call
           end
         end
       end
@@ -64,12 +66,13 @@ module FluxxRequestReviewsController
           self.pre_model.conflict_reported = true
         end
       end
-#      insta.add_workflow
       insta.format do |format|
         format.html do |triple|
           controller_dsl, outcome, default_block = triple
-          if (outcome != :error)
+          if (outcome != :error) && current_user.is_external_user?
             redirect_to reviewer_portal_index_path
+          else
+            default_block.call
           end
         end
       end
