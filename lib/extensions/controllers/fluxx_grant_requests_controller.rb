@@ -9,6 +9,7 @@ module FluxxGrantRequestsController
       insta.filter_title = "Requests Filter"
       insta.filter_template = 'grant_requests/grant_request_filter'
       insta.order_clause = 'updated_at desc'
+      insta.create_link_title = "New Grant Request"
       insta.include_relation = [:program_lead, :grantee_org_owner, :grantee_signatory, :fiscal_org_owner, :fiscal_signatory, :program_organization, :fiscal_organization, :program]
       
       insta.icon_style = ICON_STYLE
