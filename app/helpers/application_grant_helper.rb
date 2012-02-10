@@ -78,7 +78,14 @@ module ApplicationGrantHelper
     links << "  '#{link_to 'Grantee Reports', request_reports_path, :class => 'new-listing indent'}'" unless Fluxx.config(:hide_grantee_reports) == "1" || !current_user.has_listview_for_model?(RequestReport)
     links << "  '#{link_to 'Transactions', request_transactions_path, :class => 'new-listing indent'}'" unless Fluxx.config(:hide_transactions) == "1" || !current_user.has_listview_for_model?(RequestTransaction)
     links << "  '#{link_to 'Amendments', request_amendments_path, :class => 'new-listing indent'}'" if Fluxx.config(:show_request_amendments_card) == "1" && current_user.has_listview_for_model?(RequestAmendment)
-    links << "  '#{link_to 'Budgeting', admin_card_path(:id => 1), :class => 'new-detail indent'}'" unless Fluxx.config(:hide_admin_cards) == "1" || !current_user.has_listview_for_model?(Program)
+    #links << "  '#{link_to 'Budgeting', admin_card_path(:id => 1), :class => 'new-detail indent'}'" unless Fluxx.config(:hide_admin_cards) == "1" || !current_user.has_listview_for_model?(Program)
+
+    links << "  '<h3>Budgeting</h3>'"
+    links << "  '#{link_to 'Funding Sources',funding_sources_path, :class => 'new-listing indent'}'" unless Fluxx.config(:hide_funding_sources) == "1" || !current_user.has_listview_for_model?(FundingSource)
+    links << "  '#{link_to I18n.t(:program_name).pluralize, programs_path, :class => 'new-listing indent'}'" unless Program.is_hidden? || !current_user.has_listview_for_model?(Program)
+    links << "  '#{link_to I18n.t(:sub_program_name).pluralize, sub_programs_path, :class => 'new-listing indent'}'" unless SubProgram.is_hidden? || !current_user.has_listview_for_model?(SubProgram)
+    links << "  '#{link_to I18n.t(:initiative_name).pluralize, initiatives_path, :class => 'new-listing indent'}'" unless Initiative.is_hidden? || !current_user.has_listview_for_model?(Initiative)
+    links << "  '#{link_to I18n.t(:sub_initiative_name).pluralize, sub_initiatives_path, :class => 'new-listing indent'}'" unless SubInitiative.is_hidden? || !current_user.has_listview_for_model?(SubInitiative)
 
     links << "  '<h3>Contact Management</h3>'";
     links << "  '#{link_to 'People', users_path, :class => 'new-listing indent'}'" unless Fluxx.config(:hide_people) == "1" || !current_user.has_listview_for_model?(User)
