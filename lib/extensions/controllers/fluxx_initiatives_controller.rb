@@ -7,6 +7,7 @@ module FluxxInitiativesController
       insta.filter_title = "Filter"
       insta.filter_template = 'initiatives/initiative_filter'
       insta.order_clause = 'initiatives.name asc'
+      insta.create_link_title = "New Initiative"
       insta.joins = [:sub_program => :program]
       insta.search_conditions = (lambda do |params, controller_dsl, controller|
         if params[:initiative] && params[:initiative][:not_retired]
