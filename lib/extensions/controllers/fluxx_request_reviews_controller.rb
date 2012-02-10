@@ -41,7 +41,7 @@ module FluxxRequestReviewsController
       insta.template = 'request_review_form'
       insta.icon_style = ICON_STYLE
       insta.pre do |conf|
-        self.pre_model = conf.load_existing_model params
+        self.pre_model = conf.load_new_model params, self.pre_model, fluxx_current_user
         if params[:report_conflict]
           self.pre_model.conflict_reported = true
         end
