@@ -2,11 +2,6 @@ require 'rails/generators'
 require 'rails/generators/migration'
 
 class FluxxGrantMigrationGenerator < Rails::Generators::Base
-  def add_reviewer_group_to_request
-    handle_migration 'add_reviewer_group_to_request.rb', 'db/migrate/fluxx_grant_add_reviewer_group_to_request.rb'
-    sleep 1
-  end
-
   include Rails::Generators::Migration
 
   def self.source_root
@@ -118,6 +113,7 @@ class FluxxGrantMigrationGenerator < Rails::Generators::Base
     handle_migration 'add_state_to_lois.rb', 'db/migrate/fluxx_grant_add_state_to_lois.rb'
     handle_migration 'add_conflict_field_to_request_reviews_table.rb', 'db/migrate/fluxx_grant_add_conflict_field_to_request_reviews_table.rb'
     handle_migration 'create_request_reviewer_assignment.rb', 'db/migrate/fluxx_grant_create_request_reviewer_assignment.rb'
+    handle_migration 'add_reviewer_group_to_request.rb', 'db/migrate/fluxx_grant_add_reviewer_group_to_request.rb'
   end
   
   private
