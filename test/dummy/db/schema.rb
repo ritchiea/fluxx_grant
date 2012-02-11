@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120208012805) do
+ActiveRecord::Schema.define(:version => 20120211054736) do
 
   create_table "alert_emails", :force => true do |t|
     t.string   "mailer_method"
@@ -814,6 +814,20 @@ ActiveRecord::Schema.define(:version => 20120208012805) do
 
   add_index "request_reports", ["request_id"], :name => "index_request_reports_on_request_id"
 
+  create_table "request_reviewer_assignments", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "created_by_id"
+    t.integer  "updated_by_id"
+    t.integer  "request_id"
+    t.integer  "user_id"
+  end
+
+  add_index "request_reviewer_assignments", ["created_by_id"], :name => "request_reviewer_assignments_created_by_id"
+  add_index "request_reviewer_assignments", ["request_id"], :name => "request_reviewer_assignments_request_id"
+  add_index "request_reviewer_assignments", ["updated_by_id"], :name => "request_reviewer_assignments_updated_by_id"
+  add_index "request_reviewer_assignments", ["user_id"], :name => "request_reviewer_assignments_user_id"
+
   create_table "request_reviews", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -953,6 +967,7 @@ ActiveRecord::Schema.define(:version => 20120208012805) do
     t.integer  "grant_cycle_id"
     t.integer  "migrate_id"
     t.boolean  "skip_hgrant_flag",                                                 :default => false, :null => false
+    t.integer  "reviewer_group_id"
   end
 
   add_index "requests", ["fiscal_org_owner_id"], :name => "index_requests_on_fiscal_org_owner_id"

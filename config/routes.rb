@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :request_reviewer_assignments
+
   resources :program_budgets
 
   resources :request_amendments
