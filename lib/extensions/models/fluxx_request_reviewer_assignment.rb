@@ -6,6 +6,8 @@ module FluxxRequestReviewerAssignment
   when_included do
     belongs_to :created_by, :class_name => 'User', :foreign_key => 'created_by_id'
     belongs_to :updated_by, :class_name => 'User', :foreign_key => 'updated_by_id'
+    belongs_to :user
+    belongs_to :request
 
     acts_as_audited({:full_model_enabled => false, :except => [:created_by_id, :updated_by_id, :delta, :updated_by, :created_by, :audits]})
 
@@ -47,25 +49,8 @@ module FluxxRequestReviewerAssignment
     insta_filter_amount do |insta|
       insta.amount_attributes = []
     end
-    
-    insta_workflow do |insta|
-      # insta.add_state_to_english :new, 'New Request'
-      # insta.add_event_to_english :recommend_funding, 'Recommend Funding'
-    end
-    
-    # add_sphinx if respond_to?(:sphinx_indexes) && !(connection.adapter_name =~ /SQLite/i)
   end
-  
 
   class_methods do
-    def add_sphinx
-      define_index :request_reviewer_assignment_first do
-        # fields
-        
-
-        # attributes
-        has created_at, updated_at
-      end
-    end
   end
 end

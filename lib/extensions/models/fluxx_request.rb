@@ -98,6 +98,9 @@ module FluxxRequest
     base.belongs_to :fiscal_signatory, :class_name => 'User', :foreign_key => 'fiscal_signatory_id'
 
     base.has_many :request_reviews, :conditions => 'request_reviews.deleted_at IS NULL'
+    base.has_many :request_reviewer_assignments
+    base.has_many :request_reviewers, :class_name => 'User', :through => :request_reviewer_assignments, :source => :user
+    base.belongs_to :reviewer_group, :class_name => 'Group', :foreign_key => 'reviewer_group_id'
     
     base.insta_favorite
 
