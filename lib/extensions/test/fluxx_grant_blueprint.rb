@@ -146,6 +146,9 @@ module FluxxGrantBlueprint
       amount 45000.23
     end
     
+    RequestReviewerAssignment.blueprint do
+    end
+    
 
     base.extend(ModelClassMethods)
     base.class_eval do

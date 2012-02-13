@@ -1,17 +1,34 @@
 .container
   .titlebar
     %h4
-      External Review for
-      = model.request
+      = model.request.display_id if model.request
       %input{:type => 'submit', :name => 'cancel', :class => 'button create open-link float_right', :value => 'Return to Request', 'data-href'.to_sym => portal_grant_request_path(model.request)}
   %ul.content
+    -if model.request
+      -# TODO AL: needs a bit of formatting
+      = raw render_program_name model.request
+      
+      %h4.subhead= raw render_request_or_grant_amount model.request
+      - unless model.request.project_summary.blank?
+        %p= simple_format(model.request.project_summary)
+    
     = form.input :request_id, :as => :hidden
-    = form.input :review_type, :label => "Review Type"
-    = form.input :rating, :label => "Rating"
-    = form.input :comment, :label => "Comments"
-    = form.input :benefits, :label => "Benefits"
-    = form.input :outcomes, :label => "Outcomes"
-    = form.input :merits, :label => "Merits"
-    = form.input :recommendation, :label => "Recommendation"
-
+    
+    
+    = form.input :recommendation, :label => 'Recommendation:', :as => :select, :collection => ['Fundable', 'Fundable With Conditions', 'Not Fundable']
+    %p
+    %strong
+      Comment on the merits of the proposed project measured against the following review criteria:
+    (1) Follows appropriate professional standards, (2) Has a realistic budget and can be completed within required time, (3) Demonstrates capacity to complete the project, and (4) Fills a demonstrated need.
+    = form.input :merits, :label => '&nbsp;'
+    %strong
+      Measurable Outcomes.
+    Comment on the merits of the proposed project measured against the proposed evaluation criterion and outcomes. How does the application rank against the evaluation criteria listed for additional consideration?
+    = form.input :outcomes, :label => '&nbsp;'
+    %strong
+      Public Benefit.
+    Comment on the public benefit and access of the request.
+    = form.input :benefits, :label => '&nbsp;'
+    
+    
     = form.commit_button :label => "Submit Review"

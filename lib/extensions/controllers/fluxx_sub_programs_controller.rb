@@ -7,6 +7,7 @@ module FluxxSubProgramsController
       insta.filter_title = "Filter"
       insta.filter_template = 'sub_programs/sub_program_filter'
       insta.order_clause = 'name asc'
+      insta.create_link_title = "New Sub Program"
       insta.search_conditions = (lambda do |params, controller_dsl, controller|
         if params[:sub_program] && params[:sub_program][:not_retired]
           '(sub_programs.retired is null or sub_programs.retired = 0)'

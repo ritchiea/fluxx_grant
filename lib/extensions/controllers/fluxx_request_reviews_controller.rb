@@ -16,7 +16,7 @@ module FluxxRequestReviewsController
     base.insta_new RequestReview do |insta|
       insta.template = 'request_review_form'
       insta.icon_style = ICON_STYLE
-      insta.layout = 'reviewer_portal'
+      insta.layout = lambda {|user| user.is_external_user? ? 'reviewer_portal' : 'application'}
       insta.skip_card_footer = true
       insta.format do |format|
         format.html do |triple|
@@ -34,17 +34,25 @@ module FluxxRequestReviewsController
     base.insta_edit RequestReview do |insta|
       insta.template = 'request_review_form'
       insta.icon_style = ICON_STYLE
-      insta.layout = 'reviewer_portal'
+      insta.layout = lambda {|user| user.is_external_user? ? 'reviewer_portal' : 'application'}
       insta.skip_card_footer = true
     end
     base.insta_post RequestReview do |insta|
       insta.template = 'request_review_form'
       insta.icon_style = ICON_STYLE
+      insta.pre do |conf|
+        self.pre_model = conf.load_new_model params, self.pre_model, fluxx_current_user
+        if params[:report_conflict]
+          self.pre_model.conflict_reported = true
+        end
+      end
       insta.format do |format|
         format.html do |triple|
           controller_dsl, outcome, default_block = triple
-          if (outcome != :error)
+          if (outcome != :error) && current_user.is_external_user?
             redirect_to reviewer_portal_index_path
+          else
+            default_block.call
           end
         end
       end
@@ -52,12 +60,19 @@ module FluxxRequestReviewsController
     base.insta_put RequestReview do |insta|
       insta.template = 'request_review_form'
       insta.icon_style = ICON_STYLE
-#      insta.add_workflow
+      insta.pre do |conf|
+        self.pre_model = conf.load_existing_model params
+        if params[:report_conflict]
+          self.pre_model.conflict_reported = true
+        end
+      end
       insta.format do |format|
         format.html do |triple|
           controller_dsl, outcome, default_block = triple
-          if (outcome != :error)
+          if (outcome != :error) && current_user.is_external_user?
             redirect_to reviewer_portal_index_path
+          else
+            default_block.call
           end
         end
       end

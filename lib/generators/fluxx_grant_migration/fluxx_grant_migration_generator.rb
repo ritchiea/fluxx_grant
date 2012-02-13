@@ -111,6 +111,9 @@ class FluxxGrantMigrationGenerator < Rails::Generators::Base
     handle_migration 'add_budget_allocation_amount_to_fsa.rb', 'db/migrate/fluxx_grant_add_budget_allocation_amount_to_fsa.rb'
     handle_migration 'add_actual_budget_amount_to_fsa.rb', 'db/migrate/fluxx_grant_add_actual_budget_amount_to_fsa.rb'
     handle_migration 'add_state_to_lois.rb', 'db/migrate/fluxx_grant_add_state_to_lois.rb'
+    handle_migration 'add_conflict_field_to_request_reviews_table.rb', 'db/migrate/fluxx_grant_add_conflict_field_to_request_reviews_table.rb'
+    handle_migration 'create_request_reviewer_assignment.rb', 'db/migrate/fluxx_grant_create_request_reviewer_assignment.rb'
+    handle_migration 'add_reviewer_group_to_request.rb', 'db/migrate/fluxx_grant_add_reviewer_group_to_request.rb'
   end
   
   private

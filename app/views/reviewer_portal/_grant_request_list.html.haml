@@ -19,10 +19,12 @@
             Program
           %th
             Status
-          %th
-            Reviewed On
       -@data.each do |model|
-        - state = portal_user_state_for_request(model)
+        - review = model.request_reviews.where(:created_by_id => current_user.id).first
+        - state = if review
+          - review.conflict_reported ? "Conflict reported on #{mdy_date_format(review.created_at)}" : "Reviewed on #{mdy_date_format(review.created_at)}"
+        - else
+          - 'Awaiting Review'
         %tbody
           %tr
             %td
@@ -34,6 +36,4 @@
             %td= (model.program ? model.program.name : '')
             %td
               = state
-            %td
-              = mdy_date_format(model.request_reviews.where(:created_by_id => current_user.id).first.created_at) rescue ""
     = render :partial => "paging_actions"

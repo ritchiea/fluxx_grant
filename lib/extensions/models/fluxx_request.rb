@@ -98,6 +98,9 @@ module FluxxRequest
     base.belongs_to :fiscal_signatory, :class_name => 'User', :foreign_key => 'fiscal_signatory_id'
 
     base.has_many :request_reviews, :conditions => 'request_reviews.deleted_at IS NULL'
+    base.has_many :request_reviewer_assignments
+    base.has_many :request_reviewers, :class_name => 'User', :through => :request_reviewer_assignments, :source => :user
+    base.belongs_to :reviewer_group, :class_name => 'Group', :foreign_key => 'reviewer_group_id'
     
     base.insta_favorite
 
@@ -1049,6 +1052,14 @@ module FluxxRequest
     
     def related_organizations
       (request_organizations.joins(:organization).where(:organizations => {:deleted_at => nil}).order(:name).map{|ro| ro.organization} + [program_organization, fiscal_organization]).compact.reject{|o| o.deleted_at}
+    end
+    
+    def related_request_reviews
+      query = request_reviews.where('rating is not null').where(:conflict_reported => nil)
+      average_rating = query.select('avg(rating) average_rating').first
+      average_rating = average_rating.average_rating if average_rating
+      all_ratings = query.all
+      [average_rating, all_ratings].flatten
     end
     
     def related_projects limit_amount=50

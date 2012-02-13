@@ -192,7 +192,7 @@ module FluxxRequestReport
       insta.add_state_to_english RequestReport.pending_lead_approval_state, 'Pending Lead Approval', 'approval'
       insta.add_state_to_english RequestReport.pending_grant_team_approval_state, 'Pending Grants Team Approval', 'approval'
       insta.add_state_to_english RequestReport.pending_finance_approval_state, 'Pending Finance Approval', 'approval'
-      insta.add_state_to_english RequestReport.approved_state, 'Approved', 'approval'
+      insta.add_state_to_english RequestReport.approved_state, 'Approved', ['approval', 'approved']
       insta.add_state_to_english RequestReport.sent_back_to_pa_state, 'Sent Back to PA', 'sent_back'
       insta.add_state_to_english RequestReport.sent_back_to_lead_state, 'Sent Back to Lead', 'sent_back'
       insta.add_state_to_english RequestReport.sent_back_to_grant_team_state, 'Sent Back to Grants Team', 'sent_back'

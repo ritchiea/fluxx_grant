@@ -14,6 +14,8 @@
       =javascript_include_tag filename
     - Dir.glob("#{Rails.root}/public/javascripts/fluxx_engine/lib/jqplot.*.js").sort.map{|filename| filename.gsub("#{Rails.root}/public", '')}.each do |filename|
       =javascript_include_tag filename
+    - if Fluxx.config(:google_api_key)
+      = javascript_include_tag "https://maps.googleapis.com/maps/api/js?key=#{Fluxx.config(:google_api_key)}&sensor=false"
 
 
 

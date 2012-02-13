@@ -1,0 +1,3 @@
+class RequestReviewerAssignmentsController < ApplicationController
+  include FluxxRequestReviewerAssignmentsController
+end

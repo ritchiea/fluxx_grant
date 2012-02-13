@@ -16,6 +16,7 @@ module FluxxGrantOrganization
     base.has_many :request_reports, :through => :grant_requests
 
     base.insta_search
+    base.insta_formbuilder
     base.insta_export
     base.insta_export do |insta|
       insta.filename = 'organization'

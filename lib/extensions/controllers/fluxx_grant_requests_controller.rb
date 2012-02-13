@@ -9,6 +9,7 @@ module FluxxGrantRequestsController
       insta.filter_title = "Requests Filter"
       insta.filter_template = 'grant_requests/grant_request_filter'
       insta.order_clause = 'updated_at desc'
+      insta.create_link_title = "New Grant Request"
       insta.include_relation = [:program_lead, :grantee_org_owner, :grantee_signatory, :fiscal_org_owner, :fiscal_signatory, :program_organization, :fiscal_organization, :program]
       
       insta.icon_style = ICON_STYLE
@@ -159,6 +160,23 @@ module FluxxGrantRequestsController
           model.related_projects
         end
         related.display_template = '/projects/related_project'
+      end
+      insta.add_related do |related|
+        related.display_name = 'Reviews'
+        # related.add_title_block do |model|
+        #   model.title if model
+        # end
+        related.for_search do |model|
+          model.related_request_reviews
+        end
+        related.add_model_url_block do |model|
+          if model.is_a? RequestReview
+            send :request_review_path, :id => model.id
+          else
+            '#'
+          end
+        end
+        related.display_template = '/request_reviews/related_request_reviews'
       end
     end
     

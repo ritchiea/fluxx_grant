@@ -22,6 +22,18 @@ module ReportUtility
     end
   end
 
+  def self.get_initiative_ids initiative_id_param, return_all_if_nil = true
+    if (initiative_id_param)
+      initiative_id_param.map {|initiative| initiative.to_i}
+    elsif return_all_if_nil
+      query = 'SELECT id FROM initiatives WHERE retired = 0'
+      array_query([query])
+    else
+      return []
+    end
+  end
+
+
   # Take an array of IDs and return an array of the same size with the results filled in with the result that matches each array element.
   # For example, if you pass in a list of program_ids = [4, 19, 3, 10]
   # And provide a query that sums up the amount of allocation for each program ID, the result should
