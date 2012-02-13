@@ -40,7 +40,9 @@ module FluxxReviewerPortalController
     end
 
     def find_requests  pageNum
-      requests = Request.where(:type => GrantRequest.name, :state => Request.all_states_with_category('pending_external_review').map{|state| state.to_s}, :deleted_at => nil)
+      requests = Request.where(:type => GrantRequest.name, :state => Request.all_states_with_category('pending_external_review').map{|state| state.to_s}, :deleted_at => nil).where(["
+        id in (select request_id from request_reviewer_assignments where request_reviewer_assignments.user_id = ?)
+          or reviewer_group_id in (select group_id from group_members where groupable_type = 'User' and groupable_id = ?)", current_user.id, current_user.id])
 
       requests = requests.where(:granted => false).order("created_at desc").paginate :page => pageNum, :per_page => ITEMS_PER_PAGE
       requests = requests.where(:granted => false).order("created_at desc").paginate :page => 1, :per_page => ITEMS_PER_PAGE if requests.empty?
