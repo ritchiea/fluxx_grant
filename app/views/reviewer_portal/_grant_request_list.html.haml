@@ -2,7 +2,7 @@
   %h4
     = @title
 .content
-  - if @data.length == 0
+  - if !@data || @data.length == 0
     %p.caption
       No requests
   - else
