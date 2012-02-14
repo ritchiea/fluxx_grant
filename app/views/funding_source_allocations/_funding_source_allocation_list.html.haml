@@ -50,7 +50,7 @@
         %th Spending Year Funding
         - if display_program_budget
           %th Budgeted
-          %th{:class => :ar} Actual
+          %th{:class => :ar} Forecast
         %th{:class => :ar} Allocated
         %th Pipeline
         %th Granted
@@ -79,7 +79,7 @@
             %th Funding Source
             - if display_program_budget
               %th Budgeted
-              %th{:class => :ar} Actual
+              %th{:class => :ar} Forecast
             %th{:class => :ar} Allocated
             %th Pipeline
             %th Granted
@@ -105,7 +105,7 @@
               - totals[6] += (funding_source_allocation_model.actual_budget_amount || 0)
               - if display_program_budget
                 %td= link_to (funding_source_allocation_model.budget_amount || 0).to_currency(:precision => 0), edit_funding_source_allocation_path(funding_source_allocation_model), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Edit Budget Allocation"
-                %td{:class => :ar}= link_to (funding_source_allocation_model.actual_budget_amount || 0).to_currency(:precision => 0), edit_funding_source_allocation_path(funding_source_allocation_model), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Edit Actual Allocation"
+                %td{:class => :ar}= link_to (funding_source_allocation_model.actual_budget_amount || 0).to_currency(:precision => 0), edit_funding_source_allocation_path(funding_source_allocation_model), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close', :title => "Edit Forecast Allocation"
               - allocated = (funding_source_allocation_model.amount || 0)
               - if allocation_is_approved
                 - totals[0] += allocated 
