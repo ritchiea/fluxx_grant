@@ -38,7 +38,7 @@ module FundingAllocationsBaseReport
     end || []
     always_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
     legend_table = ["Status", "Grants", "Grant #{CurrencyHelper.current_long_name.pluralize}"]
-    legend_table << [I18n.t(:fip_name).pluralize, "#{I18n.t(:fip_name)} #{CurrencyHelper.current_long_name.pluralize}"] unless Fluxx.config(:hide_fips) == "1"
+    legend_table += [I18n.t(:fip_name).pluralize, "#{I18n.t(:fip_name)} #{CurrencyHelper.current_long_name.pluralize}"] unless Fluxx.config(:hide_fips) == "1"
     legend = [{:table => legend_table, :filter => "", :listing_url => "", :card_title => ""}]
     categories = ["Budgeted", "Pipeline", "Granted", "Paid"]
     start_date_string = start_date.strftime('%m/%d/%Y')
@@ -75,7 +75,7 @@ module FundingAllocationsBaseReport
         grant_result = ReportUtility.single_value_query(grant)
         fip_result = ReportUtility.single_value_query(fip)
         legend_table = [program, grant_result[:count], number_to_currency(grant_result[:amount] ? grant_result[:amount] : 0 )]
-        legend_table << [fip_result[:count], number_to_currency(fip_result[:amount] ? fip_result[:amount] : 0)] unless Fluxx.config(:hide_fips) == "1"
+        legend_table += [fip_result[:count], number_to_currency(fip_result[:amount] ? fip_result[:amount] : 0)] unless Fluxx.config(:hide_fips) == "1"
         legend << { :table => legend_table,
                     :filter => card_filter, :listing_url => listing_url, :card_title => card_title}
       end
