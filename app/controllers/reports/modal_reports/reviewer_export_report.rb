@@ -89,4 +89,5 @@ class ReviewerExportReport < ActionController::ReportBase
 
       workbook.close
       output.string
-    end
+  end
+end

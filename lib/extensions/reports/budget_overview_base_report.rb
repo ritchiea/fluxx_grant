@@ -177,4 +177,5 @@ module BudgetOverviewBaseReport
     end
    legend
   end
+
 end
