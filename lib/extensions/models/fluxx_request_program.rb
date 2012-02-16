@@ -98,6 +98,7 @@ module FluxxRequestProgram
       unless skip_request_approval
         if Request.all_states_with_category('pending_secondary_pd_approval').include?(request.state.to_sym)
           if request.all_request_programs_approved?
+            request.workflow_note = ''  # Don't display the workflow note in the notes unless it came from the request and not the request program
             request.secondary_pd_approve
           end
         end
