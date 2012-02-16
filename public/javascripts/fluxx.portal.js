@@ -250,7 +250,7 @@
                   $.each(data, function(){
                     $('<option></option>').val(this.value).html(this.label).appendTo($child)
                   });
-                  $child.val(oldVal).trigger('options.updated').change();
+                  $child.val(oldVal).trigger('options_updated').change();
                 });
               };
 

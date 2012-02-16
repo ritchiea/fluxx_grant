@@ -89,7 +89,7 @@ module FluxxCommonRequestsController
           logger.error "Unable to paint the promote screen; have this error=#{e.inspect}, backtrace=#{e.backtrace.inspect}"
           flash[:error] = I18n.t(:grant_failed_to_promote_with_exception) + e.to_s
           instance_variable_set "@approve_grant_details_error", true
-          redirect_to url_for(actual_local_model)
+          fluxx_redirect url_for(actual_local_model)
         end
 
       else
@@ -103,7 +103,7 @@ module FluxxCommonRequestsController
       event_action = event_action.to_s.to_sym if event_action
       if Request.all_events_with_category('edit_on_transition').map{|elem| elem.to_sym}.include?(event_action) && outcome == :success
         # redirect to the edit screen IF THE USER
-        redirect_to send("edit_#{actual_local_model.class.calculate_form_name.to_s}_path", actual_local_model)
+        fluxx_redirect send("edit_#{actual_local_model.class.calculate_form_name.to_s}_path", actual_local_model)
       elsif Request.all_events_with_category('become_grant').map{|elem| elem.to_sym}.include?(event_action) && outcome == :success
         send :fluxx_show_card, controller_dsl, {:template => 'grant_requests/request_became_grant', :footer_template => 'insta/simple_footer'}
       else
