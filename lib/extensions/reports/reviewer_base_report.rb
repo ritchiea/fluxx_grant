@@ -36,7 +36,7 @@ module ReviewerBaseReport
       Request.all_rejected_states,
       programs.empty?, programs,
       lead_users.empty?, lead_users
-      ]).all
+      ]).order('request_reviewer_assignments.user_id').all
       
     assigned_users = User.where(:id => assignments.map(&:user_id)).all
 
@@ -55,7 +55,7 @@ module ReviewerBaseReport
         ])
     reviews = reviews.where(extra_conditions) if extra_conditions
     user_ids = reviews.map(&:created_by_id).uniq
-    request_ids = reviews.map(&:request_id).uniq
+    request_ids = (reviews.map(&:request_id) + assignments.map(&:request_id)).uniq
     users = User.where(:id => user_ids).order('last_name, first_name').all
     users_by_userid = users.inject({}) {|acc, user| acc[user.id] = user; acc}
     requests = Request.find_by_sql ["

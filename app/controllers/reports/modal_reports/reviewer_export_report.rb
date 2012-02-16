@@ -39,20 +39,28 @@ class ReviewerExportReport < ActionController::ReportBase
 
       program_hash = Program.all.inject({}) {|acc, program| acc[program.id] = program; acc}
       sub_program_hash = SubProgram.all.inject({}) {|acc, program| acc[program.id] = program; acc}
+      review_hash = reviews.inject({}) do |acc, review|
+        acc[generate_assignment_uid(review.request_id, review.created_by_id)] = review
+        acc
+      end
 
-      column_headers = ["Grant Name", "Grant ID", I18n.t(:program_name), I18n.t(:sub_program_name), "Amount Requested", "Amount Recommended", "Start Date", "End Date", "Duration", "Reviewer Name", "Rating", "Review Type", "Comment", "Benefits", "Outcomes", "Merits", "Recommendation"]
+      column_headers = ["Reviewer Name", "Grant Name", "Grant ID", I18n.t(:program_name), I18n.t(:sub_program_name), "Amount Requested", "Amount Recommended", "Start Date", "End Date", "Duration", "Review Complete", "Conflict", "Rating"]
       if Fluxx.config(:dont_use_duration_in_requests) == "1"
         column_headers.delete "Duration"
       end
 
       column_headers.each_with_index{|label, index| worksheet.write(6, index, label, header_format)}
-
-      reviews.each do |review|
-        request_id = review.request_id
+      
+      assignments.each do |assignment|
+        review = review_hash[generate_assignment_uid(assignment.request_id, assignment.user_id)]
+        
+        request_id = assignment.request_id
         column=0
         request = requests_by_requestid[request_id]
 
-        worksheet.write(row += 1, column, request.report_grant_name)
+        user = users_by_userid[assignment.user_id]
+        worksheet.write(row += 1, column, user ? user.full_name : nil)
+        worksheet.write(row, column += 1, request.report_grant_name)
         worksheet.write(row, column += 1, request.base_request_id)
         program = program_hash[request.program_id]
         worksheet.write(row, column += 1, program ? program.name : nil)
@@ -76,18 +84,19 @@ class ReviewerExportReport < ActionController::ReportBase
           worksheet.write(row, column += 1, request.duration_in_months, number_format)
         end
 
-        user = users_by_userid[review.created_by_id]
-        worksheet.write(row, column += 1, user ? user.full_name : nil)
-        worksheet.write(row, column += 1, review.rating, number_format)
-        worksheet.write(row, column += 1, review.review_type)
-        worksheet.write(row, column += 1, review.comment)
-        worksheet.write(row, column += 1, review.benefits)
-        worksheet.write(row, column += 1, review.outcomes)
-        worksheet.write(row, column += 1, review.merits)
-        worksheet.write(row, column += 1, review.recommendation)
+        worksheet.write(row, column += 1, review ? 'Yes' : 'No')
+        if review
+          worksheet.write(row, column += 1, review.conflict_reported ? 'Yes' : 'No')
+          worksheet.write(row, column += 1, review.rating, number_format)
+        end
       end
+      
 
       workbook.close
       output.string
+  end
+  
+  def generate_assignment_uid request_id, user_id
+    "#{request_id}__#{user_id}"
   end
 end

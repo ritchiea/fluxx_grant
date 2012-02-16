@@ -11,7 +11,7 @@ class ReviewerFeedbackReport < ActionController::ReportBase
   end
 
   def compute_document_data controller, show_object, params, report_vars, models
-    start_date, end_date, reviews_by_request_id, requests_by_requestid, assigned_users, assignments, reviews, user_ids, request_ids, users, users_by_userid, requests = base_compute_show_document_data(controller, show_object, params, report_vars, {:review_type => 'HRAC Review'})
+    start_date, end_date, reviews_by_request_id, requests_by_requestid, assigned_users, assignments, reviews, user_ids, request_ids, users, users_by_userid, requests = base_compute_show_document_data(controller, show_object, params, report_vars)
 
     output = StringIO.new
 
