@@ -128,44 +128,47 @@ module BudgetOverviewBaseReport
         legend << { :table => legend_table, :filter => card_filter, :listing_url => listing_url, :card_title => card_title}
       end
     end
-    @report_data = nil
    legend
   end
 
   def calculate_report_data params
-    unless @report_data
-      @report_data = {:allocated => 0, :grant_pipeline => 0, :fip_pipeline => 0, :grant_pipeline_count => 0, :fip_pipeline_count => 0, :grant_granted => 0, :fip_granted => 0,
+    # AML: Because reports use a singleton class we can't use an instance variable and be threadsafe.
+    #      For now I'm storing our cached data in the params hash.
+    report_data = params[:report_data]
+    unless report_data
+      report_data = {:allocated => 0, :grant_pipeline => 0, :fip_pipeline => 0, :grant_pipeline_count => 0, :fip_pipeline_count => 0, :grant_granted => 0, :fip_granted => 0,
       :grant_paid => 0, :fip_paid => 0, :available => 0, :budgeted => 0, :forecast => 0, :grant_granted_count => 0, :fip_granted_count => 0, :grant_paid_count => 0, :fip_paid_count => 0}
       fsa_query = FundingSourceAllocation.find_by_category(params).where(:spending_year => params[:funding_year])
-      @report_data[:fsa_query] = fsa_query;
+      report_data[:fsa_query] = fsa_query;
       fsa_query.each do |funding_source_allocation_model|
         if funding_source_allocation_model.funding_source
           if funding_source_allocation_model.funding_source.is_approved?
-            @report_data[:allocated] += (funding_source_allocation_model.amount || 0)
+            report_data[:allocated] += (funding_source_allocation_model.amount || 0)
 
-            @report_data[:grant_pipeline] += (funding_source_allocation_model.amount_granted_in_queue("GrantRequest") || 0)
-            @report_data[:fip_pipeline_count] += (funding_source_allocation_model.number_granted_in_queue("FipRequest") || 0)
-            @report_data[:grant_pipeline_count] += (funding_source_allocation_model.number_granted_in_queue("GrantRequest") || 0)
-            @report_data[:fip_pipeline] += (funding_source_allocation_model.amount_granted_in_queue("FipRequest") || 0)
+            report_data[:grant_pipeline] += (funding_source_allocation_model.amount_granted_in_queue("GrantRequest") || 0)
+            report_data[:fip_pipeline_count] += (funding_source_allocation_model.number_granted_in_queue("FipRequest") || 0)
+            report_data[:grant_pipeline_count] += (funding_source_allocation_model.number_granted_in_queue("GrantRequest") || 0)
+            report_data[:fip_pipeline] += (funding_source_allocation_model.amount_granted_in_queue("FipRequest") || 0)
 
-            @report_data[:grant_granted] += (funding_source_allocation_model.amount_granted("GrantRequest") || 0)
-            @report_data[:fip_granted] += (funding_source_allocation_model.amount_granted("FipRequest") || 0)
-            @report_data[:grant_granted_count] += (funding_source_allocation_model.number_granted("GrantRequest") || 0)
-            @report_data[:fip_granted_count] += (funding_source_allocation_model.number_granted("FipRequest") || 0)
+            report_data[:grant_granted] += (funding_source_allocation_model.amount_granted("GrantRequest") || 0)
+            report_data[:fip_granted] += (funding_source_allocation_model.amount_granted("FipRequest") || 0)
+            report_data[:grant_granted_count] += (funding_source_allocation_model.number_granted("GrantRequest") || 0)
+            report_data[:fip_granted_count] += (funding_source_allocation_model.number_granted("FipRequest") || 0)
 
-            @report_data[:grant_paid] += (funding_source_allocation_model.amount_paid("GrantRequest") || 0)
-            @report_data[:fip_paid] += (funding_source_allocation_model.amount_paid("FipRequest") || 0)
-            @report_data[:grant_paid_count] += (funding_source_allocation_model.number_paid("GrantRequest") || 0)
-            @report_data[:fip_paid_count] += (funding_source_allocation_model.number_paid("FipRequest") || 0)
+            report_data[:grant_paid] += (funding_source_allocation_model.amount_paid("GrantRequest") || 0)
+            report_data[:fip_paid] += (funding_source_allocation_model.amount_paid("FipRequest") || 0)
+            report_data[:grant_paid_count] += (funding_source_allocation_model.number_paid("GrantRequest") || 0)
+            report_data[:fip_paid_count] += (funding_source_allocation_model.number_paid("FipRequest") || 0)
 
-            @report_data[:available] += (funding_source_allocation_model.amount_remaining || 0) - (funding_source_allocation_model.amount_granted_in_queue || 0)
+            report_data[:available] += (funding_source_allocation_model.amount_remaining || 0) - (funding_source_allocation_model.amount_granted_in_queue || 0)
           end
-          @report_data[:budgeted] += (funding_source_allocation_model.budget_amount || 0) # Budgeting should be summed regardless of whether it's approved
-          @report_data[:forecast] += (funding_source_allocation_model.actual_budget_amount || 0) # Actual should be summed regardless of whether it's approved
+          report_data[:budgeted] += (funding_source_allocation_model.budget_amount || 0) # Budgeting should be summed regardless of whether it's approved
+          report_data[:forecast] += (funding_source_allocation_model.actual_budget_amount || 0) # Actual should be summed regardless of whether it's approved
         end
       end
+      params[:report_data] = report_data
     end
-    @report_data
+    report_data
   end
 
 end
