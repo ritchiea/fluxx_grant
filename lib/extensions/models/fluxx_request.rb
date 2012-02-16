@@ -986,7 +986,7 @@ module FluxxRequest
           pending_request_programs = request_programs.select{|rp| !rp.is_approved? }
           unless pending_request_programs.empty?
             RequestProgram.without_workflow do
-              pending_request_programs.each{|rp| rp.skip_request_approval; rp.approve}
+              pending_request_programs.each{|rp| rp.skip_request_approval=true; rp.approve}
             end
           end
           if self.state == pending_secondary_pd_approval_state.to_s

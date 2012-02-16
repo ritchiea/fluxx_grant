@@ -25,9 +25,9 @@
           %td
             - if model.respond_to? :note
               -if model.updated_by_id == current_user.id || current_user.is_admin?
-                = link_to model.note, edit_note_path(:id => model.id, :as_modal => '1'), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close'
+                = link_to raw(model.note), edit_note_path(:id => model.id, :as_modal => '1'), :class => 'to-modal', 'data-on-success' => 'refreshCaller,close'
               - else
-                = model.note
+                = raw model.note
             - else
               %strong
                 - if model.related_workflowable && model.related_workflowable.class.respond_to?(:state_to_english_translation)

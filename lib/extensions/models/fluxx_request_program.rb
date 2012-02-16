@@ -45,6 +45,7 @@ module FluxxRequestProgram
     
     base.insta_formbuilder
     base.insta_workflow do |insta|
+      insta.workflow_disabled = true
       insta.add_state_to_english :new, 'New Secondary Program'
       insta.add_state_to_english :approved, 'Approved', 'approved'
       
@@ -92,6 +93,8 @@ module FluxxRequestProgram
     end
 
     def try_to_transition_associated_request
+      return running_timeline if running_timeline # for event_timeline purposes
+      request.notes << Note.new(:created_by_id => self.created_by_id, :updated_by_id => self.updated_by_id, :notable_type => request.type, :notable_id => request.id, :note => "<strong>Secondary Approval - #{program ? program.name : ''}</strong><br>#{self.workflow_note}") if request
       unless skip_request_approval
         if Request.all_states_with_category('pending_secondary_pd_approval').include?(request.state.to_sym)
           if request.all_request_programs_approved?
