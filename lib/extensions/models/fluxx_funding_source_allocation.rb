@@ -77,37 +77,101 @@ module FluxxFundingSourceAllocation
       FundingSourceAllocation.connection.execute("DROP TABLE IF EXISTS #{temp_table}")
       retval
     end
+
+    def find_by_category params
+      if params[:program_id]
+        programs = Program.where("id in (?) OR  parent_id in (?)", params[:program_id], params[:program_id])
+        sub_programs = SubProgram.where(:program_id => programs)
+        initiatives = Initiative.where(:sub_program_id => sub_programs)
+        sub_initiatives = SubInitiative.where(:initiative_id => initiatives)
+        self.where("deleted_at is null and program_id in (?) or sub_program_id in (?) or initiative_id in (?) or sub_initiative_id in (?)", programs, sub_programs, initiatives, sub_initiatives)
+      elsif params[:initiative_id]
+        initiatives = Initiative.where(:id => params[:initiative_id])
+        sub_initiatives = SubInitiative.where(:initiative_id => initiatives)
+        self.where("deleted_at is null and initiative_id in (?) or sub_initiative_id in (?)", initiatives, sub_initiatives)
+      end
+    end
   end
   
   module ModelInstanceMethods
-    def amount_granted
-      request_funding_sources.select{|rfs| !rfs.request.nil? && rfs.request.granted}.inject(0){|acc, rfs| acc + (rfs.funding_amount || 0)}
+    def amount_granted request_type = nil
+      request_funding_sources.select{|rfs| !rfs.request.nil? && rfs.request.granted && (!request_type || rfs.request.type == request_type)}.inject(0){|acc, rfs| acc + (rfs.funding_amount || 0)}
     end
-    
+
+    def number_granted request_type = nil
+      requests = []
+      request_funding_sources.select{|rfs| !rfs.request.nil? && rfs.request.granted && (!request_type || rfs.request.type == request_type)}.map{|rfs| rfs.request.id}.uniq.count
+    end
+
     def amount_remaining
       (amount || 0) - (amount_granted || 0)
     end
 
     # Pipeline
-    def amount_granted_in_queue
-      request_funding_sources.reject{|rfs| rfs.request.nil? || rfs.request.granted || Request.all_rejected_states.include?(rfs.request.state.to_sym) || rfs.request.deleted_at}.inject(0){|acc, rfs| acc + (rfs.funding_amount || 0)}
+    def amount_granted_in_queue request_type = nil
+      request_funding_sources.reject{|rfs| rfs.request.nil? || rfs.request.granted || Request.all_rejected_states.include?(rfs.request.state.to_sym) || rfs.request.deleted_at || (request_type && rfs.request.type != request_type)}.inject(0){|acc, rfs| acc + (rfs.funding_amount || 0)}
+    end
+
+    def number_granted_in_queue request_type = nil
+      request_funding_sources.reject{|rfs| rfs.request.nil? || rfs.request.granted || Request.all_rejected_states.include?(rfs.request.state.to_sym) || rfs.request.deleted_at || (request_type && rfs.request.type != request_type)}.map{|rfs| rfs.request.id}.uniq.count
     end
     
     # Look at each funding source transaction associated with each funding source associated with this allocation and sum up the amount paid
-    def amount_paid
-      a = RequestTransactionFundingSource.find_by_sql ["select sum(request_transaction_funding_sources.amount) paid_amount
-      from request_funding_sources, request_transaction_funding_sources, request_transactions 
-      where 
-      request_transaction_funding_sources.request_funding_source_id = request_funding_sources.id and
-      request_transaction_funding_sources.request_transaction_id = request_transactions.id and
-      funding_source_allocation_id = ? and
-      request_transactions.deleted_at is null and
-      request_transactions.state = 'paid'", self.id]
+    def amount_paid request_type = nil
+      a = unless (request_type)
+        RequestTransactionFundingSource.find_by_sql ["select sum(request_transaction_funding_sources.amount) paid_amount
+        from request_funding_sources, request_transaction_funding_sources, request_transactions
+        where
+        request_transaction_funding_sources.request_funding_source_id = request_funding_sources.id and
+        request_transaction_funding_sources.request_transaction_id = request_transactions.id and
+        funding_source_allocation_id = ? and
+        request_transactions.deleted_at is null and
+        request_transactions.state = 'paid'", self.id]
+      else
+        RequestTransactionFundingSource.find_by_sql ["select sum(request_transaction_funding_sources.amount) paid_amount
+        from request_funding_sources, request_transaction_funding_sources, request_transactions, requests
+        where
+        request_transaction_funding_sources.request_funding_source_id = request_funding_sources.id and
+        request_transaction_funding_sources.request_transaction_id = request_transactions.id and
+        request_funding_sources.request_id = requests.id and
+        requests.type = ? and
+        funding_source_allocation_id = ? and
+        request_transactions.deleted_at is null and
+        request_transactions.state = 'paid'", request_type, self.id]
+      end
       if a && a.is_a?(Array)
         (a.first.paid_amount ? a.first.paid_amount.to_i : 0)
       end || 0
     end
-    
+
+    #TODO AML: Combine amount_paid and number_paid?
+    def number_paid request_type = nil
+      a = unless (request_type)
+        RequestTransactionFundingSource.find_by_sql ["select count(DISTINCT requests.id) paid_count
+        from request_funding_sources, request_transaction_funding_sources, request_transactions
+        where
+        request_transaction_funding_sources.request_funding_source_id = request_funding_sources.id and
+        request_transaction_funding_sources.request_transaction_id = request_transactions.id and
+        funding_source_allocation_id = ? and
+        request_transactions.deleted_at is null and
+        request_transactions.state = 'paid'", self.id]
+      else
+        RequestTransactionFundingSource.find_by_sql ["select count(DISTINCT requests.id) paid_count
+        from request_funding_sources, request_transaction_funding_sources, request_transactions, requests
+        where
+        request_transaction_funding_sources.request_funding_source_id = request_funding_sources.id and
+        request_transaction_funding_sources.request_transaction_id = request_transactions.id and
+        request_funding_sources.request_id = requests.id and
+        requests.type = ? and
+        funding_source_allocation_id = ? and
+        request_transactions.deleted_at is null and
+        request_transactions.state = 'paid'", request_type, self.id]
+      end
+      if a && a.is_a?(Array)
+        (a.first.paid_count ? a.first.paid_count.to_i : 0)
+      end || 0
+    end
+
     def derive_program
       if sub_initiative
         sub_initiative.initiative.sub_program.program if sub_initiative.initiative && sub_initiative.initiative.sub_program
