@@ -94,7 +94,7 @@ module FluxxRequestProgram
 
     def try_to_transition_associated_request
       return running_timeline if running_timeline # for event_timeline purposes
-      request.notes << Note.new(:created_by_id => self.created_by_id, :updated_by_id => self.updated_by_id, :notable_type => request.type, :notable_id => request.id, :note => "<strong>Secondary Approval (#{program ? program.name : ''})</strong><br>#{self.workflow_note}") if request
+      request.notes << Note.new(:created_by_id => self.created_by_id, :updated_by_id => self.updated_by_id, :notable_type => request.type, :notable_id => request.id, :note => "<strong>Secondary Approval (#{program ? program.name : ''})</strong>#{self.workflow_note.blank? ? '' : "<br>#{self.workflow_note}"}") if request
       unless skip_request_approval
         if Request.all_states_with_category('pending_secondary_pd_approval').include?(request.state.to_sym)
           if request.all_request_programs_approved?
