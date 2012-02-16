@@ -8,16 +8,16 @@ module BudgetOverviewBaseReport
 
     #Calculate Series
     #Paid
-    paid = ids.map{|id| data[:fsa_query].select{|fsa| (params[:program_id] ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount_paid || 0)}}
+    paid = ids.map{|id| data[:fsa_query].select{|fsa| (grouping_table == "programs" ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount_paid || 0)}}
 
     #Pipeline
-    pipeline = ids.map{|id| data[:fsa_query].select{|fsa| (params[:program_id] ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount_granted_in_queue || 0)}}
+    pipeline = ids.map{|id| data[:fsa_query].select{|fsa| (grouping_table == "programs" ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount_granted_in_queue || 0)}}
 
     #Granted
-    granted = ids.map{|id| data[:fsa_query].select{|fsa| (params[:program_id] ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount_granted || 0)}}
+    granted = ids.map{|id| data[:fsa_query].select{|fsa| (grouping_table == "programs" ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount_granted || 0)}}
 
     #Allocated
-    allocated = ids.map{|id| data[:fsa_query].select{|fsa| (params[:program_id] ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount || 0)}}
+    allocated = ids.map{|id| data[:fsa_query].select{|fsa| (grouping_table == "programs" ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount || 0)}}
 
     #Construct AXIS labels
     query = "SELECT name, id FROM #{grouping_table} WHERE id IN (?)"
