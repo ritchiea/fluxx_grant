@@ -1,74 +1,37 @@
 module BudgetOverviewBaseReport
   def compute_plot_data controller, index_object, params, report_vars, models
     filter = params["active_record_base"]
-    hash = {}
-    hash[:title] = index_object.report_label
-    FundingSourceAllocation.build_temp_table do |temp_table_name|
+    hash = {:library => "jqPlot", :title => index_object.report_label}
+    ids, grouping_table, grouping_col = get_grouping_parameters params
+    data = calculate_report_data filter
 
-      ids, grouping_table, grouping_col = get_grouping_parameters params
-      start_date, stop_date = get_date_range filter
-      years = ReportUtility.get_years start_date, stop_date
 
-      # Never include these requests
-      rejected_states = Request.send(:sanitize_sql, ['(?)', Request.all_rejected_states])
-      paid_states = Request.send(:sanitize_sql, ['(?)', RequestTransaction.all_states_with_category('paid').map{|state| state.to_s}])
+    #Calculate Series
+    #Paid
+    paid = ids.map{|id| data[:fsa_query].select{|fsa| (params[:program_id] ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount_paid || 0)}}
 
-      always_exclude = "r.deleted_at IS NULL AND r.state not in #{rejected_states}"
+    #Pipeline
+    pipeline = ids.map{|id| data[:fsa_query].select{|fsa| (params[:program_id] ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount_granted_in_queue || 0)}}
 
-      # Selected Programs or Initiatives
+    #Granted
+    granted = ids.map{|id| data[:fsa_query].select{|fsa| (params[:program_id] ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount_granted || 0)}}
 
-      query = "SELECT name, id FROM #{grouping_table} WHERE id IN (?)"
-      groups = ReportUtility.query_map_to_array([query, ids], ids, :id, :name)
+    #Allocated
+    allocated = ids.map{|id| data[:fsa_query].select{|fsa| (params[:program_id] ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount || 0)}}
 
-      xaxis = []
-      i = 0
-      groups.each { |group| xaxis << group }
+    #Construct AXIS labels
+    query = "SELECT name, id FROM #{grouping_table} WHERE id IN (?)"
+    xaxis = ReportUtility.query_map_to_array([query, ids], ids, :id, :name)
+    xaxis = xaxis.each_index{|i| xaxis[i] = xaxis[i].to_s + "  #{(((granted[i].to_f + pipeline[i].to_f)/ allocated[i].to_f) * 100).round.to_s rescue '0'}%"}
 
-      #Paid
-      query = "select sum(rtfs.amount) AS amount,  fsa.#{grouping_col} AS #{grouping_col} from request_transactions rt, request_transaction_funding_sources rtfs, request_funding_sources rfs, #{temp_table_name} fsa, requests r
-        WHERE #{always_exclude} AND rt.state in #{paid_states} AND rt.id = rtfs.request_transaction_id AND rfs.id = rtfs.request_funding_source_id AND fsa.id = rfs.funding_source_allocation_id AND r.id = rt.request_id
-        AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND fsa.#{grouping_col} IN (?) and rt.deleted_at is null GROUP BY fsa.#{grouping_col}"
-      paid = ReportUtility.query_map_to_array([query, start_date, stop_date, ids], ids, grouping_col.to_sym, :amount)
-
-      #Budgeted
-      query = "SELECT SUM(tmp.amount) AS amount, tmp.#{grouping_col} AS #{grouping_col} FROM #{temp_table_name} tmp WHERE tmp.deleted_at IS NULL AND tmp.#{grouping_col} IN (?) AND tmp.spending_year IN (?) GROUP BY tmp.#{grouping_col}"
-      budgeted = ReportUtility.query_map_to_array([query, ids, years], ids, grouping_col.to_sym, :amount)
-
-      #Pipeline
-      #TODO: Check this
-      query = "SELECT SUM(r.amount_requested) AS amount, r.#{grouping_col} as #{grouping_col} FROM requests r  WHERE #{always_exclude} AND r.granted = 0 AND r.#{grouping_col} IN (?) AND r.state NOT IN (?) GROUP BY r.#{grouping_col}"
-      pipeline = ReportUtility.query_map_to_array([query, ids, ReportUtility.pre_pipeline_states], ids, grouping_col.to_sym, :amount)
-
-      hash = {:library => "jqPlot"}
-
-      xaxis.each_index{|i| xaxis[i] = xaxis[i].to_s + "  #{(((total_grant_allocations[i].to_f + pipeline[i].to_f)/ budgeted[i].to_f) * 100).round.to_s rescue '0'}%"}
-      budgeted.each_index{|i| budgeted[i] = 0 unless budgeted[i] }
-
-      paid.each_index{|i| paid[i] = 0 unless paid[i] }
-
-      if grouping_table == "programs"
-        #Total Granted
-        query = "SELECT sum(amount_recommended) as amount, #{grouping_col} FROM requests r WHERE #{always_exclude} AND granted = 1 AND grant_agreement_at >= ? AND grant_agreement_at <= ? AND #{grouping_col} IN (?) GROUP BY #{grouping_col}"
-        total_granted = ReportUtility.query_map_to_array([query, start_date, stop_date, ids], ids, grouping_col.to_sym, :amount)
-        hash[:data] = ReportUtility.convert_bigdecimal_to_f_in_array [pipeline, total_granted, budgeted, paid ]
-        hash[:series] = [ {:label => "Pipeline", :renderer => "$.jqplot.BarRenderer"}, {:label => "Granted (By #{grouping_table.singularize.humanize})", :renderer => "$.jqplot.BarRenderer"}, {:label => "Allocated"}, {:label => "Paid"} ]
-      else
-        #Total Grant Allocations
-        query = "SELECT SUM(rfs.funding_amount) AS amount, fsa.#{grouping_col} FROM requests r, request_funding_sources rfs, #{temp_table_name} fsa
-          WHERE rfs.request_id = r.id and fsa.id = rfs.funding_source_allocation_id AND
-          #{always_exclude} AND granted = 1 AND grant_agreement_at >= ? AND grant_agreement_at <= ? AND fsa.#{grouping_col} IN (?) GROUP BY fsa.#{grouping_col}"
-        total_grant_allocations = ReportUtility.query_map_to_array([query, start_date, stop_date, ids], ids, grouping_col.to_sym, :amount)
-        hash[:data] = ReportUtility.convert_bigdecimal_to_f_in_array [pipeline, total_grant_allocations, budgeted, paid ]
-        hash[:series] = [ {:label => "Pipeline", :renderer => "$.jqplot.BarRenderer"}, {:label => "Granted (By Initiative)", :renderer => "$.jqplot.BarRenderer"}, {:label => "Allocated"}, {:label => "Paid"} ]
-      end
-      hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => "#{I18n.t 'number.currency.format.unit'}%'.0f" }}}
-      hash[:stackSeries] = true;
-      hash[:type] = "line"
-    end
+    #Send out chart data
+    hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => "#{I18n.t 'number.currency.format.unit'}%'.0f" }}}
+    hash[:stackSeries] = true;
+    hash[:type] = "line"
+    hash[:data] = ReportUtility.convert_bigdecimal_to_f_in_array [pipeline, granted, allocated, paid ]
+    hash[:series] = [ {:label => "Pipeline", :renderer => "$.jqplot.BarRenderer"}, {:label => "Granted", :renderer => "$.jqplot.BarRenderer"}, {:label => "Allocated", :disableStack => true}, {:label => "Paid", :disableStack => true} ]
     hash.to_json
   end
-
-  #------------------------------------------------------------------------------------------------------------------------------------------------------
 
   def get_grouping_parameters filter
     if filter["active_record_base"]["program_id"]
@@ -80,7 +43,6 @@ module BudgetOverviewBaseReport
       grouping_table = "initiatives"
       grouping_col  = "initiative_id"
     end
-    p [ids, grouping_table, grouping_col]
     [ids, grouping_table, grouping_col]
   end
 
@@ -102,80 +64,108 @@ module BudgetOverviewBaseReport
 
   def report_summary controller, index_object, params, report_vars, models
     filter = params["active_record_base"]
+    data = calculate_report_data filter
     ids, grouping_table, grouping_col = get_grouping_parameters params
     start_date, stop_date = get_date_range filter
-    query = "SELECT id FROM requests WHERE deleted_at IS NULL AND state <> 'rejected' and granted = 1 and grant_agreement_at >= ? and grant_agreement_at <= ? and #{grouping_col} in (?)"
-    request_ids = ReportUtility.array_query([query, start_date, stop_date, ids])
-    hash = ReportUtility.get_report_totals request_ids
-    summary_text = "#{hash[:grants]} Grants totaling #{number_to_currency(hash[:grants_total])}"
-    summary_text = summary_text + " and #{hash[:fips]} #{I18n.t(:fip_name).pluralize} totaling #{number_to_currency(hash[:fips_total])}" unless Fluxx.config(:hide_fips) == "1"
+    num_grants = data[:grant_pipeline_count] + data[:grant_granted_count] + data[:grant_paid_count]
+    num_fips = data[:fip_pipeline_count] + data[:fip_granted_count] + data[:fip_paid_count]
+    sum_grants = data[:grant_pipeline] + data[:grant_granted] + data[:grant_paid]
+    sum_fips = data[:fip_pipeline] + data[:fip_granted] + data[:fip_paid]
+
+    summary_text = "#{num_grants} Grants totaling #{(sum_grants || 0).to_currency(:precision => 0)}"
+    summary_text = summary_text + " and #{num_fips} #{I18n.t(:fip_name).pluralize} totaling #{(sum_fips || 0).to_currency(:precision => 0)}" unless Fluxx.config(:hide_fips) == "1"
     summary_text
   end
 
   def report_legend controller, index_object, params, report_vars, models
     filter = params["active_record_base"]
+    data = calculate_report_data filter
     start_date, stop_date = get_date_range filter
     years = ReportUtility.get_years start_date, stop_date
     ids, grouping_table, grouping_col = get_grouping_parameters params
-    always_exclude = "r.deleted_at IS NULL AND r.state <> 'rejected'"
+
     legend_table = ["Status", "Grants", "Grant #{CurrencyHelper.current_long_name.pluralize}"]
     legend_table = legend_table.concat [I18n.t(:fip_name).pluralize, "#{I18n.t(:fip_name)} #{CurrencyHelper.current_long_name.pluralize}"] unless Fluxx.config(:hide_fips) == "1"
     legend = [{:table => legend_table, :filter => "", :listing_url => "", :card_title => ""}]
 
-    categories = {:pipeline => "Pipeline", :allocated => "Allocated", :paid => "Paid"}
-    if grouping_table == "programs"
-      categories[:granted_by_group] = "Granted (By Program)"
-    else
-      categories[:granted_by_initiative] = "Granted (By Initiative)"
-    end
+    categories = [:granted, :pipeline, :allocated, :paid]
     start_date_string = start_date.strftime('%m/%d/%Y')
     stop_date_string = stop_date.strftime('%m/%d/%Y')
-    FundingSourceAllocation.build_temp_table do |temp_table_name|
-      categories.each do |k, group|
-        card_filter = ""
-        card_title = group
-        listing_url = controller.granted_requests_path
-        case k
-          when :granted_by_group
-            query = "SELECT SUM(r.amount_recommended) AS amount, count(r.id) AS count FROM requests r WHERE #{always_exclude} AND granted = 1 AND grant_agreement_at >= ? AND grant_agreement_at <= ? AND #{grouping_col} IN (?) AND type = ?"
-            grant = [query, start_date, stop_date, ids, 'GrantRequest']
-            fip = [query, start_date, stop_date, ids, 'FipRequest']
-            card_filter ="utf8=%E2%9C%93&request%5Bdate_range_selector%5D=funding_agreement&request%5Brequest_from_date%5D=#{start_date_string}&request%5Brequest_to_date%5D=#{stop_date_string}&request%5B2has_been_rejected%5D=&request%5Bsort_attribute%5D=updated_at&request%5Bsort_order%5D=desc&request[#{grouping_col}][]=" + ids.join("&request[#{grouping_col}][]=")
 
-          when :granted_by_initiative
-            query = "SELECT SUM(rfs.funding_amount) AS amount, count(distinct r.id) AS count FROM requests r, request_funding_sources rfs, #{temp_table_name} fsa
-              WHERE rfs.request_id = r.id and fsa.id = rfs.funding_source_allocation_id AND
-              #{always_exclude} AND granted = 1 AND grant_agreement_at >= ? AND grant_agreement_at <= ? AND fsa.#{grouping_col} IN (?) AND type = ?
-              "
-            grant = [query, start_date, stop_date, ids, 'GrantRequest']
-            fip = [query, start_date, stop_date, ids, 'FipRequest']
-            card_filter ="utf8=%E2%9C%93&request%5Bdate_range_selector%5D=funding_agreement&request%5Brequest_from_date%5D=#{start_date_string}&request%5Brequest_to_date%5D=#{stop_date_string}&request%5B2has_been_rejected%5D=&request%5Bsort_attribute%5D=updated_at&request%5Bsort_order%5D=desc&request[funding_source_allocation_#{grouping_col}][]=" + ids.join("&request[funding_source_allocation_#{grouping_col}][]=")
-          when :paid
-            query = "select sum(rtfs.amount) AS amount, COUNT(DISTINCT r.id) AS count from request_transactions rt, request_transaction_funding_sources rtfs, request_funding_sources rfs, #{temp_table_name} fsa, requests r
-              WHERE #{always_exclude} AND rt.state = 'paid' AND rt.id = rtfs.request_transaction_id AND rfs.id = rtfs.request_funding_source_id AND fsa.id = rfs.funding_source_allocation_id AND r.id = rt.request_id
-              AND r.grant_agreement_at >= ? AND r.grant_agreement_at <= ? AND fsa.#{grouping_col} IN (?) AND type = ? and rt.deleted_at is null"
-            grant = [query, start_date, stop_date, ids, 'GrantRequest']
-            fip = [query, start_date, stop_date, ids, 'FipRequest']
-          when :allocated
-            query = "SELECT SUM(tmp.amount) AS amount FROM #{temp_table_name} tmp WHERE tmp.deleted_at IS NULL AND tmp.#{grouping_col} IN (?) AND tmp.spending_year IN (?)"
-            grant = [query, ids, years]
-            fip = [query, ids, years]
-          when :pipeline
-            query = "SELECT SUM(r.amount_requested) AS amount, COUNT(DISTINCT r.id) AS count FROM requests r  WHERE #{always_exclude} AND r.granted = 0 AND r.#{grouping_col} IN (?) AND type = ? AND r.state NOT IN (?)"
-            grant = [query, ids, 'GrantRequest', ReportUtility.pre_pipeline_states]
-            fip = [query, ids, 'FipRequest', ReportUtility.pre_pipeline_states]
-            filter_states = "&request[filter_state][]=" + (GrantRequest.all_states).select{|state| ReportUtility.pre_pipeline_states.index(state.to_s).nil? }.join("&request[filter_state][]=")
-            card_filter ="utf8=%E2%9C%93&request%5Bsort_attribute%5D=updated_at&request%5Bsort_order%5D=desc&request[#{grouping_col}][]=" + ids.join("&request[#{grouping_col}][]=") + filter_states
-            listing_url = controller.grant_requests_path
-        end
-        grant_result = ReportUtility.single_value_query(grant)
-        fip_result = ReportUtility.single_value_query(fip)
-        legend_table = [group, grant_result[:count], number_to_currency(grant_result[:amount] ? grant_result[:amount] : 0 )]
-        legend_table = legend_table.concat [fip_result[:count], number_to_currency(fip_result[:amount] ? fip_result[:amount] : 0)] unless Fluxx.config(:hide_fips) == "1"
+    categories.each do |cat|
+      card_filter = ""
+      card_title = cat.to_s.humanize
+      listing_url = controller.granted_requests_path
+      case cat
+        when :granted
+          grant_result = data[:grant_granted]
+          fip_result = data[:fip_granted]
+          card_filter ="utf8=%E2%9C%93&request%5Bdate_range_selector%5D=funding_agreement&request%5Brequest_from_date%5D=#{start_date_string}&request%5Brequest_to_date%5D=#{stop_date_string}&request%5B2has_been_rejected%5D=&request%5Bsort_attribute%5D=updated_at&request%5Bsort_order%5D=desc&request[#{grouping_col}][]=" + ids.join("&request[#{grouping_col}][]=")
+          grant_count = data[:grant_granted_count]
+          fip_count = data[:fip_granted_count]
+        when :paid
+          grant_result = data[:grant_paid]
+          fip_result = data[:fip_paid]
+          grant_count = data[:grant_paid_count]
+          fip_count = data[:fip_paid_count]
+        when :allocated
+          grant_result = data[:allocated]
+        when :pipeline
+          grant_result = data[:grant_pipeline]
+          fip_result = data[:fip_pipeline]
+          grant_count = data[:grant_pipeline_count]
+          fip_count = data[:fip_pipeline_count]
+          listing_url = controller.grant_requests_path
+          filter_states = "&request[filter_state][]=" + (GrantRequest.all_states).select{|state| ReportUtility.pre_pipeline_states.index(state.to_s).nil? }.join("&request[filter_state][]=")
+          card_filter ="utf8=%E2%9C%93&request%5Bsort_attribute%5D=updated_at&request%5Bdate_range_selector%5D=funding_agreement&request%5Brequest_from_date%5D=#{start_date_string}&request%5Brequest_to_date%5D=#{stop_date_string}%5Bsort_order%5D=desc&request[#{grouping_col}][]=" + ids.join("&request[#{grouping_col}][]=") + filter_states
+      end
+      if cat == :allocated
+        legend_table = [card_title, {:value => (grant_result || 0).to_currency(:precision => 0), :colspan => 4}]
+        legend << { :table => legend_table, :filter => card_filter, :listing_url => listing_url, :card_title => card_title}
+      else
+        legend_table = [card_title, grant_count, (grant_result || 0).to_currency(:precision => 0)]
+        legend_table = legend_table.concat [fip_count, (fip_result || 0).to_currency(:precision => 0)] unless Fluxx.config(:hide_fips) == "1"
         legend << { :table => legend_table, :filter => card_filter, :listing_url => listing_url, :card_title => card_title}
       end
     end
+    @report_data = nil
    legend
+  end
+
+  def calculate_report_data params
+    unless @report_data
+      @report_data = {:allocated => 0, :grant_pipeline => 0, :fip_pipeline => 0, :grant_pipeline_count => 0, :fip_pipeline_count => 0, :grant_granted => 0, :fip_granted => 0,
+      :grant_paid => 0, :fip_paid => 0, :available => 0, :budgeted => 0, :forecast => 0, :grant_granted_count => 0, :fip_granted_count => 0, :grant_paid_count => 0, :fip_paid_count => 0}
+      fsa_query = FundingSourceAllocation.find_by_category(params).where(:spending_year => params[:funding_year])
+      @report_data[:fsa_query] = fsa_query;
+      fsa_query.each do |funding_source_allocation_model|
+        if funding_source_allocation_model.funding_source
+          if funding_source_allocation_model.funding_source.is_approved?
+            @report_data[:allocated] += (funding_source_allocation_model.amount || 0)
+
+            @report_data[:grant_pipeline] += (funding_source_allocation_model.amount_granted_in_queue("GrantRequest") || 0)
+            @report_data[:fip_pipeline_count] += (funding_source_allocation_model.number_granted_in_queue("FipRequest") || 0)
+            @report_data[:grant_pipeline_count] += (funding_source_allocation_model.number_granted_in_queue("GrantRequest") || 0)
+            @report_data[:fip_pipeline] += (funding_source_allocation_model.amount_granted_in_queue("FipRequest") || 0)
+
+            @report_data[:grant_granted] += (funding_source_allocation_model.amount_granted("GrantRequest") || 0)
+            @report_data[:fip_granted] += (funding_source_allocation_model.amount_granted("FipRequest") || 0)
+            @report_data[:grant_granted_count] += (funding_source_allocation_model.number_granted("GrantRequest") || 0)
+            @report_data[:fip_granted_count] += (funding_source_allocation_model.number_granted("FipRequest") || 0)
+
+            @report_data[:grant_paid] += (funding_source_allocation_model.amount_paid("GrantRequest") || 0)
+            @report_data[:fip_paid] += (funding_source_allocation_model.amount_paid("FipRequest") || 0)
+            @report_data[:grant_paid_count] += (funding_source_allocation_model.number_paid("GrantRequest") || 0)
+            @report_data[:fip_paid_count] += (funding_source_allocation_model.number_paid("FipRequest") || 0)
+
+            @report_data[:available] += (funding_source_allocation_model.amount_remaining || 0) - (funding_source_allocation_model.amount_granted_in_queue || 0)
+          end
+          @report_data[:budgeted] += (funding_source_allocation_model.budget_amount || 0) # Budgeting should be summed regardless of whether it's approved
+          @report_data[:forecast] += (funding_source_allocation_model.actual_budget_amount || 0) # Actual should be summed regardless of whether it's approved
+        end
+      end
+    end
+    @report_data
   end
 
 end
