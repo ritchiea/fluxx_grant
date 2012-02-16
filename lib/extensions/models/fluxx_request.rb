@@ -981,11 +981,11 @@ module FluxxRequest
       
       if pending_secondary_pd_approval_state
         we = workflow_events.find :first, :conditions => {:new_state => pending_secondary_pd_approval_state.to_s}, :order => 'id desc'
-        if we.created_at < (Time.now - 5.days)
+        if we.created_at < (Time.now - 7.days)
           # Time to promote this puppy!!
           pending_request_programs = request_programs.select{|rp| !rp.is_approved? }
           unless pending_request_programs.empty?
-            pending_request_programs.each{|rp| rp.approve}
+            pending_request_programs.each{|rp| rp.workflow_note = '7 Day Approval Limit Expired'; rp.approve}
           end
           if self.state == pending_secondary_pd_approval_state.to_s
             self.secondary_pd_approve
