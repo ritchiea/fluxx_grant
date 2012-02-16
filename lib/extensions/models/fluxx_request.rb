@@ -985,9 +985,12 @@ module FluxxRequest
           # Time to promote this puppy!!
           pending_request_programs = request_programs.select{|rp| !rp.is_approved? }
           unless pending_request_programs.empty?
-            pending_request_programs.each{|rp| rp.workflow_note = '7 Day Approval Limit Expired'; rp.approve}
+            RequestProgram.without_workflow do
+              pending_request_programs.each{|rp| rp.skip_request_approval; rp.approve}
+            end
           end
           if self.state == pending_secondary_pd_approval_state.to_s
+            self.workflow_note = '7 Day Approval Limit Expired'
             self.secondary_pd_approve
           end
           self.save

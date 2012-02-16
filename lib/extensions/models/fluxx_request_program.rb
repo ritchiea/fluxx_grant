@@ -9,7 +9,7 @@ module FluxxRequestProgram
     base.has_many :workflow_events, :as => :workflowable
     base.validates_presence_of     :request
     base.validates_presence_of     :program
-    
+    base.send :attr_accessor, :skip_request_approval
 
     base.acts_as_audited({:full_model_enabled => false, :except => [:created_by_id, :updated_by_id, :delta, :updated_by, :created_by, :audits]})
 
@@ -92,9 +92,11 @@ module FluxxRequestProgram
     end
 
     def try_to_transition_associated_request
-      if Request.all_states_with_category('pending_secondary_pd_approval').include?(request.state.to_sym)
-        if request.all_request_programs_approved?
-          request.secondary_pd_approve
+      unless skip_request_approval
+        if Request.all_states_with_category('pending_secondary_pd_approval').include?(request.state.to_sym)
+          if request.all_request_programs_approved?
+            request.secondary_pd_approve
+          end
         end
       end
     end
