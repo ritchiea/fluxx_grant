@@ -34,7 +34,7 @@ module FluxxRequestReviewsController
     base.insta_edit RequestReview do |insta|
       insta.template = 'request_review_form'
       insta.icon_style = ICON_STYLE
-      insta.layout = lambda {|user| user.is_external_user? ? 'reviewer_portal' : 'application'}
+      insta.layout = lambda {|user| user.is_external_user? ? 'reviewer_portal' : nil}
       insta.skip_card_footer = true
     end
     base.insta_post RequestReview do |insta|

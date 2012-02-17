@@ -83,19 +83,23 @@ class ReviewerFeedbackReport < ActionController::ReportBase
       end
 
       start_user_column = column + 1
+      num_ratings = 0
       users.each do |user|
         review = reviews_by_request_id[request_id]
         user_review = review[user.id] if review
-        if !user_review.rating.blank?
+        if user_review && !user_review.rating.blank?
+          num_ratings += 1
           worksheet.write(row, column += 1, (user_review ? (user_review.rating.to_i rescue '') : ''), number_format)
         else
           column += 1
         end
       end
       end_user_column = column
-
-      avg_formula = "#{column_letters[start_user_column]}#{row+1}:#{column_letters[end_user_column]}#{row+1}"
-      worksheet.write(row, column+=1, ("=AVERAGE(#{avg_formula})"), number_format)
+      
+      if num_ratings > 0
+        avg_formula = "#{column_letters[start_user_column]}#{row+1}:#{column_letters[end_user_column]}#{row+1}"
+        worksheet.write(row, column+=1, ("=AVERAGE(#{avg_formula})"), number_format)
+      end
     end
 
     workbook.close
