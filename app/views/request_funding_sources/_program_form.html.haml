@@ -50,6 +50,9 @@
   - form.object.program.funding_source_allocations
 - funding_source_allocations = [] unless funding_source_allocations
 
+- # Make sure we validate that there is enough money remaining in the allocation; this is important if the original form post errored out for validation reasons
+- funding_source_allocations = funding_source_allocations.select{|fsa| fsa.amount_remaining && form.object.funding_amount && form.object.funding_amount > 0 && fsa.amount_remaining >= form.object.funding_amount}
+
 -# Build a list of parameters to send to the URL
 - param_list = ['program_id=.program-dropdown-select']
 - param_list << 'sub_program_id=.sub-program-select' unless Fluxx.config(:no_funding_source_ripple_sub_program) == "1"
