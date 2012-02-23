@@ -14,5 +14,5 @@
   <br/>
   - model.model_documents.each do |doc| 
     - if doc
-      = link_to doc.document_file_name, doc.document.url, :target => '_blank', :class => mime_type_to_class(doc.document_content_type)
+      = link_to doc.document_file_name, s3_or_file_path(doc), :target => '_blank', :class => mime_type_to_class(doc.document_content_type)
       %span.upload-date= "Uploaded #{mdy_date_format(doc.created_at)}"
