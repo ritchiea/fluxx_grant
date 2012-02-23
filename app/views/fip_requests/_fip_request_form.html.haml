@@ -1,7 +1,8 @@
 %fieldset.inputs
   %ol
     = form.input :fip_title, :label => "Title" 
-    = form.input :fip_projected_end_at, :label => "Projected End Date" 
+    - unless model.granted
+      = form.input :fip_projected_end_at, :label => "Projected End Date" 
     = form.input :fip_type, :label => "#{I18n.t(:fip_name)} Type"
 
     = form.input :amount_requested, :label => "Amount Requested" 
@@ -16,8 +17,8 @@
 
     - unless model.in_new_state?
       = form.input :initiative_types, :label => "Initiative types.", :label_class=>''
-      = form.input(:amount_recommended, :label => "Recommended amount to fund.", :label_class=>'')
       - unless model.granted
+        = form.input(:amount_recommended, :label => "Recommended amount to fund.", :label_class=>'')
         = form.input :grant_begins_at, :label => "Start Date:"
       = form.input :ierf_proposed_end_at, :label => "Final Proposal Date:"
       = form.input :ierf_budget_end_at, :label => "Final Budget Date:"
