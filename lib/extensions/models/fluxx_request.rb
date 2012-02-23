@@ -1227,7 +1227,9 @@ module FluxxRequest
           a[:end_date] = grant_closed_at if grant_closed_at_changed?
           a[:old_end_date] = changed_attributes['grant_closed_at'] || grant_closed_at
         end
-        a[:amount_recommended] = amount_recommended if amount_recommended_changed?
+        if amount_recommended_changed?
+          a[:amount_recommended] = amount_recommended
+        end
         a[:old_amount_recommended] = changed_attributes['amount_recommended'] || amount_recommended
         a[:original] = false
 
