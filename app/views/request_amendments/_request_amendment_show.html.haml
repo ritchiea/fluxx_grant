@@ -14,7 +14,7 @@
   .pairs
     .key= "New Start Date:"
     .value= model.start_date.mdy if model.start_date
-  - unless Fluxx.config(:dont_use_duration_in_requests) == "1"
+  - unless Fluxx.config(:dont_use_duration_in_requests) == "1" || model.request.is_a?(FipRequest)
     .pairs
       .key= "New Duration:"
       .value= model.duration
