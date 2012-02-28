@@ -1,5 +1,5 @@
 module FluxxRequestReview
-  SEARCH_ATTRIBUTES = [:created_at, :updated_at, :id]
+  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :state, :created_at, :id, :updated_at, :request_type, :favorite_user_ids, :filter_state, :request_hierarchy, :allocation_hierarchy, :model_theme_id]
   
   def self.included(base)
     base.belongs_to :request
@@ -12,7 +12,11 @@ module FluxxRequestReview
 
     base.insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES
-      insta.derived_filters = {}
+      insta.derived_filters = {
+        :request_hierarchy => (lambda do |search_with_attributes, request_params, name, val|
+          FluxxGrantSphinxHelper.prepare_hierarchy search_with_attributes, name, val
+        end),
+      }
     end
 
     base.insta_realtime do |insta|
@@ -22,10 +26,14 @@ module FluxxRequestReview
     base.insta_multi
     base.insta_export do |insta|
       insta.filename = 'request_review'
-      insta.headers = [['Date Created', :date], ['Date Updated', :date]]
-      insta.sql_query = "created_at, updated_at
+      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'Reviewer', 'Program', 'Sub Program', 'Request ID', 'Rating']
+      insta.sql_query = "request_reviews.created_at, request_reviews.updated_at,  CONCAT(users.first_name, ' ', users.last_name), programs.name, sub_programs.name, requests.base_request_id, request_reviews.rating
                 from request_reviews
-                where id IN (?)"
+                left join requests on requests.id = request_reviews.request_id
+                left join users on users.id = request_reviews.created_by_id
+                left join programs on programs.id = requests.program_id
+                left join sub_programs on sub_programs.id = requests.sub_program_id
+                where request_reviews.id IN (?)"
     end
     base.insta_lock
 
@@ -54,7 +62,7 @@ module FluxxRequestReview
     
 #    base.send :include, AASM
 #    base.add_aasm
-#    base.add_sphinx if base.respond_to?(:sphinx_indexes) && !(base.connection.adapter_name =~ /SQLite/i)
+    base.add_sphinx if base.respond_to?(:sphinx_indexes) && !(base.connection.adapter_name =~ /SQLite/i)
   end
   
 
@@ -64,13 +72,21 @@ module FluxxRequestReview
 #      aasm_initial_state :new
 #    end
     
-#    def add_sphinx
-#      define_index :request_review_first do
-#        # fields
-#        # attributes
-#        has created_at, updated_at
-#      end
-#    end
+    def add_sphinx
+      include_model_theme_id = self.column_names.include?('model_theme_id')
+
+      define_index :request_review_first do
+
+        # fields
+        indexes "lower(request_reviews.comment)", :as => :comment, :sortable => true
+
+        # attributes
+        has created_at, updated_at, deleted_at
+        set_property :delta => :delayed
+        has FluxxGrantSphinxHelper.request_hierarchy, :type => :multi, :as => :request_hierarchy
+        has model_theme_id if include_model_theme_id
+      end
+    end
   end
   
   module ModelInstanceMethods

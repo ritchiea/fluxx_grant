@@ -1,6 +1,3 @@
-%h2
-  = model.name
-%h4
-  secondary
-%p
-  tertiary
+%h2= model.created_by.full_name
+%h4= model.review_type
+%h4= ["Rating: #{model.rating}", mdy_date_format(model.created_at), model.request.grant_or_request_id].compact.join(' | ')
