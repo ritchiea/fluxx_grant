@@ -81,7 +81,7 @@ module FluxxRequestReview
         indexes "lower(request_reviews.comment)", :as => :comment, :sortable => true
 
         # attributes
-        has created_at, updated_at, deleted_at, :created_by_id
+        has created_at, updated_at, deleted_at, created_by_id, conflict_reported
         set_property :delta => :delayed
         has FluxxGrantSphinxHelper.request_hierarchy, :type => :multi, :as => :request_hierarchy
         has model_theme_id if include_model_theme_id
