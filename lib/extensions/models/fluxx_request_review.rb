@@ -82,6 +82,8 @@ module FluxxRequestReview
 
         # attributes
         has created_at, updated_at, deleted_at, created_by_id, conflict_reported
+        has grant.program(:id), :as => :grant_program_ids
+        has grant.sub_program(:id), :as => :grant_sub_program_ids
         set_property :delta => :delayed
         has FluxxGrantSphinxHelper.request_hierarchy, :type => :multi, :as => :request_hierarchy
         has model_theme_id if include_model_theme_id
