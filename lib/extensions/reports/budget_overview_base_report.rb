@@ -8,28 +8,30 @@ module BudgetOverviewBaseReport
 
     #Calculate Series
     #Paid
-    paid = ids.map{|id| data[:fsa_query].select{|fsa| (grouping_table == "programs" ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount_paid || 0)}}
+    if data[:fsa_query]
+      paid = ids.map{|id| data[:fsa_query].select{|fsa| (grouping_table == "programs" ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount_paid || 0)}}
 
-    #Pipeline
-    pipeline = ids.map{|id| data[:fsa_query].select{|fsa| (grouping_table == "programs" ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount_granted_in_queue || 0)}}
+      #Pipeline
+      pipeline = ids.map{|id| data[:fsa_query].select{|fsa| (grouping_table == "programs" ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount_granted_in_queue || 0)}}
 
-    #Granted
-    granted = ids.map{|id| data[:fsa_query].select{|fsa| (grouping_table == "programs" ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount_granted || 0)}}
+      #Granted
+      granted = ids.map{|id| data[:fsa_query].select{|fsa| (grouping_table == "programs" ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount_granted || 0)}}
 
-    #Allocated
-    allocated = ids.map{|id| data[:fsa_query].select{|fsa| (grouping_table == "programs" ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount || 0)}}
+      #Allocated
+      allocated = ids.map{|id| data[:fsa_query].select{|fsa| (grouping_table == "programs" ? fsa.derive_program.id : fsa.derive_initiative.id) == id}.inject(0){|acc, rfs| acc + (rfs.amount || 0)}}
 
-    #Construct AXIS labels
-    query = "SELECT name, id FROM #{grouping_table} WHERE id IN (?)"
-    xaxis = ReportUtility.query_map_to_array([query, ids], ids, :id, :name)
-    xaxis = xaxis.each_index{|i| xaxis[i] = xaxis[i].to_s + "  #{(((granted[i].to_f + pipeline[i].to_f)/ allocated[i].to_f) * 100).round.to_s rescue '0'}%"}
+      #Construct AXIS labels
+      query = "SELECT name, id FROM #{grouping_table} WHERE id IN (?)"
+      xaxis = ReportUtility.query_map_to_array([query, ids], ids, :id, :name)
+      xaxis = xaxis.each_index{|i| xaxis[i] = xaxis[i].to_s + "  #{(((granted[i].to_f + pipeline[i].to_f)/ allocated[i].to_f) * 100).round.to_s rescue '0'}%"}
 
-    #Send out chart data
-    hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => "#{I18n.t 'number.currency.format.unit'}%'.0f" }}}
-    hash[:stackSeries] = true;
-    hash[:type] = "line"
-    hash[:data] = ReportUtility.convert_bigdecimal_to_f_in_array [pipeline, granted, allocated, paid ]
-    hash[:series] = [ {:label => "Pipeline", :renderer => "$.jqplot.BarRenderer"}, {:label => "Granted", :renderer => "$.jqplot.BarRenderer"}, {:label => "Allocated", :disableStack => true}, {:label => "Paid", :disableStack => true} ]
+      #Send out chart data
+      hash[:axes] = { :xaxis => {:ticks => xaxis, :tickOptions => { :angle => -30 }}, :yaxis => { :min => 0, :tickOptions => { :formatString => "#{I18n.t 'number.currency.format.unit'}%'.0f" }}}
+      hash[:stackSeries] = true;
+      hash[:type] = "line"
+      hash[:data] = ReportUtility.convert_bigdecimal_to_f_in_array [pipeline, granted, allocated, paid ]
+      hash[:series] = [ {:label => "Pipeline", :renderer => "$.jqplot.BarRenderer"}, {:label => "Granted", :renderer => "$.jqplot.BarRenderer"}, {:label => "Allocated", :disableStack => true}, {:label => "Paid", :disableStack => true} ]
+    end
     hash.to_json
   end
 
@@ -120,7 +122,7 @@ module BudgetOverviewBaseReport
           card_filter ="utf8=%E2%9C%93&request%5Bsort_attribute%5D=updated_at&request%5Bdate_range_selector%5D=funding_agreement&request%5Brequest_from_date%5D=#{start_date_string}&request%5Brequest_to_date%5D=#{stop_date_string}%5Bsort_order%5D=desc&request[#{grouping_col}][]=" + ids.join("&request[#{grouping_col}][]=") + filter_states
       end
       if cat == :allocated
-        legend_table = [card_title, {:value => (grant_result || 0).to_currency(:precision => 0), :colspan => 4}]
+        legend_table = [card_title, {:value => (grant_result || 0).to_currency(:precision => 0), :colspan => (Fluxx.config(:hide_fips) == "1" ? 2 : 4)}]
         legend << { :table => legend_table, :filter => card_filter, :listing_url => listing_url, :card_title => card_title}
       else
         legend_table = [card_title, grant_count, (grant_result || 0).to_currency(:precision => 0)]
@@ -138,35 +140,38 @@ module BudgetOverviewBaseReport
     unless report_data
       report_data = {:allocated => 0, :grant_pipeline => 0, :fip_pipeline => 0, :grant_pipeline_count => 0, :fip_pipeline_count => 0, :grant_granted => 0, :fip_granted => 0,
       :grant_paid => 0, :fip_paid => 0, :available => 0, :budgeted => 0, :forecast => 0, :grant_granted_count => 0, :fip_granted_count => 0, :grant_paid_count => 0, :fip_paid_count => 0}
-      fsa_query = FundingSourceAllocation.find_by_category(params).where(:spending_year => params[:funding_year])
-      report_data[:fsa_query] = fsa_query;
-      fsa_query.each do |funding_source_allocation_model|
-        if funding_source_allocation_model.funding_source
-          if funding_source_allocation_model.funding_source.is_approved?
-            report_data[:allocated] += (funding_source_allocation_model.amount || 0)
+      fsa_query = FundingSourceAllocation.find_by_category(params)
+      if fsa_query
+        fsa_query = fsa_query.where(:spending_year => params[:funding_year])
+        report_data[:fsa_query] = fsa_query;
+        fsa_query.each do |funding_source_allocation_model|
+          if funding_source_allocation_model.funding_source
+            if funding_source_allocation_model.funding_source.is_approved?
+              report_data[:allocated] += (funding_source_allocation_model.amount || 0)
 
-            report_data[:grant_pipeline] += (funding_source_allocation_model.amount_granted_in_queue("GrantRequest") || 0)
-            report_data[:fip_pipeline_count] += (funding_source_allocation_model.number_granted_in_queue("FipRequest") || 0)
-            report_data[:grant_pipeline_count] += (funding_source_allocation_model.number_granted_in_queue("GrantRequest") || 0)
-            report_data[:fip_pipeline] += (funding_source_allocation_model.amount_granted_in_queue("FipRequest") || 0)
+              report_data[:grant_pipeline] += (funding_source_allocation_model.amount_granted_in_queue("GrantRequest") || 0)
+              report_data[:fip_pipeline_count] += (funding_source_allocation_model.number_granted_in_queue("FipRequest") || 0)
+              report_data[:grant_pipeline_count] += (funding_source_allocation_model.number_granted_in_queue("GrantRequest") || 0)
+              report_data[:fip_pipeline] += (funding_source_allocation_model.amount_granted_in_queue("FipRequest") || 0)
 
-            report_data[:grant_granted] += (funding_source_allocation_model.amount_granted("GrantRequest") || 0)
-            report_data[:fip_granted] += (funding_source_allocation_model.amount_granted("FipRequest") || 0)
-            report_data[:grant_granted_count] += (funding_source_allocation_model.number_granted("GrantRequest") || 0)
-            report_data[:fip_granted_count] += (funding_source_allocation_model.number_granted("FipRequest") || 0)
+              report_data[:grant_granted] += (funding_source_allocation_model.amount_granted("GrantRequest") || 0)
+              report_data[:fip_granted] += (funding_source_allocation_model.amount_granted("FipRequest") || 0)
+              report_data[:grant_granted_count] += (funding_source_allocation_model.number_granted("GrantRequest") || 0)
+              report_data[:fip_granted_count] += (funding_source_allocation_model.number_granted("FipRequest") || 0)
 
-            report_data[:grant_paid] += (funding_source_allocation_model.amount_paid("GrantRequest") || 0)
-            report_data[:fip_paid] += (funding_source_allocation_model.amount_paid("FipRequest") || 0)
-            report_data[:grant_paid_count] += (funding_source_allocation_model.number_paid("GrantRequest") || 0)
-            report_data[:fip_paid_count] += (funding_source_allocation_model.number_paid("FipRequest") || 0)
+              report_data[:grant_paid] += (funding_source_allocation_model.amount_paid("GrantRequest") || 0)
+              report_data[:fip_paid] += (funding_source_allocation_model.amount_paid("FipRequest") || 0)
+              report_data[:grant_paid_count] += (funding_source_allocation_model.number_paid("GrantRequest") || 0)
+              report_data[:fip_paid_count] += (funding_source_allocation_model.number_paid("FipRequest") || 0)
 
-            report_data[:available] += (funding_source_allocation_model.amount_remaining || 0) - (funding_source_allocation_model.amount_granted_in_queue || 0)
+              report_data[:available] += (funding_source_allocation_model.amount_remaining || 0) - (funding_source_allocation_model.amount_granted_in_queue || 0)
+            end
+            report_data[:budgeted] += (funding_source_allocation_model.budget_amount || 0) # Budgeting should be summed regardless of whether it's approved
+            report_data[:forecast] += (funding_source_allocation_model.actual_budget_amount || 0) # Actual should be summed regardless of whether it's approved
           end
-          report_data[:budgeted] += (funding_source_allocation_model.budget_amount || 0) # Budgeting should be summed regardless of whether it's approved
-          report_data[:forecast] += (funding_source_allocation_model.actual_budget_amount || 0) # Actual should be summed regardless of whether it's approved
         end
+        params[:report_data] = report_data
       end
-      params[:report_data] = report_data
     end
     report_data
   end
