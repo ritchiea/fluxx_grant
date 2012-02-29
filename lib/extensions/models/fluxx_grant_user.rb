@@ -157,7 +157,7 @@ module FluxxGrantUser
     
     def related_requests look_for_granted=false, limit_amount=50
       granted_param = look_for_granted ? 1 : 0
-      Request.find_by_sql ["SELECT requests.* 
+      request_users = Request.find_by_sql ["SELECT requests.*
         FROM requests 
         WHERE deleted_at IS NULL AND id IN (?)  AND granted = ?
         UNION
@@ -168,6 +168,11 @@ module FluxxGrantUser
         ORDER BY grant_agreement_at desc, request_received_at desc
         limit ?
         ", request_ids, granted_param, self.id, granted_param, limit_amount]
+      reviews = Request.find_by_sql ["SELECT requests.*
+        FROM requests WHERE deleted_at IS NULL and id in (
+        select request_id from request_reviews
+        where deleted_at is null and created_by_id = ?)", self.id]
+      (request_users + reviews).compact
     end
     
     def is_grantee?
