@@ -60,18 +60,11 @@ module FluxxRequestReview
       include ModelInstanceMethods
     end
     
-#    base.send :include, AASM
-#    base.add_aasm
     base.add_sphinx if base.respond_to?(:sphinx_indexes) && !(base.connection.adapter_name =~ /SQLite/i)
   end
   
 
   module ModelClassMethods
-#    def add_aasm
-#      aasm_column :state
-#      aasm_initial_state :new
-#    end
-    
     def add_sphinx
       include_model_theme_id = self.column_names.include?('model_theme_id')
 
@@ -80,13 +73,13 @@ module FluxxRequestReview
         # fields
         indexes request.program_organization.name, :as => :request_org_name, :sortable => true
         indexes request.program_organization.acronym, :as => :request_org_acronym, :sortable => true
-        indexes "CONCAT(IF(requests.type = 'FipRequest', 'F-', 'R-'),requests.base_request_id)", :Sortable => true, :as => :request_id, :Sortable => true
-        indexes "lower(TRIM(CONCAT(CONCAT(IFNULL(created_by.first_name, ' '), ' '), IFNULL(created_by.last_name, ' '))))", :as => :external_reviewer, :sortable => true
+        indexes "CONCAT(IF(requests.type = 'FipRequest', 'F-', 'R-'),requests.base_request_id)", :as => :request_id, :sortable => true
+        indexes "lower(TRIM(CONCAT(CONCAT(IFNULL(users.first_name, ' '), ' '), IFNULL(users.last_name, ' '))))", :as => :external_reviewer, :sortable => true
 
         # attributes
         has created_at, updated_at, deleted_at, created_by_id, conflict_reported
-        has grant.program(:id), :as => :grant_program_ids
-        has grant.sub_program(:id), :as => :grant_sub_program_ids
+        has created_by(:id), :as => :created_by_ids
+        has grant(:id), :as => :grant_ids
         set_property :delta => :delayed
         has FluxxGrantSphinxHelper.request_hierarchy, :type => :multi, :as => :request_hierarchy
         has model_theme_id if include_model_theme_id
