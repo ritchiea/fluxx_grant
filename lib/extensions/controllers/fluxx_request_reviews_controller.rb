@@ -1,5 +1,5 @@
 module FluxxRequestReviewsController
-  ICON_STYLE = 'style-reports'
+  ICON_STYLE = 'style-request-reviews'
   def self.included(base)
     base.insta_index RequestReview do |insta|
       insta.template = 'request_review_list'
