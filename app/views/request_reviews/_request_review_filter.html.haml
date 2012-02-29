@@ -1,8 +1,7 @@
 = render :partial => 'grant_requests/program_filter',  :locals => {:form => form, :prefix => '', :label_prefix => '', :rollup => 'request_hierarchy'}
 -reviewer_user_profile = UserProfile.where(:name => "Reviewer").first
 = form.input :created_by_id, :label => 'Reviewer', :required => false, :as => :select, :collection => User.all(:conditions => {:user_profile_id => reviewer_user_profile.id, :deleted_at => nil}), :input_html => {:class => 'add-another'}
-= form.input :conflict_reported, :label => 'Has Conflict Reported', :required => false, :as => :boolean
--#organization
+= form.input :conflict_reported, :label => 'Has Conflict Reported', :required => false, :as => :boolean, :checked_value => true, :unchecked_value => ''
 
 -#= form.input :request_type, :required => false, :label => 'Request Type:', :as => :select, :collection => [['Grants', GrantRequest.name], [(I18n.t(:fip_name)).pluralize, FipRequest.name]], :input_html => {:class => 'add-another'}
 -#= form.input :filter_state, :label => 'Status:', :required => false, :as => :select, :collection => (RequestTransaction.all_states.map{|state|[RequestTransaction.state_to_english_translation(state), state]}), :input_html => {:class => 'add-another'}

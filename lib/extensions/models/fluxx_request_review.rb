@@ -1,5 +1,5 @@
 module FluxxRequestReview
-  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :state, :created_at, :id, :updated_at, :request_type, :favorite_user_ids, :filter_state, :request_hierarchy, :allocation_hierarchy, :model_theme_id]
+  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :conflict_reported, :created_at, :id, :updated_at, :request_hierarchy, :allocation_hierarchy, :model_theme_id]
   
   def self.included(base)
     base.belongs_to :request
@@ -78,7 +78,10 @@ module FluxxRequestReview
       define_index :request_review_first do
 
         # fields
-        indexes "lower(request_reviews.comment)", :as => :comment, :sortable => true
+        indexes request.program_organization.name, :as => :request_org_name, :sortable => true
+        indexes request.program_organization.acronym, :as => :request_org_acronym, :sortable => true
+        indexes "CONCAT(IF(requests.type = 'FipRequest', 'F-', 'R-'),requests.base_request_id)", :Sortable => true, :as => :request_id, :Sortable => true
+        indexes "lower(TRIM(CONCAT(CONCAT(IFNULL(created_by.first_name, ' '), ' '), IFNULL(created_by.last_name, ' '))))", :as => :external_reviewer, :sortable => true
 
         # attributes
         has created_at, updated_at, deleted_at, created_by_id, conflict_reported
