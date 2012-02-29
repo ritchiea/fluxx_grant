@@ -140,11 +140,6 @@ module FluxxGrantUser
         set_property :delta => :delayed
       end
     end
-
-    def all_portal_users
-      portal_user_profile = UserProfile.where(:name => "Grantee").first
-      User.search_for_ids('', :with => {:user_profile_id => portal_user_profile.id}, :Per_page => ActionController::ControllerDslIndex.max_sphinx_results) if portal_user_profile
-    end
   end
 
   module ModelInstanceMethods
