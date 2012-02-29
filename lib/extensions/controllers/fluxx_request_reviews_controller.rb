@@ -81,8 +81,37 @@ module FluxxRequestReviewsController
       insta.template = 'request_review_form'
       insta.icon_style = ICON_STYLE
     end
+
     base.insta_related RequestReview do |insta|
       insta.add_related do |related|
+        related.display_name = 'People'
+        related.add_title_block do |model|
+          model.full_name if model
+        end
+        related.for_search do |model|
+          [model.created_by]
+        end
+        related.display_template = '/users/related_users'
+      end
+      insta.add_related do |related|
+        related.display_name = 'Requests'
+        related.add_title_block do |model|
+          model.title if model
+        end
+        related.for_search do |model|
+          [model.request]
+        end
+        related.display_template = '/grant_requests/related_request'
+      end
+      insta.add_related do |related|
+        related.display_name = 'Organizations'
+        related.add_title_block do |model|
+          model.name if model
+        end
+        related.for_search do |model|
+          [model.request.program_organization, model.request.fiscal_organization]
+        end
+        related.display_template = '/organizations/related_organization'
       end
     end
     

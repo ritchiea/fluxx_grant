@@ -1,5 +1,5 @@
 module FluxxRequestReview
-  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :conflict_reported, :created_at, :id, :updated_at, :request_hierarchy, :allocation_hierarchy, :model_theme_id]
+  SEARCH_ATTRIBUTES = [:grant_program_ids, :grant_sub_program_ids, :conflict_reported, :created_at, :id, :updated_at, :request_hierarchy, :allocation_hierarchy, :model_theme_id, :created_by_ids]
   
   def self.included(base)
     base.belongs_to :request
