@@ -114,6 +114,7 @@ class FluxxGrantMigrationGenerator < Rails::Generators::Base
     handle_migration 'add_conflict_field_to_request_reviews_table.rb', 'db/migrate/fluxx_grant_add_conflict_field_to_request_reviews_table.rb'
     handle_migration 'create_request_reviewer_assignment.rb', 'db/migrate/fluxx_grant_create_request_reviewer_assignment.rb'
     handle_migration 'add_reviewer_group_to_request.rb', 'db/migrate/fluxx_grant_add_reviewer_group_to_request.rb'
+    handle_migration 'add_delta_to_request_reviews.rb', 'db/migrate/fluxx_grant_add_delta_to_request_reviews.rb'
   end
   
   private
