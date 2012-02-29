@@ -180,7 +180,7 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :satellite_org_ids
         has 'null', :type => :multi, :as => :related_org_ids
         has 'null', :type => :multi, :as => :multi_element_value_ids
-        has request_reports(:id), :type => :multi, :as => :request_report_ids
+        has grant_requests.request_reports(:id), :type => :multi, :as => :request_report_ids
         has 'ROUND(avg(request_reports.evaluation_rating))', :type => :integer, :as => :request_report_eval_avg_rating
 
         set_property :delta => :delayed
