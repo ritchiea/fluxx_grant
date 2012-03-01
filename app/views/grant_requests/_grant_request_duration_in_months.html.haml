@@ -3,7 +3,7 @@
     = "#{model.fip_projected_end_at ? model.fip_projected_end_at.mdy : ''} (Original)"
   - elsif Fluxx.config(:dont_use_duration_in_requests) == "1"
     = "#{model.grant_closed_at ? model.grant_closed_at.mdy : ''} (Original)"
-  - else
+  - elsif model.duration_in_months
     = "#{model.duration_in_months} months (Original)"
 - else 
   - model.request_amendments.select{|ra| ra.is_approved? || ra.is_original?}.reverse.each do |amend|

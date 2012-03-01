@@ -1,0 +1,45 @@
+%table.spreadsheet
+  %thead
+    %tr
+      %th Date Created
+      %th Date Updated
+      %th Request ID
+      %th State
+      %th Report Type
+      %th Due Date
+      %th Date Approved
+      %th Org Name
+      %th Amount Recommended
+      %th Lead PO
+      %th Project Summary
+  %tbody
+    -@models.each do |model|
+      %tr
+        %td{:nowrap => 1, :style => "min-width: 84px"}= model.created_at.mdy if model.created_at
+        %td{:nowrap => 1}= model.updated_at.mdy if model.updated_at
+        %td{:nowrap => 1}= link_to model.request.grant_or_request_id, current_show_path(model.id), :class => "new-detail", 'data-insert' => 'after'
+        %td{:nowrap => 1}= as_currency(model.amount_paid)
+        %td{:nowrap => 1}= as_currency(model.amount_due)
+        %td{:nowrap => 1}= model.due_at.mdy if model.due_at
+        %td{:nowrap => 1}= model.paid_at.mdy if model.paid_at
+        %td{:nowrap => 1}= model.payment_type
+        %td{:nowrap => 1}= model.payment_confirmation_number
+        %td{:nowrap => 1}= model.comment
+        %td{:nowrap => 1}= link_to model.state_to_english,  url_for(:action => :show, :view_states => true, :id => model.id), :class => 'to-modal small-modal', :title => 'View Workflow', 'data-on-success' => 'refreshCaller'
+        %td{:nowrap => 1}= model.request.program_organization.name if model.request.program_organization
+        %td{:nowrap => 1}= model.request.program_organization.street_address if model.request.program_organization
+        %td{:nowrap => 1}= model.request.program_organization.street_address2 if model.request.program_organization
+        %td{:nowrap => 1}= model.request.program_organization.city if model.request.program_organization
+        %td{:nowrap => 1}= model.request.program_organization.geo_state.name if model.request.program_organization && model.request.program_organization.geo_state
+        %td{:nowrap => 1}= model.request.program_organization.geo_country.name if model.request.program_organization && model.request.program_organization.geo_country
+        %td{:nowrap => 1}= model.request.program_organization.postal_code if model.request.program_organization
+        %td{:nowrap => 1}= model.request.program_organization.url if model.request.program_organization
+        
+        %td{:nowrap => 1}= model.request.fiscal_organization.name if model.request.fiscal_organization
+        %td{:nowrap => 1}= model.request.fiscal_organization.street_address if model.request.fiscal_organization
+        %td{:nowrap => 1}= model.request.fiscal_organization.street_address2 if model.request.fiscal_organization
+        %td{:nowrap => 1}= model.request.fiscal_organization.city if model.request.fiscal_organization
+        %td{:nowrap => 1}= model.request.fiscal_organization.geo_state.name if model.request.fiscal_organization && model.request.fiscal_organization.geo_state
+        %td{:nowrap => 1}= model.request.fiscal_organization.geo_country.name if model.request.fiscal_organization && model.request.fiscal_organization.geo_country
+        %td{:nowrap => 1}= model.request.fiscal_organization.postal_code if model.request.fiscal_organization
+        %td{:nowrap => 1}= model.request.fiscal_organization.url if model.request.fiscal_organization
