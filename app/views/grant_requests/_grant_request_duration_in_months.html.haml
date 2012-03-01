@@ -5,9 +5,11 @@
     = "#{model.grant_closed_at ? model.grant_closed_at.mdy : ''} (Original)"
   - elsif model.duration_in_months
     = "#{model.duration_in_months} months (Original)"
-- else 
-  - model.request_amendments.select{|ra| ra.is_approved? || ra.is_original?}.reverse.each do |amend|
-    - if amend.duration || amend.end_date
+- else
+  -show_all_amendments = true if show_all_amendments == nil
+  -request_amendments = model.request_amendments.select{|ra| (ra.is_approved? || ra.is_original?) && (ra.duration || ra.end_date)}.reverse
+  - request_amendments.each do |amend|
+    - if show_all_amendments || request_amendments.first == amend
       %div
         - if model.is_a?(FipRequest) || Fluxx.config(:dont_use_duration_in_requests) == "1"
           = "#{amend.end_date ? amend.end_date.mdy : ''}"
