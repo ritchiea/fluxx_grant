@@ -1,23 +1,41 @@
 %table.spreadsheet
   %thead
     %tr
-      %th Date Created
-      %th Date Updated
       %th Request ID
       %th State
-      %th Report Type
-      %th Due Date
-      %th Date Approved
-      %th Org Name
-      %th Amount Recommended
-      %th Lead PO
-      %th Project Summary
+      %th Date Created
+      %th Date Updated
+      %th Amount Paid
+      %th Amount Due
+      %th Date Due
+      %th Paid Date
+      %th Payment Type
+      %th Payment Confirmation
+      %th Comment
+      %th Grantee
+      %th Grantee Street Address
+      %th Grantee Street Address2
+      %th Grantee City
+      %th Grantee State
+      %th Grantee Country'
+      %th Grantee Postal Code
+      %th Grantee URL
+      %th Fiscal Org
+      %th Fiscal Street Address
+      %th Fiscal Street Address2
+      %th Fiscal City
+      %th Fiscal State
+      %th Fiscal Country
+      %th Fiscal Postal Code
+      %th Fiscal URL
+
   %tbody
     -@models.each do |model|
       %tr
+        %td{:nowrap => 1}= link_to model.request.grant_or_request_id, current_show_path(model.id), :class => "new-detail", 'data-insert' => 'after'
+        %td{:nowrap => 1}= link_to model.state_to_english,  url_for(:action => :show, :view_states => true, :id => model.id), :class => 'to-modal small-modal', :title => 'View Workflow', 'data-on-success' => 'refreshCaller'
         %td{:nowrap => 1, :style => "min-width: 84px"}= model.created_at.mdy if model.created_at
         %td{:nowrap => 1}= model.updated_at.mdy if model.updated_at
-        %td{:nowrap => 1}= link_to model.request.grant_or_request_id, current_show_path(model.id), :class => "new-detail", 'data-insert' => 'after'
         %td{:nowrap => 1}= as_currency(model.amount_paid)
         %td{:nowrap => 1}= as_currency(model.amount_due)
         %td{:nowrap => 1}= model.due_at.mdy if model.due_at
@@ -25,7 +43,6 @@
         %td{:nowrap => 1}= model.payment_type
         %td{:nowrap => 1}= model.payment_confirmation_number
         %td{:nowrap => 1}= model.comment
-        %td{:nowrap => 1}= link_to model.state_to_english,  url_for(:action => :show, :view_states => true, :id => model.id), :class => 'to-modal small-modal', :title => 'View Workflow', 'data-on-success' => 'refreshCaller'
         %td{:nowrap => 1}= model.request.program_organization.name if model.request.program_organization
         %td{:nowrap => 1}= model.request.program_organization.street_address if model.request.program_organization
         %td{:nowrap => 1}= model.request.program_organization.street_address2 if model.request.program_organization
