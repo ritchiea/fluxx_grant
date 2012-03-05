@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120211054736) do
+ActiveRecord::Schema.define(:version => 20120305165619) do
 
   create_table "alert_emails", :force => true do |t|
     t.string   "mailer_method"
@@ -23,6 +23,7 @@ ActiveRecord::Schema.define(:version => 20120211054736) do
     t.datetime "updated_at"
     t.string   "model_type"
     t.datetime "send_at"
+    t.text     "email_params"
   end
 
   create_table "alert_recipients", :force => true do |t|
@@ -32,6 +33,19 @@ ActiveRecord::Schema.define(:version => 20120211054736) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "alert_transition_states", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "created_by_id"
+    t.integer  "updated_by_id"
+    t.integer  "alert_id"
+    t.string   "state"
+  end
+
+  add_index "alert_transition_states", ["alert_id"], :name => "alert_transition_states_alert_id"
+  add_index "alert_transition_states", ["created_by_id"], :name => "alert_transition_states_created_by_id"
+  add_index "alert_transition_states", ["updated_by_id"], :name => "alert_transition_states_updated_by_id"
 
   create_table "alerts", :force => true do |t|
     t.datetime "created_at"
@@ -44,7 +58,16 @@ ActiveRecord::Schema.define(:version => 20120211054736) do
     t.text     "body"
     t.datetime "locked_until"
     t.integer  "locked_by_id"
+    t.integer  "dashboard_id"
+    t.integer  "dashboard_card_id"
+    t.boolean  "group_models",            :default => false, :null => false
+    t.boolean  "state_driven",            :default => false, :null => false
+    t.text     "cc_emails"
+    t.text     "bcc_emails"
+    t.boolean  "alert_enabled",           :default => true,  :null => false
   end
+
+  add_index "alerts", ["dashboard_id"], :name => "alerts_dashboard_id"
 
   create_table "audits", :force => true do |t|
     t.datetime "created_at"
@@ -130,7 +153,7 @@ ActiveRecord::Schema.define(:version => 20120211054736) do
     t.text     "data",              :limit => 2147483647
   end
 
-  add_index "client_stores", ["user_id", "client_store_type"], :name => "index_client_stores_on_user_id_and_client_store_type"
+  add_index "client_stores", ["user_id", "client_store_type"], :name => "client_store_idx_usr_id_clt_stor_type"
   add_index "client_stores", ["user_id"], :name => "index_client_stores_on_user_id"
 
   create_table "dashboard_templates", :force => true do |t|
@@ -167,7 +190,7 @@ ActiveRecord::Schema.define(:version => 20120211054736) do
     t.integer  "favorable_id",   :null => false
   end
 
-  add_index "favorites", ["favorable_type", "favorable_id"], :name => "index_favorites_on_favorable_type_and_favorable_id"
+  add_index "favorites", ["favorable_type", "favorable_id"], :name => "favorites_favtype_favid"
   add_index "favorites", ["user_id"], :name => "favorites_user_id"
 
   create_table "funding_source_allocation_authorities", :force => true do |t|
@@ -305,7 +328,7 @@ ActiveRecord::Schema.define(:version => 20120211054736) do
   end
 
   add_index "group_members", ["group_id"], :name => "index_group_members_on_group_id"
-  add_index "group_members", ["groupable_id", "groupable_type"], :name => "index_group_members_on_groupable_id_and_groupable_type"
+  add_index "group_members", ["groupable_id", "groupable_type"], :name => "group_members_grp_id_grp_type"
 
   create_table "groups", :force => true do |t|
     t.datetime "created_at"
@@ -355,7 +378,7 @@ ActiveRecord::Schema.define(:version => 20120211054736) do
     t.integer  "organization_id"
     t.boolean  "delta"
     t.string   "tax_id"
-    t.decimal  "amount_requested",                                   :precision => 10, :scale => 2
+    t.decimal  "amount_requested",                                   :precision => 15, :scale => 2
     t.integer  "sub_program_id"
     t.integer  "duration_in_months"
     t.datetime "grant_begins_at"
@@ -384,15 +407,20 @@ ActiveRecord::Schema.define(:version => 20120211054736) do
     t.string   "category"
     t.text     "document"
     t.datetime "deleted_at"
-    t.boolean  "delta",                 :default => true,  :null => false
-    t.boolean  "display_in_adhoc_list", :default => false, :null => false
+    t.boolean  "delta",                              :default => true,  :null => false
+    t.boolean  "display_in_adhoc_list",              :default => false, :null => false
     t.string   "generate_state"
+    t.string   "document_content_type"
+    t.string   "disposition"
+    t.integer  "related_model_document_template_id"
+    t.boolean  "do_not_insert_page_break"
   end
 
   add_index "model_document_templates", ["category"], :name => "index_model_document_templates_on_category"
   add_index "model_document_templates", ["created_by_id"], :name => "modeldoctemplate_created_by_id"
   add_index "model_document_templates", ["document_type"], :name => "index_model_document_templates_on_document_type"
   add_index "model_document_templates", ["model_type"], :name => "index_model_document_templates_on_model_type"
+  add_index "model_document_templates", ["related_model_document_template_id"], :name => "mdt_related_model_doc_templt_id"
   add_index "model_document_templates", ["updated_by_id"], :name => "modeldoctemplate_updated_by_id"
 
   create_table "model_document_types", :force => true do |t|
@@ -400,17 +428,20 @@ ActiveRecord::Schema.define(:version => 20120211054736) do
     t.datetime "updated_at"
     t.integer  "created_by_id"
     t.integer  "updated_by_id"
-    t.string   "name",                                :null => false
-    t.string   "model_type",                          :null => false
-    t.boolean  "required",          :default => true, :null => false
+    t.string   "name",                                     :null => false
+    t.string   "model_type",                               :null => false
+    t.boolean  "required",          :default => true,      :null => false
     t.integer  "program_id"
     t.integer  "sub_program_id"
     t.integer  "initiative_id"
     t.integer  "sub_initiative_id"
+    t.string   "doc_label",         :default => "default", :null => false
   end
 
   add_index "model_document_types", ["created_by_id"], :name => "model_document_types_created_by_id"
+  add_index "model_document_types", ["doc_label"], :name => "index_model_document_types_on_doc_label"
   add_index "model_document_types", ["initiative_id"], :name => "model_document_types_initiative_id"
+  add_index "model_document_types", ["model_type", "doc_label"], :name => "mod_docs_type_docid_label"
   add_index "model_document_types", ["model_type"], :name => "index_model_document_types_on_model_type"
   add_index "model_document_types", ["program_id"], :name => "model_document_types_program_id"
   add_index "model_document_types", ["sub_initiative_id"], :name => "model_document_types_sub_initiative_id"
@@ -426,17 +457,21 @@ ActiveRecord::Schema.define(:version => 20120211054736) do
     t.string   "document_content_type"
     t.integer  "document_file_size"
     t.datetime "document_updated_at"
-    t.string   "documentable_type",                              :null => false
-    t.integer  "documentable_id",                                :null => false
+    t.string   "documentable_type",                                 :null => false
+    t.integer  "documentable_id",                                   :null => false
     t.datetime "locked_until"
     t.integer  "locked_by_id"
     t.integer  "model_document_type_id"
     t.string   "document_type",              :default => "file"
     t.text     "document_text"
     t.integer  "model_document_template_id"
+    t.string   "doc_label",                  :default => "default", :null => false
+    t.string   "s3_permission"
   end
 
+  add_index "model_documents", ["doc_label"], :name => "index_model_documents_on_doc_label"
   add_index "model_documents", ["documentable_id", "documentable_type"], :name => "model_documents_docid_type"
+  add_index "model_documents", ["documentable_type", "documentable_id", "doc_label"], :name => "mod_docs_type_docid_label"
   add_index "model_documents", ["documentable_type", "documentable_id"], :name => "model_documents_doc_type_id"
   add_index "model_documents", ["model_document_template_id"], :name => "model_documents_template_id"
   add_index "model_documents", ["model_document_type_id"], :name => "model_documents_model_document_type_id"
@@ -522,12 +557,16 @@ ActiveRecord::Schema.define(:version => 20120211054736) do
     t.string   "vendor_number"
     t.boolean  "is_grantor",                             :default => false
     t.integer  "migrate_id"
+    t.string   "name_foreign_language",  :limit => 1500
+    t.float    "latitude"
+    t.float    "longitude"
   end
 
   add_index "organizations", ["created_by_id"], :name => "organizations_created_by_id"
   add_index "organizations", ["geo_country_id"], :name => "organizations_geo_country_id"
   add_index "organizations", ["geo_state_id"], :name => "organizations_geo_state_id"
   add_index "organizations", ["name"], :name => "index_organizations_on_name", :length => {"name"=>255}
+  add_index "organizations", ["parent_org_id", "deleted_at"], :name => "index_organizations_on_parent_org_id_and_deleted_at"
   add_index "organizations", ["parent_org_id"], :name => "index_organizations_on_parent_org_id"
   add_index "organizations", ["updated_by_id"], :name => "organizations_updated_by_id"
 
@@ -541,7 +580,7 @@ ActiveRecord::Schema.define(:version => 20120211054736) do
     t.integer  "initiative_id"
     t.integer  "sub_initiative_id"
     t.integer  "spending_year"
-    t.decimal  "amount",            :precision => 10, :scale => 0
+    t.decimal  "amount",            :precision => 15, :scale => 2
     t.integer  "locked_by_id"
     t.datetime "locked_until"
     t.datetime "deleted_at"
@@ -747,7 +786,7 @@ ActiveRecord::Schema.define(:version => 20120211054736) do
   add_index "request_funding_sources", ["funding_source_allocation_id"], :name => "rfs_funding_source_allocation_id"
   add_index "request_funding_sources", ["initiative_id"], :name => "request_funding_sources_initiative_id"
   add_index "request_funding_sources", ["program_id"], :name => "request_funding_sources_program_id"
-  add_index "request_funding_sources", ["request_id"], :name => "index_request_funding_sources_on_request_id"
+  add_index "request_funding_sources", ["request_id"], :name => "rfs_index_request_id"
   add_index "request_funding_sources", ["sub_initiative_id"], :name => "request_funding_sources_sub_initiative_id"
   add_index "request_funding_sources", ["sub_program_id"], :name => "request_funding_sources_sub_program_id"
 
@@ -845,6 +884,7 @@ ActiveRecord::Schema.define(:version => 20120211054736) do
     t.datetime "locked_until"
     t.datetime "deleted_at"
     t.boolean  "conflict_reported"
+    t.boolean  "delta",             :default => false
   end
 
   add_index "request_reviews", ["created_by_id"], :name => "request_reviews_created_by_id"
@@ -1157,6 +1197,15 @@ ActiveRecord::Schema.define(:version => 20120211054736) do
     t.string   "last_login_ip"
     t.boolean  "test_user_flag",                               :default => false
     t.integer  "migrate_id"
+    t.string   "linkedin_url"
+    t.string   "facebook_url"
+    t.string   "first_name_foreign_language",  :limit => 500
+    t.string   "middle_name_foreign_language", :limit => 500
+    t.string   "last_name_foreign_language",   :limit => 500
+    t.string   "perishable_token"
+    t.boolean  "active",                                       :default => true
+    t.boolean  "approved",                                     :default => true
+    t.boolean  "confirmed",                                    :default => true
   end
 
   add_index "users", ["email"], :name => "index_users_on_email"
@@ -1250,6 +1299,6 @@ ActiveRecord::Schema.define(:version => 20120211054736) do
 
   add_index "workflow_events", ["created_by_id"], :name => "workflow_events_created_by_id"
   add_index "workflow_events", ["updated_by_id"], :name => "workflow_events_updated_by_id"
-  add_index "workflow_events", ["workflowable_id", "workflowable_type"], :name => "workflow_events_id_type"
+  add_index "workflow_events", ["workflowable_id", "workflowable_type"], :name => "workflow_events_flowid_type"
 
 end

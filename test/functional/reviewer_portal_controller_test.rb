@@ -10,7 +10,7 @@ class ReviewerPortalControllerTest < ActionController::TestCase
   
   test "should get index" do
     get :index
-    assert_response :success
+    assert 200, @response.status
   end
 
 end

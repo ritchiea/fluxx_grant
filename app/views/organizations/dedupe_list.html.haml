@@ -1,0 +1,36 @@
+%table{:border=>2}
+  %tr
+    %th dupe?
+    %th name
+    %th street
+    %th street2
+    %th city
+    %th state
+    %th country
+    %th postal_code
+    %th phone
+    %th fax
+    %th email
+    %th url
+    %th acronym
+  - last_name_soundex = nil
+  - last_street_soundex = nil
+  = form_for 
+  - @organizations.each(:cache_rows => false, :symbolize_keys => true, :as => :hash) do |org|
+    %tr
+      %td= last_name_soundex && (org[:name_soundex] == last_name_soundex || org[:name_soundex] =~ /^#{last_name_soundex}/ || last_name_soundex =~ /^#{org[:name_soundex]}/) && (org[:street_soundex] == last_street_soundex || org[:street_soundex] =~ /^#{last_street_soundex}/ || last_street_soundex =~ /^#{org[:street_soundex]}/ || org[:street_soundex].blank? || last_street_soundex.blank?) ? "Y" : ''
+      %td= org[:name]
+      %td= org[:street_address]
+      %td= org[:street_address2]
+      %td= org[:city]
+      %td= org[:state]
+      %td= org[:country]
+      %td= org[:postal_code]
+      %td= org[:phone]
+      %td= org[:fax]
+      %td= org[:email]
+      %td= org[:url]
+      %td= org[:acronym]
+    - last_name_soundex = org[:name_soundex]  
+    - last_street_soundex = org[:street_soundex]  
+  
