@@ -1,7 +1,8 @@
+require 'csv'
 class Ofac
   def generate_csv models, output
     if models
-      csv = FasterCSV.new(output, :row_sep => "\r\n") 
+      csv = CSV.new(output, :row_sep => "\r\n") 
       models.each do |model|
         if model.is_a? User
           csv << [model.title,
