@@ -51,5 +51,7 @@ Rails.application.routes.draw do
   resources :grantee_portal
   resources :portal_grant_requests
 
-  match "organizations_dedupe", :controller => 'organizations', :action => 'dedupe_list' 
+  match "organizations_dedupe", :controller => 'organizations', :action => 'dedupe_list'
+  match "organizations_dedupe_prep", :controller => 'organizations', :action => 'dedupe_prep'
+  match "organizations_dedupe_complete", :controller => 'organizations', :action => 'dedupe_complete'
 end
