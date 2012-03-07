@@ -140,37 +140,5 @@ module FluxxGrantOrganizationsController
   end
 
   module ModelInstanceMethods
-    ORG_QUERY_SELECT = "select organizations.id, soundex(name) name_soundex, soundex(street_address) street_soundex, 
-      name, street_address, street_address2, city, 
-      (select name from geo_states where id = geo_state_id) geo_state_name,
-      (select name from geo_countries where id = geo_country_id) geo_country_name, postal_code, phone, fax, email, url, acronym"
-
-    def dedupe_list
-      @organizations = Organization.connection.execute "#{ORG_QUERY_SELECT}
-        from organizations where deleted_at is null order by name_soundex, street_soundex"
-      render :layout => false
-    end
-    
-    def dedupe_prep
-      @organizations = Organization.connection.execute ClientStore.send(:sanitize_sql, ["#{ORG_QUERY_SELECT}
-        from organizations where id in (?) and deleted_at is null", params[:org_id]])
-      render :action => 'dedupe_prep', :layout => false
-    end
-    
-    def dedupe_complete
-      @organizations = Organization.where(:id => params[:org_id], :deleted_at => nil).all
-      @primary_org = Organization.where(:id => params[:primary_org_id], :deleted_at => nil).first
-      if @organizations && @primary_org
-        (@organizations - [@primary_org]).each do |dupe_org|
-          p "ESH: merging dupe_org #{dupe_org.id} into primary_org #{@primary_org.id}"
-          @primary_org.merge dupe_org
-        end
-        # TODO ESH: swap this out when it runs inside fluxx
-        # fluxx_redirect organizations_dedupe_path
-        redirect_to organizations_dedupe_path
-      else
-        dedupe_prep
-      end
-    end
   end
 end
