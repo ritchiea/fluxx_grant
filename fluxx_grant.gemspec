@@ -30,9 +30,9 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'faker', '>= 0.3.1'
   s.add_development_dependency 'mocha', '>= 0.9'
   s.add_development_dependency 'rcov'
-  if RUBY_VERSION < '1.9'
-    s.add_development_dependency "ruby-debug", ">= 0.10.3"
-  else
-    s.add_development_dependency "ruby-debug19", ">= 0.10.3"
-  end
+  #if RUBY_VERSION < '1.9'
+  #  s.add_development_dependency "ruby-debug", ">= 0.10.3"
+  #else
+  #  s.add_development_dependency "ruby-debug19", ">= 0.10.3"
+  #end
 end
