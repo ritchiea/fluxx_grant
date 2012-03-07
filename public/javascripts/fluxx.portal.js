@@ -3,6 +3,14 @@
     initGranteePortal: function() {
       $('.multiple-select-transfer select[multiple="true"], .multiple-select-transfer select[multiple="multiple"]').selectTransfer();
       $('.datetime input').fluxxDatePicker({ changeMonth: true, changeYear: true });
+      $('[data-char-limit]').each(function() {
+        var $input = $(this),
+            limit = parseInt($input.data('char-limit'));
+        $input.charCount({
+          allowed: limit,
+          counterText: 'Characters left: '
+        });
+      });
       if ($.fluxx && $.fluxx.util)
         $.fluxx.util.autoGrowTextArea($('textarea'));
 
