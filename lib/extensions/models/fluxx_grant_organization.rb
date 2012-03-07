@@ -4,7 +4,7 @@ module FluxxGrantOrganization
   require 'net/https'
   include REXML
 
-  SEARCH_ATTRIBUTES = [:parent_org_id, :grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_ids, :grant_ids, :favorite_user_ids, :related_org_ids, :city, :geo_country_id, :geo_state_id, :postal_code, :request_report_eval_avg_rating]
+  SEARCH_ATTRIBUTES = [:parent_org_id, :grant_program_ids, :grant_sub_program_ids, :state, :updated_at, :request_ids, :grant_ids, :favorite_user_ids, :related_org_ids, :city, :geo_country_id, :geo_state_id, :postal_code, :request_report_eval_avg_rating, :is_grantee]
 
   def self.included(base)
     base.send :include, ::FluxxOrganization
@@ -80,6 +80,8 @@ module FluxxGrantOrganization
 
   module ModelClassMethods
     def add_sphinx
+      is_grantee_query = 'if(count(if(requests.granted = 1 and requests.deleted_at is null, 1, NULL)) > 0, 1, 0)'
+      
       define_index :organization_first do
         # fields
         indexes "lower(organizations.name)", :as => :name, :sortable => true
@@ -104,6 +106,7 @@ module FluxxGrantOrganization
         has multi_element_choices.multi_element_value(:id), :type => :multi, :as => :multi_element_value_ids
         has 'null', :type => :multi, :as => :request_report_ids
         has 'null', :type => :integer, :as => :request_report_eval_avg_rating
+        has is_grantee_query, :type => :boolean, :as => :is_grantee
 
         set_property :delta => :delayed
       end
@@ -130,6 +133,7 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :multi_element_value_ids
         has 'null', :type => :multi, :as => :request_report_ids
         has 'null', :type => :integer, :as => :request_report_eval_avg_rating
+        has is_grantee_query, :type => :boolean, :as => :is_grantee
 
         set_property :delta => :delayed
       end
@@ -156,6 +160,7 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :multi_element_value_ids
         has 'null', :type => :multi, :as => :request_report_ids
         has 'null', :type => :integer, :as => :request_report_eval_avg_rating
+        has is_grantee_query, :type => :boolean, :as => :is_grantee
 
         set_property :delta => :delayed
       end
@@ -182,6 +187,7 @@ module FluxxGrantOrganization
         has 'null', :type => :multi, :as => :multi_element_value_ids
         has grant_requests.request_reports(:id), :type => :multi, :as => :request_report_ids
         has 'ROUND(avg(request_reports.evaluation_rating))', :type => :integer, :as => :request_report_eval_avg_rating
+        has is_grantee_query, :type => :boolean, :as => :is_grantee
 
         set_property :delta => :delayed
       end

@@ -255,7 +255,7 @@ class GrantRequestTest < ActiveSupport::TestCase
     Organization.expects(:charity_check_enabled).returns(true)
     @req.state = 'funding_recommended'
     @req.insta_fire_event :complete_ierf, User.make
-    @req.program_organization.expects(:c3_status_approved?).returns(false)
+    @req.program_organization.expects(:has_c3_status_approved?).returns(false)
     assert_equal 'No c3 status', @req.funding_warnings.first
   end
 
@@ -264,7 +264,7 @@ class GrantRequestTest < ActiveSupport::TestCase
     @req.state = 'funding_recommended'
     @req.duration_in_months = 15
     @req.insta_fire_event :complete_ierf, User.make
-    @req.program_organization.expects(:c3_status_approved?).returns(true)
+    @req.program_organization.expects(:has_c3_status_approved?).returns(true)
     assert_equal 'Duration is over 12 months', @req.funding_warnings.first
   end
 
@@ -273,7 +273,7 @@ class GrantRequestTest < ActiveSupport::TestCase
     @req.state = 'funding_recommended'
     @req.duration_in_months = 15
     @req.insta_fire_event :complete_ierf, User.make
-    @req.program_organization.expects(:c3_status_approved?).returns(true)
+    @req.tax_class_org.expects(:has_c3_status_approved?).returns(true)
     @req.expects(:funding_sources_expired_before_close_date).returns("foo, bar")
     assert_equal 'Funding source(s) foo, bar expire before the estimated grant close date', @req.funding_warnings.last
   end

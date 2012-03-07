@@ -140,5 +140,13 @@ module FluxxGrantOrganizationsController
   end
 
   module ModelInstanceMethods
+    def dedupe_list
+      @organizations = Organization.connection.execute "select soundex(name) name_soundex, soundex(street_address) street_soundex, 
+        name, street_address, street_address2, city, 
+        (select name from geo_states where id = geo_state_id) geo_state_name,
+        (select name from geo_countries where id = geo_country_id) geo_country_name, postal_code, phone, fax, email, url, acronym
+        from organizations order by name_soundex, street_soundex"
+      render :layout => false
+    end
   end
 end

@@ -138,8 +138,8 @@ module FluxxLoi
       include ModelInstanceMethods
     end
     
-#    base.send :include, AASM
-#    base.add_aasm
+   base.send :include, AASM
+   base.add_aasm
     base.add_sphinx if base.respond_to?(:sphinx_indexes) && !(base.connection.adapter_name =~ /SQLite/i)
   end
   
@@ -154,6 +154,7 @@ module FluxxLoi
     def add_aasm
       aasm_column :state
       aasm_initial_state :new
+      aasm_state :new
     end
 
     def add_sphinx
