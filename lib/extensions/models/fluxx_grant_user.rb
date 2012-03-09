@@ -50,12 +50,19 @@ module FluxxGrantUser
     
     base.insta_export do |insta|
       insta.filename = 'user'
-      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'salutation', 'first_name', 'last_name', 'email', 'personal_email', 'prefix', 'middle_initial', 'personal_phone', 
+      insta.headers = ['last_name', 'first_name', ['Date Created', :date], ['Date Updated', :date], 'salutation', 'email', 'personal_email', 'prefix', 'middle_initial', 'personal_phone',
                       'personal_mobile', 'personal_fax',
                       'personal_street_address', 'personal_street_address2', 'personal_city', 'state_name', 'country_name', 'personal_postal_code', 'work_street_address', 'work_street_address2', 
                       'work_city', 'work_state', 'work_country', 'work_postal_code', 'work_phone', 'work_fax', 'other_contact',
                       'assistant_name', 'assistant_email', 'blog_url', 'twitter_url', ['Birthday', :date], 'primary_title', 'primary_organization', 'time_zone']
-      insta.sql_query = "users.created_at, users.updated_at, salutation, first_name, last_name, users.email, personal_email, prefix, middle_initial, personal_phone, personal_mobile, personal_fax,
+      insta.spreadsheet_cells = [:last_name, :first_name, :created_at, :updated_at, :salutation, :email, :personal_email, :prefix, :middle_initial, :personal_phone, :personal_mobile, :personal_fax,
+                            :personal_street_address, :personal_street_address2, :personal_city, [:geo_state, :name], [:geo_country, :name], :personal_postal_code,
+                            [:primary_user_organization, :organization, :street_address], [:primary_user_organization, :organization, :street_address2], [:primary_user_organization, :organization, :city],
+                            [:primary_user_organization, :organization, :geo_state, :name], [:primary_user_organization, :organization, :geo_country, :name], [:primary_user_organization, :organization, :postal_code],
+                            :work_phone, :work_fax, :other_contact,
+                            :assistant_name, :assistant_email, :blog_url, :twitter_url, :birth_at,
+                            [:primary_user_organization, :title], [:primary_user_organization, :organization, :name], :time_zone]
+      insta.sql_query = "last_name, first_name, users.created_at, users.updated_at, salutation, users.email, personal_email, prefix, middle_initial, personal_phone, personal_mobile, personal_fax,
                       personal_street_address, personal_street_address2, personal_city, geo_states.name state_name,  geo_countries.name country_name, personal_postal_code, 
                       organizations.street_address work_street_address, organizations.street_address2 work_street_address2, organizations.city work_city,
                       work_geo_states.name work_state_name, work_countries.name work_country_name, organizations.postal_code work_postal_code,

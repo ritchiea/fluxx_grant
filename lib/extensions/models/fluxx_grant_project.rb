@@ -18,8 +18,9 @@ module FluxxGrantProject
     end
     base.insta_export do |insta|
       insta.filename = 'project'
-      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'Title', 'Description', 'Project Type', 'Lead User First', 'Lead User Last']
-      insta.sql_query = "projects.created_at, projects.updated_at, projects.title, projects.description, ifnull(mev.description, mev.value),
+      insta.headers = ['Title', ['Date Created', :date], ['Date Updated', :date], 'Description', 'Project Type', 'Lead User First', 'Lead User Last']
+      insta.spreadsheet_cells = [:title, :created_at, :updated_at, :description, :project_type, [:lead_user, :first_name], [:lead_user, :last_name]]
+      insta.sql_query = "projects.title, projects.created_at, projects.updated_at, projects.description, ifnull(mev.description, mev.value),
                       users.first_name, users.last_name
                       from projects 
                       left outer join multi_element_choices mec ON mec.id = projects.project_type_id

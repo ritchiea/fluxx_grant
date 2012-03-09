@@ -20,9 +20,11 @@ module FluxxGrantOrganization
     base.insta_export
     base.insta_export do |insta|
       insta.filename = 'organization'
-      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'name', 'street_address', 'street_address2', 'city', 'state_name',
+      insta.headers = ['name', ['Date Created', :date], ['Date Updated', :date], 'street_address', 'street_address2', 'city', 'state_name',
                   'country_name', 'postal_code', 'phone', 'other_contact', 'fax', 'email', 'url', 'blog_url', 'twitter_url', 'acronym', 'tax_class', 'ein']
-      insta.sql_query = "organizations.created_at, organizations.updated_at, organizations.name, street_address, street_address2, city, geo_states.name state_name,
+      insta.spreadsheet_cells = [:name, :created_at, :updated_at, :street_address, :street_address2, :city, [:geo_state, :name], [:geo_country, :name],
+                  :postal_code, :phone, :other_contact, :fax, :email, :url, :blog_url, :twitter_url, :acronym, :tax_class, :tax_id]
+      insta.sql_query = "organizations.name, organizations.created_at, organizations.updated_at, street_address, street_address2, city, geo_states.name state_name,
                   geo_countries.name country_name,
                   postal_code, phone, other_contact, fax, email, url, blog_url, twitter_url, acronym, mev_tax_class.value tax_class_value, tax_id
                   from organizations
