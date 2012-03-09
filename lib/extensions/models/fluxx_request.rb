@@ -106,6 +106,8 @@ module FluxxRequest
 
     base.insta_lock
     base.insta_export do |insta|
+      insta.spreadsheet_template = "grant_requests/grant_request_spreadsheet"
+      #insta.spreadsheet_cells = [:grant_or_request_id, :grant_or_request_id, :state, :amount_requested, :amount_recommended, [:program_organization, :name]]
       insta.filename = (lambda { |with_clause| (with_clause != nil && with_clause[:granted]==1) ? 'grant' : 'request'})
       insta.headers = (lambda do |with_clause|
           block1 = ['Request ID', 'Request Type', 'Status', ['Amount Requested', :currency], ['Amount Recommended', :currency]]

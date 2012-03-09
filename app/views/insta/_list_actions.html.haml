@@ -2,15 +2,12 @@
 -view ||= :listing
 %li= link_to raw('&#9617;'), '#', :class => 'open-listing-actions', :title => 'Open/Close Listing Actions Tab'
 %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/monitor.png', :alt => 'Show Full Screen'), url_for(), :class => "to-fullscreen", :title =>'Show Full Screen'
--if @show_summary_view || @show_spreadsheet_view
-  %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/application_view_list.png', :alt => 'Show List View'), url_for(), :class => "to-listing#{view == :listing ? ' disabled' : ''}", :title =>'Show Listing View'
+%li= link_to image_tag('/images/fluxx_engine/theme/default/icons/application_view_list.png', :alt => 'Show List View'), url_for(), :class => "to-listing#{view == :listing ? ' disabled' : ''}", :title =>'Show Listing View'
 -if @show_summary_view
   %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/chart_pie.png', :alt => 'Show Summary View'), url_for(), :class => "to-summary#{view == :summary ? ' disabled' : ''}", :title =>'Show Summary View'
--if @show_spreadsheet_view
-  %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/application_view_columns.png', :alt => 'Show Spreadsheet View'), url_for(), :class => "to-spreadsheet#{view == :spreadsheet ? ' disabled' : ''}", :title =>'Show Spreadsheet View'
--if @show_summary_view || @show_spreadsheet_view
-  %li.divider
-    %span
+%li= link_to image_tag('/images/fluxx_engine/theme/default/icons/application_view_columns.png', :alt => 'Show Spreadsheet View'), url_for(), :class => "to-spreadsheet#{view == :spreadsheet ? ' disabled' : ''}", :title =>'Show Spreadsheet View'
+%li.divider
+  %span
 - if @first_report_id
   %li= link_to image_tag('/images/fluxx_engine/theme/default/icons/chart_bar.png', :alt => "Reports"), url_for(:fluxxreport_id => @first_report_id, :all_results => 1), :class => 'new-detail area-data', 'data-insert' => 'after', :title =>'Visualizations'
 - if @show_conversion_funnel

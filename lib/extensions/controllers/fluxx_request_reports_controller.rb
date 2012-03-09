@@ -12,12 +12,6 @@ module FluxxRequestReportsController
           {:state => "approved"}
         end
       end)
-      insta.spreadsheet_view do |format|
-        format.html do |triple|
-          controller_dsl, outcome, default_block = triple
-          default_block.call
-        end
-      end
     end
     base.insta_report do |insta|
       insta.report_name_path = 'request_reports'

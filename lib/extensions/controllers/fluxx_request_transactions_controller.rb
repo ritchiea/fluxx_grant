@@ -7,12 +7,6 @@ module FluxxRequestTransactionsController
       insta.filter_template = 'request_transactions/request_transaction_filter'
       insta.order_clause = 'due_at desc'
       insta.icon_style = ICON_STYLE
-      insta.spreadsheet_view do |format|
-        format.html do |triple|
-          controller_dsl, outcome, default_block = triple
-          default_block.call
-        end
-      end
     end
     base.insta_show RequestTransaction do |insta|
       insta.template = 'request_transaction_show'
