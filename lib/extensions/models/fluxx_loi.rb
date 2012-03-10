@@ -68,24 +68,32 @@ module FluxxLoi
     base.insta_multi
     base.insta_export do |insta|
       insta.filename = 'loi'
-      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'Applicant', 
-      'Organization Name', 'Foreign Organization Name',
+      insta.headers = ['Applicant', 'Organization Name', 'Project Title', ['Date Created', :date], ['Date Updated', :date],
+        'Foreign Organization Name',
          'Address', "Address 2", 'City', 'State', 'Country',
          'Postal Code',
          'Email', 'Phone', 
-         'Project Title', 'Project Summary',
+         'Project Summary',
          'Program Name', 'Amount Requested', 'Duration in Months', 
-         'Grant Begins At'
+         'Grant Begins At', 'Connected to Request'
+
       ]
-      insta.sql_query = "lois.created_at, lois.updated_at, lois.applicant, 
-          lois.organization_name, lois.organization_name_foreign_language,
+      insta.spreadsheet_cells = [:applicant, :organization_name, :project_title, :created_at, :updated_at,
+                :organization_name_foreign_language,
+                :address, :street_address2, :city, [:geo_states, :name], [:geo_countries, :name],
+                :postal_code,
+                :email, :phone,
+                :project_summary, [:program, :name], :amount_requested, :duration_in_months, :grant_begins_at, [:request, :grant_or_request_id]]
+      insta.sql_query = "lois.applicant, lois.organization_name, lois.project_title, lois.created_at, lois.updated_at,
+          lois.organization_name_foreign_language,
           lois.address, lois.street_address2, lois.city, geo_states.name state_name, geo_countries.name country_name, 
           lois.postal_code,
           lois.email, lois.phone, 
-          lois.project_title, lois.project_summary, 
-          (select name from programs where programs.id = lois.program_id) program_name, 
-          lois.amount_requested, lois.duration_in_months, 
-          lois.grant_begins_at 
+          lois.project_summary,
+          (select name from programs where programs.id = lois.program_id) program_name,
+          lois.amount_requested, lois.duration_in_months,
+          lois.grant_begins_at,
+          (select base_request_id from requests where requests.id = lois.request_id) base_request_id
           
         from lois
         left outer join geo_states on geo_states.id = lois.geo_state_id

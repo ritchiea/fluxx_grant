@@ -106,8 +106,7 @@ module FluxxRequest
 
     base.insta_lock
     base.insta_export do |insta|
-      insta.spreadsheet_template = "grant_requests/grant_request_spreadsheet"
-      #insta.spreadsheet_cells = [:grant_or_request_id, :grant_or_request_id, :state, :amount_requested, :amount_recommended, [:program_organization, :name]]
+      #insta.spreadsheet_template = "grant_requests/grant_request_spreadsheet"
       insta.filename = (lambda { |with_clause| (with_clause != nil && with_clause[:granted]==1) ? 'grant' : 'request'})
       insta.headers = (lambda do |with_clause|
           block1 = ['Request ID', 'Request Type', 'Status', ['Amount Requested', :currency], ['Amount Recommended', :currency]]
@@ -129,6 +128,28 @@ module FluxxRequest
             block1 + block2
           end
         end)
+      insta.spreadsheet_cells = (lambda do |with_clause|
+        block1 = [:grant_or_request_id, :type, :state, :amount_requested, :amount_recommended]
+        grant_block = [:amount_recommended, :amount_funded, :amount_pending, :grant_agreement_at, :grant_begins_at, :grant_ends_at]
+        block2 = [[:program_organization, :name], [:program_organization, :street_address], [:program_organization, :street_address2], [:program_organization, :city], [:program_organization, :geo_state, :name], [:program_organization, :geo_country, :name], [:program_organization, :postal_code], [:program_organization, :url], [:program_organization, :tax_class], [:program_orgranization, :tax_id],
+                    [:fiscal_organization, :name], [:fiscal_organization, :street_address], [:fiscal_organization, :street_address2], [:fiscal_organization, :city], [:fiscal_organization, :geo_state, :name], [:fiscal_organization, :geo_country, :name], [:fiscal_organization, :postal_code], [:fiscal_organization, :url], [:fiscal_organization, :tax_class], [:fiscal_organization, :tax_id],
+                    [:program_lead_id, :full_name], [:program, :name], [:sub_program, :name], :request_received_at, :duration_in_months,
+                    :constituents, nil, [:program_organization, :tax_class], :funding_source_list,
+                    :ierf_proposed_end_at,
+                    :ierf_budget_end_at,
+                    :created_at, :updated_at,
+                    [:grantee_org_owner, :first_name], [:grantee_org_owner, :last_name], [:grantee_org_owner, :email],
+                    [:program_lead, :first_name], [:program_lead, :last_name], [:program_lead, :email],
+                    [:grantee_signatory, :first_name], [:grantee_signatory, :last_name], [:grantee_signatory, :email],
+                    :project_summary]
+          if with_clause && with_clause[:granted]==1
+            block1 + grant_block + block2
+          else
+            block1 + block2
+          end
+      end)
+
+      #[:grant_or_request_id, :grant_or_request_id, :state, :amount_requested, :amount_recommended, [:program_organization, :name]]
       insta.sql_query =   (lambda do |with_clause|
           block1 = "  
           requests.base_request_id, requests.type, requests.state,
@@ -1404,7 +1425,9 @@ module FluxxRequest
       letter_request_reports.size > 1 ? letter_request_reports.last : RequestReport.new
     end
 
-    
+    def funding_source_list
+      request_funding_sources.map{|rfs| rfs.funding_source_allocation.funding_source.name if rfs.funding_source_allocation && rfs.funding_source_allocation.funding_source}.join(',')
+    end
     
   end
 end

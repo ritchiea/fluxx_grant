@@ -53,12 +53,21 @@ module FluxxRequestTransaction
     base.insta_favorite
     base.insta_export do |insta|
       insta.filename = 'request_transaction'
-      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'request_id', ['Amount Paid', :currency], ['Amount Due', :currency], ['Date Due', :date], ['Date Paid', :date], 'payment_type', 'payment_confirmation', 'Comment', 'Status',
+      insta.headers = ['request_id', 'State', ['Date Created', :date], ['Date Updated', :date], ['Amount Paid', :currency], ['Amount Due', :currency], ['Date Due', :date], ['Date Paid', :date], 'payment_type', 'payment_confirmation', 'Comment',
         'Grantee', 'Grantee Street Address', 'Grantee Street Address2', 'Grantee City', 'Grantee State', 'Grantee Country', 'Grantee Postal Code', 'Grantee URL',
         'Fiscal Org', 'Fiscal Street Address', 'Fiscal Street Address2', 'Fiscal City', 'Fiscal State', 'Fiscal Country', 'Fiscal Postal Code', 'Fiscal URL']
-      insta.sql_query = "request_transactions.created_at, request_transactions.updated_at, requests.base_request_id request_id, amount_paid, amount_due, due_at, paid_at, payment_type, payment_confirmation_number,
+      insta.spreadsheet_cells = [[:request, :base_request_id], :state, :created_at, :updated_at, :amount_paid, :amount_due, :due_at, :paid_at, :payment_type, :payment_confirmation_number,
+                      :comment,
+                      [:request, :program_organization, :name],
+                      [:request, :program_organization, :street_address], [:request, :program_organization, :street_address2], [:request, :program_organization, :city],
+                      [:request, :program_organization, :geo_state, :name], [:request, :program_organization, :geo_country, :name], [:request, :program_organization, :postal_code],
+                      [:request, :program_organization, :url],
+                      [:request, :fiscal_organization, :name],
+                      [:request, :fiscal_organization, :street_address], [:request, :fiscal_organization, :street_address2], [:request, :fiscal_organization, :city],
+                      [:request, :fiscal_organization, :geo_state, :name], [:request, :fiscal_organization, :geo_country, :name], [:request, :fiscal_organization, :postal_code],
+                      [:request, :fiscal_organization, :url]]
+      insta.sql_query = "requests.base_request_id request_id, request_transactions.state, request_transactions.created_at, request_transactions.updated_at, amount_paid, amount_due, due_at, paid_at, payment_type, payment_confirmation_number,
                 request_transactions.comment,
-                request_transactions.state, 
                 program_organization.name,
                 program_organization.street_address program_org_street_address, program_organization.street_address2 program_org_street_address2, program_organization.city program_org_city,
                 program_org_country_states.name program_org_state_name, program_org_countries.name program_org_country_name, program_organization.postal_code program_org_postal_code,
