@@ -14,6 +14,20 @@ module FluxxRequestAmendment
     insta_utc do |insta|
       insta.time_attributes = [:start_date, :end_date]
     end
+
+    insta_export do |insta|
+      insta.filename = 'request_amendment'
+      insta.headers = ['Request', ['Date Created', :date], ['Date Updated', :date], :duration, ['Start Date', :date], ['End Date', :date],
+     ['Amount Recommended', :currency], 'Original','Request Type', 'State', 'Note', 'Old Duration', ['Old Start Date', :date], ['Old End Date', :date], ['Old Amount Recommended', :currency]]
+      insta.spreadsheet_cells = [[:request, :grant_or_request_id], :created_at, :updated_at, :duration, :start_date, :end_date, :amount_recommended, :original,
+      :request_type, :state, :note, :old_duration, :old_start_date, :old_end_date, :old_amount_recommended]
+      insta.sql_query = "(select base_request_id from requests where id = request_id), created_at, updated_at, duration, start_date, end_date, amount_recommended, original,
+            request_type, state, note, old_duration, old_start_date, old_end_date, old_amount_recommended
+
+        from request_amendments
+        where request_amendments.id IN (?)"
+    end
+
     
     insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES
