@@ -1,0 +1,22 @@
+-sql_query = "select initiatives.id, initiatives.created_at, initiatives.updated_at, initiatives.name, if(spending_year is null, 'none', spending_year) as spending_year, sum(amount) as amount_funded from initiatives left outer join funding_source_allocations fsa on true where #{Initiative::INITIATIVE_FSA_JOIN_WHERE_CLAUSE.gsub /\?/, 'initiatives.id'} and initiatives.id IN (?) group by name, if(spending_year is null, 0, spending_year)"
+
+%table.spreadsheet
+  %thead
+    %tr
+      %th Date Created
+      %th Date Updated
+      %th Name
+      %th Spending Year
+      %th Amount Funded
+      %th Geo Zone
+  %tbody
+    -Initiative.connection.execute(Initiative.send(:sanitize_sql, [sql_query, models])).each_hash do |res|
+      %tr
+        %td{:nowrap => 1}= mdy_date_format res["created_at"]
+        %td{:nowrap => 1}= mdy_date_format res["updated_at"]
+        %td{:nowrap => 1}= res["name"]
+        %td{:nowrap => 1}= res["spending_year"]
+        %td{:nowrap => 1}= dollars_format res["amount_funded"]
+        -model = Initiative.find(res["id"])
+        %td{:nowrap => 1}= model.geo_zone if model && model.respond_to?(:geo_zone)
+

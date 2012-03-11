@@ -13,6 +13,7 @@ module FluxxSubInitiative
 
     base.acts_as_audited({:full_model_enabled => false, :except => [:created_by_id, :updated_by_id, :delta, :updated_by, :created_by, :audits]})
     base.insta_export do |insta|
+      insta.spreadsheet_template = "sub_initiative_spreadsheet"
       insta.filename = 'sub_initiative'
       insta.headers = [['Date Created', :date], ['Date Updated', :date], 'Name', 'Spending Year', ['Amount Funded', :currency]]
       insta.sql_query = "            sub_initiatives.created_at, sub_initiatives.updated_at, sub_initiatives.name, if(spending_year is null, 'none', spending_year), sum(amount)

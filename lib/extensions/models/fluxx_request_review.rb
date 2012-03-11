@@ -27,6 +27,7 @@ module FluxxRequestReview
     base.insta_export do |insta|
       insta.filename = 'request_review'
       insta.headers = [['Date Created', :date], ['Date Updated', :date], 'Reviewer', 'Program', 'Sub Program', 'Request ID', 'Rating']
+      insta.spreadsheet_cells = [:created_at, :updated_at,  [:created_by, :full_name], [:request, :program, :name], [:request, :sub_program, :name], [:request, :base_request_id], :rating]
       insta.sql_query = "request_reviews.created_at, request_reviews.updated_at,  CONCAT(users.first_name, ' ', users.last_name), programs.name, sub_programs.name, requests.base_request_id, request_reviews.rating
                 from request_reviews
                 left join requests on requests.id = request_reviews.request_id

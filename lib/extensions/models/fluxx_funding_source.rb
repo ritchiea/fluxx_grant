@@ -14,7 +14,15 @@ SEARCH_ATTRIBUTES = [:state, :model_theme_id]
     base.insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES
     end
-    base.insta_export
+    base.insta_export do |insta|
+      insta.filename = 'funding_source'
+      insta.headers = ['Name', 'Amount', 'State', ['Amount Budgeted', :currency],	['Amount Requested', :currency],	['Date Created', :date],	['Date Updated', :date], ['Starts At', :date], ['Ends At', :date],	'Narrative Lead First',	'Narrative Lead Last', ['Net Available to Spend', :currency],	['Overhead Amount', :currency],	'Retired']
+      insta.spreadsheet_cells = [:name, :amount, :state, :amount_budgeted, :amount_requested, :created_at, :updated_at, :start_at, :end_at, [:narrative_lead_user, :first_name], [:narrative_lead_user, :last_name], :net_available_to_spend_amount, :overhead_amount, :retired]
+      insta.sql_query = "funding_sources.name, funding_sources.amount, funding_sources.state, funding_sources.amount_budgeted, funding_sources.amount_requested, funding_sources.created_at, funding_sources.updated_at, funding_sources.start_at, funding_sources.end_at, users.first_name, users.last_name, funding_sources.net_available_to_spend_amount, funding_sources.overhead_amount, funding_sources.retired
+                          from funding_sources
+                          left outer join users ON users.id = funding_sources.narrative_lead_user_id"
+    end
+
     base.insta_realtime
     base.insta_filter_amount do |insta|
       insta.amount_attributes = [:amount, :amount_requested, :amount_budgeted, :overhead_amount, :net_available_to_spend_amount]

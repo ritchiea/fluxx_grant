@@ -22,9 +22,13 @@ module FluxxRequestReport
     base.insta_search
     base.insta_export do |insta|
       insta.filename = 'report'
-      insta.headers = [['Date Created', :date], ['Date Updated', :date], 'Request ID', 'state', 'Report Type', ['Date Due', :date], ['Date Approved', :date], 'Org Name', 
+      insta.headers = ['Request ID', 'state', ['Date Created', :date], ['Date Updated', :date], 'Report Type', ['Date Due', :date], ['Date Approved', :date], 'Org Name',
             ['Amount Recommended', :currency], 'Lead PO', 'Project Summary']
-      insta.sql_query = "request_reports.created_at, request_reports.updated_at, requests.base_request_id request_id, request_reports.state, if(request_reports.report_type = 'FinalBudget', 'FinalFinancial', if(request_reports.report_type = 'InterimBudget', 'InterimFinancial', request_reports.report_type)), request_reports.due_at, request_reports.approved_at, organizations.name program_org_name,
+      insta.spreadsheet_cells = [[:request, :base_request_id], :state, :created_at, :updated_at, :translated_report_type, :due_at, :approved_at, [:request, :program_organization, :name],
+                    [:request, :amount_recommended],
+                    [:request, :program_lead, :full_name],
+                    [:request, :project_summary]]
+      insta.sql_query = "requests.base_request_id request_id, request_reports.state, request_reports.created_at, request_reports.updated_at, if(request_reports.report_type = 'FinalBudget', 'FinalFinancial', if(request_reports.report_type = 'InterimBudget', 'InterimFinancial', request_reports.report_type)), request_reports.due_at, request_reports.approved_at, organizations.name program_org_name,
               requests.amount_recommended, 
               (select concat(users.first_name, (concat(' ', users.last_name))) full_name from
                 users where id = program_lead_id) lead_po,
@@ -595,6 +599,15 @@ module FluxxRequestReport
           new_report.due_at = self.due_at + year_offset.year
           new_report.save
         end
+      end
+    end
+    def translated_report_type
+      if report_type == 'FinalBudget'
+        'FinalFinancial'
+      elsif report_type == 'InterimBudget'
+        'InterimFinancial'
+      else
+        report_type
       end
     end
   end

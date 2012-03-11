@@ -19,6 +19,7 @@ module FluxxInitiative
       insta.filter_fields = SEARCH_ATTRIBUTES
     end
     base.insta_export do |insta|
+      insta.spreadsheet_template = "initiative_spreadsheet"
       insta.filename = 'initiative'
       insta.headers = [['Date Created', :date], ['Date Updated', :date], 'Name', 'Spending Year', ['Amount Funded', :currency]]
       insta.sql_query = "initiatives.created_at, initiatives.updated_at, initiatives.name, if(spending_year is null, 'none', spending_year), sum(amount)

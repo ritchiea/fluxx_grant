@@ -29,6 +29,7 @@ module FluxxSubProgram
     
     
     base.insta_export do |insta|
+      insta.spreadsheet_template = "sub_program_spreadsheet"
       insta.filename = 'sub_program'
       insta.headers = [['Date Created', :date], ['Date Updated', :date], 'Name', 'Spending Year', ['Amount Funded', :currency]]
       insta.sql_query = "sub_programs.created_at, sub_programs.updated_at, sub_programs.name, if(spending_year is null, 'none', spending_year), sum(amount)
