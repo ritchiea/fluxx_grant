@@ -31,7 +31,11 @@ module FluxxRequestAmendment
     
     insta_search do |insta|
       insta.filter_fields = SEARCH_ATTRIBUTES
-      insta.derived_filters = {}
+      insta.derived_filters = {
+        :request_hierarchy => (lambda do |search_with_attributes, request_params, name, val|
+          FluxxGrantSphinxHelper.prepare_hierarchy search_with_attributes, name, val
+        end),
+      }
     end
     
     insta_filter_amount do |insta|
