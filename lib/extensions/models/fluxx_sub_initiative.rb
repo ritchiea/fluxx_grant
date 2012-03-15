@@ -39,7 +39,7 @@ module FluxxSubInitiative
 
   module ModelClassMethods
     def is_hidden?
-      Fluxx.config(:hide_program) == "1" && Fluxx.config(:funding_source_allocation_hide_program) == "1"
+      Fluxx.config(:hide_sub_initiative) == "1" && Fluxx.config(:funding_source_allocation_hide_sub_initiative) == "1"
     end
 
     def load_all
