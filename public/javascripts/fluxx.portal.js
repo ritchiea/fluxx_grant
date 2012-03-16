@@ -14,6 +14,17 @@
       if ($.fluxx && $.fluxx.util)
         $.fluxx.util.autoGrowTextArea($('textarea'));
 
+
+      $('textarea.wysiwyg').each(function() {
+        var $elem = $(this);
+        $elem.rte({
+          content_css_url: '/stylesheets/fluxx_engine/lib/rte/css/rte.css',
+          media_url: '/stylesheets/fluxx_engine/lib/rte/img/',
+          buttons: $(this).data('wysiwyg-buttons').replace(/\s+/, '').split(','),
+          height: $(this).data('height')
+        });
+      });
+
       $.fn.installFluxxDecorators();
       $('.notice').delay(10000).fadeOut('slow');
     },
